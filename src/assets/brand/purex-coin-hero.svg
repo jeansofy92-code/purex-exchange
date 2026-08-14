@@ -1,0 +1,66 @@
+<svg width="820" height="820" viewBox="0 0 820 820" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bgGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(410 310) rotate(90) scale(440 440)">
+      <stop stop-color="#0C1A13"/>
+      <stop offset="0.42" stop-color="#07110D"/>
+      <stop offset="1" stop-color="#010807"/>
+    </radialGradient>
+
+    <linearGradient id="metalStroke" x1="120" y1="90" x2="690" y2="730" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FAFC"/>
+      <stop offset="0.14" stop-color="#BFC9D1"/>
+      <stop offset="0.28" stop-color="#F6F7F8"/>
+      <stop offset="0.46" stop-color="#7C8692"/>
+      <stop offset="0.58" stop-color="#F7F9FB"/>
+      <stop offset="0.74" stop-color="#A1ACB7"/>
+      <stop offset="0.88" stop-color="#EEF2F5"/>
+      <stop offset="1" stop-color="#7E8792"/>
+    </linearGradient>
+
+    <radialGradient id="coinFill" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(405 330) rotate(90) scale(350 350)">
+      <stop stop-color="#0D1F19"/>
+      <stop offset="0.45" stop-color="#0C1713"/>
+      <stop offset="1" stop-color="#020A09"/>
+    </radialGradient>
+
+    <linearGradient id="greenFill" x1="275" y1="204" x2="572" y2="593" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D9FFD8"/>
+      <stop offset="0.15" stop-color="#B5FBB9"/>
+      <stop offset="0.5" stop-color="#5FEA5D"/>
+      <stop offset="0.78" stop-color="#3ACD4C"/>
+      <stop offset="1" stop-color="#AFF7B7"/>
+    </linearGradient>
+
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="coinShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="26" stdDeviation="30" flood-color="#000000" flood-opacity="0.55"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="18" flood-color="#77FF8B" flood-opacity="0.38"/>
+    </filter>
+  </defs>
+
+  <circle cx="410" cy="410" r="330" fill="url(#bgGlow)"/>
+
+  <g filter="url(#coinShadow)">
+    <circle cx="410" cy="410" r="260" fill="url(#coinFill)" stroke="url(#metalStroke)" stroke-width="24"/>
+    <circle cx="410" cy="410" r="220" fill="none" stroke="rgba(166,255,180,0.24)" stroke-width="2"/>
+    <circle cx="410" cy="410" r="188" fill="none" stroke="rgba(166,255,180,0.12)" stroke-width="2"/>
+
+    <circle cx="410" cy="410" r="164" fill="url(#coinFill)" stroke="rgba(133, 246, 142, 0.35)" stroke-width="2"/>
+
+    <g filter="url(#softGlow)">
+      <path d="M343 263H430.7C503.9 263 553 309.7 553 381.1C553 453.8 503.3 500 431 500H343V263ZM343 548H434.3C510.8 548 561 590.7 561 661.7C561 732.6 510.7 776 434.3 776H343V548Z" fill="url(#greenFill)"/>
+      <path d="M401 263H422V776H401V263Z" fill="#79F370" opacity="0.9"/>
+      <path d="M488.5 405.7C512 405.7 531.8 425 531.8 449.3C531.8 474.2 512.1 493.1 488.6 493.1H455.4V405.7H488.5Z" fill="#071A0F" opacity="0.18"/>
+    </g>
+  </g>
+
+  <circle cx="410" cy="410" r="286" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+  <circle cx="410" cy="410" r="310" stroke="rgba(88,230,91,0.08)" stroke-width="1.5"/>
+</svg>

@@ -1,0 +1,14 @@
+<svg width="420" height="120" viewBox="0 0 420 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="purex-glow" x1="18" y1="10" x2="82" y2="82" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B9F7C0"/>
+      <stop offset="1" stop-color="#58E65B"/>
+    </linearGradient>
+  </defs>
+  <rect x="12" y="12" width="80" height="80" rx="20" fill="#08120D" stroke="#3BD95D" stroke-width="2"/>
+  <path d="M35 28H52.5C61.7 28 68 33.3 68 41.2C68 49.1 61.7 54.4 52.5 54.4H35V28ZM35 61.6H53.2C62.7 61.6 69 66.6 69 74.8C69 82.9 62.8 88 53.4 88H35V61.6Z" fill="url(#purex-glow)"/>
+  <path d="M43 28H46.6V88H43V28Z" fill="#59E960" opacity="0.9"/>
+  <path d="M45.5 42.7C51.1 42.7 55.9 47.2 55.9 53.1C55.9 59.2 51.1 63.7 45.4 63.7H39.8V42.7H45.5Z" fill="#08120D" opacity="0.28"/>
+  <text x="116" y="54" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="800" letter-spacing="3">PUREX</text>
+  <text x="118" y="83" fill="#99A8A0" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="7">EXCHANGE</text>
+</svg>
