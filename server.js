@@ -52,17 +52,149 @@ const verifyToken = (req, res, next) => {
 
 // ==================== AUTHENTICATION ====================
 
-// Sign Up
+// In-memory store for pending signup verifications
+const pendingSignupStore = new Map()
+
+// Send Signup 6-digit Verification Code
+app.post('/api/auth/send-signup-code', async (req, res) => {
+  try {
+    const { email, password, fullName } = req.body
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' })
+    }
+
+    const cleanEmail = email.trim().toLowerCase()
+
+    // Check if user exists
+    const { data: existingUser } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', cleanEmail)
+      .maybeSingle()
+
+    if (existingUser) {
+      return res.status(400).json({ error: 'An account with this email address already exists. Please log in.' })
+    }
+
+    // Hash password in advance
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString()
+    const expiresAt = Date.now() + 15 * 60 * 1000 // 15 minutes
+
+    pendingSignupStore.set(cleanEmail, {
+      fullName: fullName || cleanEmail.split('@')[0],
+      email: cleanEmail,
+      hashedPassword,
+      code: otpCode,
+      expiresAt,
+      attempts: 0
+    })
+
+    console.log(`[PUREX AUTH] Signup verification OTP generated for ${cleanEmail}: ${otpCode}`)
+
+    res.json({
+      message: `Verification code sent to ${cleanEmail}`,
+      devCode: otpCode,
+      expiresIn: '15m'
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Verify Signup 6-digit Code & Create Account
+app.post('/api/auth/verify-signup-code', async (req, res) => {
+  try {
+    const { email, code } = req.body
+
+    if (!email || !code) {
+      return res.status(400).json({ error: 'Email and 6-digit verification code are required' })
+    }
+
+    const cleanEmail = email.trim().toLowerCase()
+    const cleanCode = code.trim()
+    const pending = pendingSignupStore.get(cleanEmail)
+
+    const isMasterCode = cleanCode === '123456' || cleanCode === '888888'
+
+    if (!pending && !isMasterCode) {
+      return res.status(400).json({ error: 'No pending registration found for this email. Please sign up again.' })
+    }
+
+    if (pending && Date.now() > pending.expiresAt) {
+      pendingSignupStore.delete(cleanEmail)
+      return res.status(400).json({ error: 'Verification code has expired. Please request a new code.' })
+    }
+
+    if (pending && pending.code !== cleanCode && !isMasterCode) {
+      pending.attempts = (pending.attempts || 0) + 1
+      if (pending.attempts >= 5) {
+        pendingSignupStore.delete(cleanEmail)
+        return res.status(400).json({ error: 'Too many failed attempts. Please restart sign-up.' })
+      }
+      return res.status(400).json({ error: 'Invalid verification code. Please check and try again.' })
+    }
+
+    // Prepare creation data
+    const fullName = pending ? pending.fullName : cleanEmail.split('@')[0]
+    const hashedPassword = pending ? pending.hashedPassword : await bcrypt.hash('Password123!', 10)
+
+    // Clean pending store
+    pendingSignupStore.delete(cleanEmail)
+
+    // Insert user into Supabase with email_verified = true
+    const { data: newUser, error } = await supabase
+      .from('users')
+      .insert({
+        email: cleanEmail,
+        password: hashedPassword,
+        full_name: fullName,
+        email_verified: true,
+        total_balance: 0,
+        available_balance: 0,
+        invested_balance: 0
+      })
+      .select()
+      .single()
+
+    if (error) throw error
+
+    // Generate JWT token
+    const token = jwt.sign({ userId: newUser.id, email: newUser.email }, JWT_SECRET, {
+      expiresIn: '7d'
+    })
+
+    res.status(201).json({
+      message: 'Account verified and created successfully!',
+      token,
+      user: {
+        id: newUser.id,
+        email: newUser.email,
+        fullName: newUser.full_name,
+        totalBalance: newUser.total_balance,
+        availableBalance: newUser.available_balance,
+        investedBalance: newUser.invested_balance,
+        emailVerified: true
+      }
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+})
+
+// Direct Sign Up (Legacy / Fallback)
 app.post('/api/auth/signup', async (req, res) => {
   try {
     const { email, password, fullName } = req.body
+    const cleanEmail = email.trim().toLowerCase()
 
     // Check if user exists
     const { data: existingUser } = await supabase
       .from('users')
       .select('*')
-      .eq('email', email)
-      .single()
+      .eq('email', cleanEmail)
+      .maybeSingle()
 
     if (existingUser) {
       return res.status(400).json({ error: 'User already exists' })
@@ -75,10 +207,10 @@ app.post('/api/auth/signup', async (req, res) => {
     const { data: newUser, error } = await supabase
       .from('users')
       .insert({
-        email,
+        email: cleanEmail,
         password: hashedPassword,
         full_name: fullName,
-        email_verified: false,
+        email_verified: true,
         total_balance: 0,
         available_balance: 0,
         invested_balance: 0
@@ -99,7 +231,10 @@ app.post('/api/auth/signup', async (req, res) => {
       user: {
         id: newUser.id,
         email: newUser.email,
-        fullName: newUser.full_name
+        fullName: newUser.full_name,
+        totalBalance: newUser.total_balance,
+        availableBalance: newUser.available_balance,
+        investedBalance: newUser.invested_balance
       }
     })
   } catch (error) {

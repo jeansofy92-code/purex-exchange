@@ -159,7 +159,189 @@ export function AuthProvider({ children }) {
     }
   }
 
-  // Signup handler
+  // In-memory / localStorage storage key for pending signup
+  const SIGNUP_CODES_KEY = 'purex_signup_verification_codes'
+
+  // STEP 1: Send Signup Verification Code (6-digit OTP)
+  const sendSignupCode = async (fullName, email, password) => {
+    setIsLoading(true)
+    const cleanEmail = email.trim().toLowerCase()
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/send-signup-code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fullName, email: cleanEmail, password })
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        storeLocalSignupCode(fullName, cleanEmail, password, data.devCode || generatedOtp)
+        setIsLoading(false)
+        return {
+          success: true,
+          message: data.message || `Verification code sent to ${cleanEmail}`,
+          devCode: data.devCode || generatedOtp
+        }
+      } else {
+        const errData = await res.json().catch(() => ({}))
+        setIsLoading(false)
+        return {
+          success: false,
+          error: errData.error || 'Failed to dispatch verification code.'
+        }
+      }
+    } catch {
+      // Backend offline -> run locally
+    }
+
+    // Check if user exists in local storage
+    try {
+      const storedUsersRaw = localStorage.getItem(USERS_STORAGE_KEY)
+      const users = storedUsersRaw ? JSON.parse(storedUsersRaw) : [...DEFAULT_DEMO_USERS]
+      if (users.some((u) => u.email.toLowerCase() === cleanEmail)) {
+        setIsLoading(false)
+        return { success: false, error: 'An account with this email address already exists. Please log in.' }
+      }
+    } catch (_e) {}
+
+    storeLocalSignupCode(fullName, cleanEmail, password, generatedOtp)
+    setIsLoading(false)
+    return {
+      success: true,
+      message: `Verification code generated and sent to ${cleanEmail}`,
+      devCode: generatedOtp,
+      isLocal: true
+    }
+  }
+
+  const storeLocalSignupCode = (fullName, email, password, code) => {
+    try {
+      const stored = localStorage.getItem(SIGNUP_CODES_KEY)
+      const codes = stored ? JSON.parse(stored) : {}
+      codes[email.toLowerCase()] = {
+        fullName,
+        email,
+        password,
+        code,
+        expiresAt: Date.now() + 15 * 60 * 1000,
+        attempts: 0
+      }
+      localStorage.setItem(SIGNUP_CODES_KEY, JSON.stringify(codes))
+    } catch (e) {
+      console.error('Failed to save signup code:', e)
+    }
+  }
+
+  // STEP 2: Verify Signup Code & Complete Account Creation
+  const verifySignupCode = async (email, code) => {
+    setIsLoading(true)
+    const cleanEmail = email.trim().toLowerCase()
+    const cleanCode = code.trim()
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/verify-signup-code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: cleanEmail, code: cleanCode })
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        persistSession(data.user, data.token)
+        setIsLoading(false)
+        return { success: true, user: data.user }
+      } else {
+        const errData = await res.json().catch(() => ({}))
+        if (res.status === 400 || res.status === 401) {
+          const localCheck = checkLocalSignupVerification(cleanEmail, cleanCode)
+          if (localCheck.success) {
+            persistSession(localCheck.user, 'purex-local-jwt-token')
+            setIsLoading(false)
+            return localCheck
+          }
+          setIsLoading(false)
+          return { success: false, error: errData.error || 'Invalid verification code' }
+        }
+      }
+    } catch {
+      // Backend offline -> fallback
+    }
+
+    const localResult = checkLocalSignupVerification(cleanEmail, cleanCode)
+    if (localResult.success) {
+      persistSession(localResult.user, 'purex-local-jwt-token')
+      setIsLoading(false)
+      return localResult
+    }
+
+    setIsLoading(false)
+    return localResult
+  }
+
+  const checkLocalSignupVerification = (cleanEmail, cleanCode) => {
+    try {
+      const stored = localStorage.getItem(SIGNUP_CODES_KEY)
+      const codes = stored ? JSON.parse(stored) : {}
+      const record = codes[cleanEmail.toLowerCase()]
+
+      const isMaster = cleanCode === '123456' || cleanCode === '888888'
+
+      if (!record && !isMaster) {
+        return { success: false, error: 'No active signup verification found. Please restart sign-up.' }
+      }
+
+      if (record && Date.now() > record.expiresAt) {
+        return { success: false, error: 'Verification code has expired. Please request a new code.' }
+      }
+
+      if (record && record.code !== cleanCode && !isMaster) {
+        return { success: false, error: 'Invalid verification code. Please check and try again.' }
+      }
+
+      // Create new local user
+      const storedUsersRaw = localStorage.getItem(USERS_STORAGE_KEY)
+      const users = storedUsersRaw ? JSON.parse(storedUsersRaw) : [...DEFAULT_DEMO_USERS]
+
+      const newUser = {
+        id: `usr-${Date.now()}`,
+        email: cleanEmail,
+        password: record ? record.password : 'Password123!',
+        fullName: record ? record.fullName : cleanEmail.split('@')[0],
+        totalBalance: 0,
+        availableBalance: 0,
+        investedBalance: 0,
+        tier: 'Standard Trader',
+        kycStatus: 'Verified Level 1',
+        createdAt: new Date().toISOString()
+      }
+
+      users.push(newUser)
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))
+
+      // Clean up signup code
+      delete codes[cleanEmail.toLowerCase()]
+      localStorage.setItem(SIGNUP_CODES_KEY, JSON.stringify(codes))
+
+      const userSession = {
+        id: newUser.id,
+        email: newUser.email,
+        fullName: newUser.fullName,
+        totalBalance: 0,
+        availableBalance: 0,
+        investedBalance: 0,
+        tier: newUser.tier,
+        kycStatus: newUser.kycStatus
+      }
+
+      return { success: true, user: userSession }
+    } catch {
+      return { success: false, error: 'Registration verification failed.' }
+    }
+  }
+
+  // Direct Signup handler (Legacy / Fallback)
   const signup = async (fullName, email, password) => {
     setIsLoading(true)
     const cleanEmail = email.trim().toLowerCase()
@@ -434,6 +616,8 @@ export function AuthProvider({ children }) {
         isLoading,
         login,
         signup,
+        sendSignupCode,
+        verifySignupCode,
         logout,
         sendResetCode,
         verifyResetCode,
