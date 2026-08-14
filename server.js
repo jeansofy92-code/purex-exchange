@@ -50,7 +50,73 @@ const verifyToken = (req, res, next) => {
   }
 }
 
-// ==================== AUTHENTICATION ====================
+// ==================== AUTHENTICATION & EMAIL DISPATCH ====================
+
+// Email Dispatch Helper (Nodemailer with SMTP support)
+const EMAIL_FROM = process.env.EMAIL_FROM || '"PUREX Exchange Security" <security@purex.exchange>'
+
+async function sendVerificationEmail({ to, code, subject, purpose }) {
+  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+    try {
+      const nodemailer = await import('nodemailer')
+      const transporter = nodemailer.default.createTransport({
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT || '587'),
+        secure: process.env.SMTP_SECURE === 'true',
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS
+        }
+      })
+
+      const htmlContent = `
+        <div style="background-color: #050708; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 40px 20px; color: #ffffff;">
+          <div style="max-width: 480px; margin: 0 auto; background-color: #080d0e; border: 1px solid rgba(88,230,91,0.3); border-radius: 20px; padding: 32px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);">
+            <div style="text-align: center; margin-bottom: 24px;">
+              <h1 style="color: #ffffff; font-size: 24px; font-weight: 900; letter-spacing: 0.15em; margin: 0;">PUREX <span style="color: #58e65b; font-size: 11px; font-weight: 700; display: block; letter-spacing: 0.3em; margin-top: 4px;">EXCHANGE</span></h1>
+            </div>
+            
+            <h2 style="color: #ffffff; font-size: 18px; font-weight: 700; margin-bottom: 12px; text-align: center;">${subject || 'Verification Code'}</h2>
+            <p style="color: #8d9691; font-size: 13px; line-height: 1.6; text-align: center; margin-bottom: 24px;">
+              Use the one-time verification code below to complete your ${purpose || 'verification'} on PUREX Exchange:
+            </p>
+            
+            <div style="background: rgba(88,230,91,0.06); border: 1px solid rgba(88,230,91,0.4); border-radius: 14px; padding: 18px; text-align: center; margin-bottom: 24px;">
+              <span style="font-family: monospace; font-size: 32px; font-weight: 900; letter-spacing: 0.25em; color: #58e65b;">${code}</span>
+            </div>
+            
+            <p style="color: #8d9691; font-size: 11px; line-height: 1.5; text-align: center;">
+              ⏳ This security code expires in <strong>15 minutes</strong>.<br />
+              If you did not initiate this action, please ignore this email.
+            </p>
+            
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 24px; padding-top: 16px; text-align: center;">
+              <p style="color: #5a6560; font-size: 10px; margin: 0;">
+                PUREX Exchange • 256-bit TLS Encrypted • Equinix NY4 Institutional Node
+              </p>
+            </div>
+          </div>
+        </div>
+      `
+
+      await transporter.sendMail({
+        from: EMAIL_FROM,
+        to,
+        subject: `[PUREX] ${code} is your security verification code`,
+        html: htmlContent
+      })
+
+      console.log(`[PUREX EMAIL] Successfully sent email with code to: ${to}`)
+      return { sent: true }
+    } catch (err) {
+      console.warn(`[PUREX EMAIL] SMTP delivery warning:`, err.message)
+      return { sent: false, error: err.message }
+    }
+  } else {
+    console.log(`[PUREX EMAIL SIMULATOR] Code for ${to} is [ ${code} ] (SMTP not configured)`)
+    return { sent: false, reason: 'No SMTP configured' }
+  }
+}
 
 // In-memory store for pending signup verifications
 const pendingSignupStore = new Map()
@@ -92,6 +158,14 @@ app.post('/api/auth/send-signup-code', async (req, res) => {
     })
 
     console.log(`[PUREX AUTH] Signup verification OTP generated for ${cleanEmail}: ${otpCode}`)
+
+    // Dispatch real email via SMTP if configured
+    await sendVerificationEmail({
+      to: cleanEmail,
+      code: otpCode,
+      subject: 'Verify Your PUREX Account',
+      purpose: 'account registration'
+    })
 
     res.json({
       message: `Verification code sent to ${cleanEmail}`,
@@ -308,6 +382,14 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     })
 
     console.log(`[PUREX AUTH] Password reset OTP generated for ${cleanEmail}: ${otpCode}`)
+
+    // Dispatch real email via SMTP if configured
+    await sendVerificationEmail({
+      to: cleanEmail,
+      code: otpCode,
+      subject: 'Reset Your PUREX Password',
+      purpose: 'password reset'
+    })
 
     res.json({
       message: `Password reset verification code dispatched to ${cleanEmail}`,
