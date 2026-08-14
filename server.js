@@ -16,15 +16,16 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-// Initialize Supabase with fallback
+// Initialize Supabase with clean project URL formatting
 let supabase = null
-const supabaseUrl = process.env.SUPABASE_URL
+const rawSupabaseUrl = process.env.SUPABASE_URL || 'https://mmmwdsvkgvfndpkxsvvi.supabase.co'
+const supabaseUrl = rawSupabaseUrl.replace(/\/rest\/v1\/?$/, '').replace(/\/$/, '')
 const supabaseKey = process.env.SUPABASE_KEY
 
 if (supabaseUrl && supabaseKey && !supabaseUrl.includes('your-project')) {
   try {
     supabase = createClient(supabaseUrl, supabaseKey)
-    console.log('[PUREX] Connected to Supabase Cloud Database')
+    console.log(`[PUREX] Connected to Supabase Cloud Database at: ${supabaseUrl}`)
   } catch (err) {
     console.warn('[PUREX] Supabase initialization notice:', err.message)
   }
