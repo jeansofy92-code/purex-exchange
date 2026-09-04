@@ -43,12 +43,13 @@ body {
   width: 100%;
   background-color: #050708;
   background-image: 
-    linear-gradient(180deg, rgba(2, 3, 3, 0.68) 0%, rgba(2, 3, 3, 0.62) 50%, rgba(2, 3, 3, 0.68) 100%),
-    url('/world-map-bg.jpg');
-  background-size: cover, cover;
-  background-position: center, center;
-  background-repeat: no-repeat, no-repeat;
-  background-attachment: fixed, fixed;
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(88, 230, 91, 0.12), transparent 70%),
+    linear-gradient(180deg, rgba(5, 7, 8, 0.72) 0%, rgba(5, 7, 8, 0.82) 40%, rgba(5, 7, 8, 0.92) 100%),
+    url('/crypto-bg.jpg');
+  background-size: cover, cover, cover;
+  background-position: center top, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-attachment: fixed, fixed, fixed;
 }
 
 .home-page-world-map {
