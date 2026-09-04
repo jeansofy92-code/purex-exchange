@@ -1,17 +1,24 @@
 @import 'tailwindcss';
 
 :root {
-  --bg: #050708;
-  --bg-secondary: #080c0d;
-  --card: #0d1213;
-  --card-soft: rgba(13, 18, 19, 0.8);
-  --border: #1b2420;
-  --green: #58e65b;
-  --green-deep: #183a1d;
+  --bg: #07080a;
+  --bg-secondary: #0c0e12;
+  --card: #0e1117;
+  --card-soft: rgba(14, 17, 23, 0.85);
+  --border: rgba(212, 175, 55, 0.18);
+  --gold: #d4af37;
+  --gold-light: #f6e5b8;
+  --gold-dark: #8c6d23;
+  --gold-gradient: linear-gradient(135deg, #fae5a8 0%, #d4af37 50%, #a47c17 100%);
+  --gold-glow: rgba(212, 175, 55, 0.3);
+  --green: #00e676;
+  --green-deep: #0a2e16;
+  --red: #ff5252;
   --text: #ffffff;
-  --muted: #8d9691;
-  --muted-strong: #dfe9e2;
-  --shadow-green: rgba(88, 230, 91, 0.35);
+  --text-gold: #e8d08d;
+  --muted: #8b929a;
+  --muted-strong: #dce2e8;
+  --shadow-gold: 0 10px 30px -10px rgba(212, 175, 55, 0.35);
 }
 
 html {
@@ -28,28 +35,41 @@ html, body, #root {
 body {
   margin: 0;
   min-width: 320px;
-  background: #050708;
+  background: #07080a;
   color: var(--text);
-  font-family: Inter, 'Segoe UI', sans-serif;
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Luxury Background Canvas: Responsive for Desktop and Mobile */
 .home-page-shell {
   position: relative;
   isolation: isolate;
   overflow: hidden;
   min-height: 100vh;
   width: 100%;
-  background-color: #050708;
+  background-color: #07080a;
   background-image: 
-    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(88, 230, 91, 0.12), transparent 70%),
-    linear-gradient(180deg, rgba(5, 7, 8, 0.72) 0%, rgba(5, 7, 8, 0.82) 40%, rgba(5, 7, 8, 0.92) 100%),
-    url('/crypto-bg.jpg');
+    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(212, 175, 55, 0.14) 0%, transparent 65%),
+    linear-gradient(180deg, rgba(7, 8, 10, 0.7) 0%, rgba(7, 8, 10, 0.85) 45%, rgba(7, 8, 10, 0.96) 100%),
+    url('/luxury-gold-bg.jpg');
   background-size: cover, cover, cover;
   background-position: center top, center, center;
   background-repeat: no-repeat, no-repeat, no-repeat;
-  background-attachment: fixed, fixed, fixed;
+  background-attachment: scroll, scroll, fixed;
+}
+
+@media (max-width: 768px) {
+  .home-page-shell {
+    background-image: 
+      radial-gradient(circle at 50% 15%, rgba(212, 175, 55, 0.18) 0%, transparent 55%),
+      linear-gradient(180deg, rgba(7, 8, 10, 0.65) 0%, rgba(7, 8, 10, 0.82) 40%, rgba(7, 8, 10, 0.95) 100%),
+      url('/luxury-gold-mobile-bg.jpg');
+    background-size: cover, cover, cover;
+    background-position: center top, center, center;
+    background-attachment: scroll, scroll, scroll;
+  }
 }
 
 .home-page-world-map {
@@ -497,6 +517,97 @@ p {
   line-height: 1.08;
 }
 
+.gold-text-gradient {
+  background: linear-gradient(135deg, #fff7db 0%, #fae098 30%, #d4af37 65%, #aa7e18 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 14px rgba(212, 175, 55, 0.28));
+}
+
+.platinum-text-gradient {
+  background: linear-gradient(135deg, #ffffff 0%, #d8e2eb 50%, #90a0b2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(212, 175, 55, 0.09);
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  color: #f5df9a;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.12);
+}
+
+.gold-btn {
+  background: linear-gradient(135deg, #fcedb6 0%, #d4af37 50%, #ad8522 100%);
+  color: #07080a;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 1px solid #fae39d;
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.35);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.6rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gold-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(212, 175, 55, 0.55);
+  filter: brightness(1.08);
+}
+
+.gold-glass-btn {
+  background: rgba(212, 175, 55, 0.06);
+  color: #fae5a8;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  backdrop-filter: blur(12px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.gold-glass-btn:hover {
+  background: rgba(212, 175, 55, 0.14);
+  border-color: rgba(212, 175, 55, 0.45);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.luxury-card {
+  background: rgba(12, 15, 20, 0.72);
+  border: 1px solid rgba(212, 175, 55, 0.16);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: all 0.3s ease;
+}
+
+.luxury-card:hover {
+  border-color: rgba(212, 175, 55, 0.35);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 25px rgba(212, 175, 55, 0.15);
+}
+
 .hero-heading {
   font-size: clamp(2.8rem, 4.5vw, 4.4rem);
   font-weight: 800;
@@ -504,12 +615,9 @@ p {
 }
 
 .hero-heading-accent {
-  color: #58e65b;
-}
-
-
-.trust-item {
-  padding: 1rem 0.85rem 0 0;
+  background: linear-gradient(135deg, #fff7db 0%, #fae098 30%, #d4af37 65%, #aa7e18 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .trust-item .text-white {
