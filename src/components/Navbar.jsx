@@ -44,17 +44,15 @@ function Navbar({ theme, setTheme }) {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[rgba(212,175,55,0.2)] bg-[#07080a]/90 backdrop-blur-2xl">
-      <nav className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-3.5 sm:px-6 lg:px-10">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#050708]/90 backdrop-blur-xl">
+      <nav className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-4 sm:px-6 lg:px-10">
         <NavLink to="/" className="flex items-center gap-3" aria-label="PUREX Exchange home">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#d4af37]/40 bg-gradient-to-br from-[#f7e09e] via-[#d4af37] to-[#8c6d23] text-black font-black text-lg shadow-[0_0_20px_rgba(212,175,55,0.3)]">
-            X
+          <div className="brand-mark-wrap">
+            <CoinLogo symbol="PUREX" size={34} className="brand-mark-svg" />
           </div>
           <div className="leading-none">
-            <div className="text-[1.15rem] font-[800] tracking-[0.14em] text-white flex items-center gap-1">
-              PUREX <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#d4af37]/20 text-[#f7e09e] border border-[#d4af37]/30">PRO</span>
-            </div>
-            <div className="text-[0.55rem] font-[700] tracking-[0.24em] text-[#d4af37]">TRADE • INVEST • GROW</div>
+            <div className="text-[1.05rem] font-[700] tracking-[0.18em] text-white">PUREX</div>
+            <div className="text-[0.55rem] font-[600] tracking-[0.26em] text-[#8d9691]">EXCHANGE</div>
           </div>
         </NavLink>
 
@@ -87,31 +85,31 @@ function Navbar({ theme, setTheme }) {
               <button
                 type="button"
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center gap-2.5 rounded-xl border border-[rgba(212,175,55,0.3)] bg-[rgba(12,15,20,0.85)] py-1.5 px-3 hover:border-[#d4af37] hover:bg-[#d4af37]/10 transition-all cursor-pointer"
+                className="flex items-center gap-2.5 rounded-xl border border-white/15 bg-white/[0.04] py-1.5 px-3 hover:border-[#58e65b]/40 hover:bg-[#183a1d]/30 transition-all cursor-pointer"
               >
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[#fae098] to-[#d4af37] text-black font-extrabold text-xs">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#183a1d] text-[#58e65b] border border-[#58e65b]/30 font-bold text-xs">
                   {user.fullName ? user.fullName[0].toUpperCase() : 'U'}
                 </div>
                 <div className="text-left text-xs leading-tight">
                   <div className="font-bold text-white max-w-[110px] truncate">
                     {user.fullName || user.email.split('@')[0]}
                   </div>
-                  <div className="text-[10px] font-mono text-[#fae098]">
+                  <div className="text-[10px] font-mono text-[#58e65b]">
                     ${(user.totalBalance || user.availableBalance || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </div>
                 </div>
-                <ChevronDown size={14} className={`text-zinc-400 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown size={14} className={`text-[#8d9691] transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {/* User Dropdown Menu */}
               {isUserMenuOpen && (
-                <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-[rgba(212,175,55,0.3)] bg-[#0c0e12] p-3 shadow-[0_20px_50px_rgba(0,0,0,0.95)] backdrop-blur-2xl z-50">
+                <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-white/15 bg-[#080d0e] p-3 shadow-[0_20px_50px_rgba(0,0,0,0.9)] backdrop-blur-2xl z-50">
                   <div className="border-b border-white/10 pb-3 mb-2 px-1">
                     <div className="text-xs font-bold text-white">{user.fullName || 'Trader Account'}</div>
-                    <div className="text-[11px] text-zinc-400 font-mono truncate">{user.email}</div>
-                    <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-[#d4af37]/15 px-2 py-0.5 text-[10px] font-bold text-[#fae098] border border-[#d4af37]/30">
+                    <div className="text-[11px] text-[#8d9691] font-mono truncate">{user.email}</div>
+                    <div className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-[#183a1d]/80 px-2 py-0.5 text-[10px] font-bold text-[#58e65b] border border-[#58e65b]/20">
                       <Shield size={10} />
-                      <span>{user.tier || 'VIP Elite Tier'}</span>
+                      <span>{user.tier || 'VIP Trader Tier'}</span>
                     </div>
                   </div>
 
@@ -119,17 +117,17 @@ function Navbar({ theme, setTheme }) {
                     <Link
                       to="/trade"
                       onClick={() => setIsUserMenuOpen(false)}
-                      className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-zinc-200 hover:bg-[#d4af37]/10 hover:text-[#fae098] transition-colors"
+                      className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-[#dfe9e2] hover:bg-white/5 hover:text-[#58e65b] transition-colors"
                     >
-                      <TrendingUp size={14} className="text-[#fae098]" />
+                      <TrendingUp size={14} className="text-[#58e65b]" />
                       <span>Trading Terminal</span>
                     </Link>
                     <Link
                       to="/admin"
                       onClick={() => setIsUserMenuOpen(false)}
-                      className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-zinc-200 hover:bg-[#d4af37]/10 hover:text-[#fae098] transition-colors"
+                      className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-[#dfe9e2] hover:bg-white/5 hover:text-[#58e65b] transition-colors"
                     >
-                      <Shield size={14} className="text-[#fae098]" />
+                      <Shield size={14} className="text-[#58e65b]" />
                       <span>Moderator & Admin Portal</span>
                     </Link>
                   </div>
@@ -150,11 +148,11 @@ function Navbar({ theme, setTheme }) {
           ) : (
             /* Unauthenticated Login & Sign Up links */
             <>
-              <Link to="/login" className="px-3.5 py-1.5 text-xs font-semibold text-zinc-300 hover:text-[#fae098] transition-colors">
+              <Link to="/login" className="nav-link-btn text-[#dfe9e2] hover:text-[#58e65b] transition-colors">
                 Log In
               </Link>
-              <Link to="/signup" className="gold-btn !py-1.5 !px-4 !text-xs font-bold">
-                Get Started
+              <Link to="/signup" className="nav-cta-btn">
+                Sign Up
               </Link>
             </>
           )}

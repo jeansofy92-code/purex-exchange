@@ -1,25 +1,21 @@
 import Hero from '../components/Hero'
-import EliteDashboardHub from '../components/home/EliteDashboardHub'
+import CryptoTicker from '../components/CryptoTicker'
 import Features from '../components/Features'
+import MarketOverview from '../components/MarketOverview'
+import Stats from '../components/Stats'
 import Security from '../components/Security'
 import CTA from '../components/CTA'
 
 function Home() {
   return (
-    <main className="home-page-shell">
-      {/* Luxury Hero with 3D Vault Centerpiece */}
+    <main className="home-page-shell home-page-shell--world-map">
+      <div className="home-page-world-map" aria-hidden="true" />
       <Hero />
-
-      {/* Elite Live Interactive Trading Hub & Market Matrix */}
-      <EliteDashboardHub />
-
-      {/* Platform Strengths & Institutional Features */}
+      <CryptoTicker />
       <Features />
-
-      {/* Security Fortress & SAFU Fund */}
+      <MarketOverview />
+      <Stats />
       <Security />
-
-      {/* High-Conversion VIP Invitation Call to Action */}
       <CTA />
     </main>
   )
