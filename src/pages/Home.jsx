@@ -12,8 +12,8 @@ import TerminalCTA from '../components/home/TerminalCTA'
 
 function Home() {
   return (
-    <main className="relative min-h-screen bg-[#050608] text-slate-100 overflow-x-hidden">
-      {/* 1. Interactive Ambient Live Network Canvas & Warm Gold Grid Background */}
+    <main className="relative min-h-screen bg-[#11142c] text-slate-100 overflow-x-hidden">
+      {/* 1. Interactive Ambient Cosmic Canvas & Starry Diamond Background */}
       <LiveNetworkBackground />
 
       {/* Foreground Content Shell - Tight, dense spacing */}
