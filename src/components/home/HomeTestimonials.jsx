@@ -1,115 +1,119 @@
 import { motion } from 'framer-motion'
-import { Star, ShieldCheck, CheckCircle2, Quote } from 'lucide-react'
+import { Star, ShieldCheck, CheckCircle2, Quote, TrendingUp, Award } from 'lucide-react'
 
 const testimonials = [
   {
     id: 1,
     name: 'Marcus Vance',
-    role: 'Quantitative Day Trader',
-    location: 'United Kingdom',
+    role: 'Quantitative Lead Trader',
+    location: 'London, UK',
     rating: 5,
-    text: 'The 0.01s order execution and ultra-deep BTC liquidity make Purex my go-to platform. Withdrawals to cold storage are instant and zero-fuss.',
-    badge: 'Verified VIP Trader',
-    volume: '$2.8M 30d Vol',
+    text: 'The 0.85ms order execution speed and ultra-deep BTC/ETH book liquidity are on par with Tier-1 institutional brokers. Automated daily staking payouts process like clockwork.',
+    badge: 'VIP Level 4',
+    volume: '$3.4M 30D Volume',
     avatar: 'M',
-    avatarBg: 'bg-[#58e65b]/20 text-[#58e65b] border-[#58e65b]/40',
+    pnl: '+28.4% 30D PnL',
   },
   {
     id: 2,
     name: 'Elena Rostova',
-    role: 'DeFi Portfolio Manager',
-    location: 'Switzerland',
+    role: 'DeFi Portfolio Director',
+    location: 'Zurich, Switzerland',
     rating: 5,
-    text: 'We stake over $250k across the Purex Elite vaults. Transparent daily yield payouts directly into our account balance with audited SAFU proof of reserves.',
+    text: 'We allocate over $450k across the Purex Diamond and Liquid ETH Yield vaults. Having cryptographically verifiable Merkle proof of reserves gives our fund full compliance confidence.',
     badge: 'Institutional Partner',
-    volume: '$4.1M Staked',
+    volume: '$5.2M Capital Staked',
     avatar: 'E',
-    avatarBg: 'bg-[#627eea]/20 text-[#627eea] border-[#627eea]/40',
+    pnl: '+24.8% APY Compounded',
   },
   {
     id: 3,
     name: 'David K. Chen',
-    role: 'Retail Crypto Investor',
+    role: 'Active Derivatives Trader',
     location: 'Singapore',
     rating: 5,
-    text: 'Customer support answered my wire verification within 4 minutes on a Sunday night. Cleanest UI in crypto, no spam or gimmicks.',
-    badge: 'Verified Member',
-    volume: '3+ Years Active',
+    text: 'Zero-fee deposits via SEPA and Apple Pay made funding instant. Support desk answered my institutional sub-account setup in 3 minutes on a Sunday night.',
+    badge: 'Verified Pro Trader',
+    volume: '3+ Years on Purex',
     avatar: 'D',
-    avatarBg: 'bg-[#f7931a]/20 text-[#f7931a] border-[#f7931a]/40',
+    pnl: '94.2% Execution Fill',
   },
 ]
 
 export default function HomeTestimonials() {
   return (
-    <section className="relative mx-auto max-w-[1440px] px-4 py-16 sm:px-6 lg:px-10">
-      <div className="text-center max-w-2xl mx-auto mb-12">
-        <div className="inline-flex items-center gap-2 mb-3">
-          <span className="green-badge">
-            <CheckCircle2 size={12} className="text-[#58e65b]" />
-            TRUSTED WORLDWIDE
-          </span>
+    <section className="relative mx-auto max-w-[1440px] px-3.5 py-12 sm:px-6 lg:px-10">
+      <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <div className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900/80 px-3 py-1 text-xs font-semibold text-emerald-400">
+            <Award size={13} />
+            <span>VERIFIED INSTITUTIONAL REVIEWS</span>
+          </div>
+          <h2 className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white">
+            Trusted by 250,000+ Active Traders & Funds
+          </h2>
+          <p className="mt-1 text-xs sm:text-sm text-slate-400 max-w-xl">
+            Real feedback from verified quant funds, high-frequency traders, and DeFi wealth managers.
+          </p>
         </div>
-        <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-          Built for Serious Traders & Institutions
-        </h2>
-        <p className="mt-3 text-sm sm:text-base text-[#8d9691]">
-          Join over 250,000+ active traders and funds executing billions in daily volume with complete peace of mind.
-        </p>
 
         {/* Global Rating Score Pill */}
-        <div className="mt-5 inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-2 backdrop-blur-md">
-          <div className="flex text-[#58e65b]">
+        <div className="inline-flex items-center gap-2.5 rounded-2xl border border-slate-800 bg-slate-950/80 px-4 py-2 text-xs font-mono">
+          <div className="flex text-emerald-400">
             {[...Array(5)].map((_, i) => (
-              <Star key={i} size={15} fill="#58e65b" stroke="#58e65b" />
+              <Star key={i} size={13} fill="#34d399" stroke="#34d399" />
             ))}
           </div>
-          <span className="text-xs font-bold text-white">4.9 / 5.0 Rating</span>
-          <span className="text-xs text-[#8d9691] border-l border-white/15 pl-3">
-            Based on 12,400+ Verified Reviews
-          </span>
+          <span className="font-bold text-white">4.92 / 5.0</span>
+          <span className="text-slate-500 border-l border-slate-800 pl-2">14,200+ Audited Reviews</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
         {testimonials.map((item, idx) => (
           <motion.div
             key={item.id}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: idx * 0.1, duration: 0.4 }}
-            className="exchange-card relative p-6 flex flex-col justify-between"
+            transition={{ delay: idx * 0.08 }}
+            className="rounded-2xl border border-slate-800 bg-[#090d14]/90 p-5 backdrop-blur-xl shadow-xl flex flex-col justify-between hover:border-slate-700 transition-all group"
           >
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex text-[#58e65b]">
+              {/* Header: Stars & Quote */}
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex text-emerald-400">
                   {[...Array(item.rating)].map((_, i) => (
-                    <Star key={i} size={14} fill="#58e65b" stroke="#58e65b" />
+                    <Star key={i} size={13} fill="#34d399" stroke="#34d399" />
                   ))}
                 </div>
-                <Quote size={20} className="text-white/10" />
+                <span className="rounded bg-slate-900 border border-slate-800 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-400">
+                  {item.badge}
+                </span>
               </div>
 
-              <p className="text-sm leading-relaxed text-[#dfe9e2] italic">
+              <p className="text-xs sm:text-sm leading-relaxed text-slate-300 italic">
                 "{item.text}"
               </p>
             </div>
 
-            <div className="mt-6 border-t border-white/10 pt-4 flex items-center justify-between">
+            <div className="mt-5 border-t border-slate-800/80 pt-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-xl border font-bold text-sm ${item.avatarBg}`}
-                >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 border border-slate-800 font-mono font-bold text-sm text-emerald-400 shadow">
                   {item.avatar}
                 </div>
                 <div>
-                  <div className="font-bold text-white text-sm flex items-center gap-1.5">
-                    {item.name}
-                    <ShieldCheck size={14} className="text-[#58e65b]" />
+                  <div className="font-bold text-white text-xs sm:text-sm flex items-center gap-1">
+                    <span>{item.name}</span>
+                    <ShieldCheck size={13} className="text-emerald-400" />
                   </div>
-                  <div className="text-[11px] text-[#8d9691]">{item.role} • {item.location}</div>
+                  <div className="text-[11px] text-slate-400 font-mono">{item.role} • {item.location}</div>
                 </div>
+              </div>
+
+              <div className="text-right font-mono text-[10px] text-slate-400 hidden sm:block">
+                <div className="text-emerald-400 font-bold">{item.pnl}</div>
+                <div>{item.volume}</div>
               </div>
             </div>
           </motion.div>

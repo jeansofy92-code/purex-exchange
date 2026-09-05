@@ -1,58 +1,53 @@
-import Hero from '../components/Hero'
-import CryptoTicker from '../components/CryptoTicker'
-import HomeMarketGainers from '../components/home/HomeMarketGainers'
-import MarketOverview from '../components/MarketOverview'
-import RoiCalculator from '../components/about/RoiCalculator'
-import HowItWorks from '../components/about/HowItWorks'
-import Features from '../components/Features'
-import Stats from '../components/Stats'
-import Security from '../components/Security'
+import LiveNetworkBackground from '../components/home/LiveNetworkBackground'
+import HeroCommandCenter from '../components/home/HeroCommandCenter'
+import LiveActivityFeed from '../components/home/LiveActivityFeed'
+import MarketDiscoveryHub from '../components/home/MarketDiscoveryHub'
+import StakingYieldMatrix from '../components/home/StakingYieldMatrix'
+import CopyTradingLeaderboard from '../components/home/CopyTradingLeaderboard'
+import ProofOfReservesSecurity from '../components/home/ProofOfReservesSecurity'
 import HomeTestimonials from '../components/home/HomeTestimonials'
-import HomeAppDownload from '../components/home/HomeAppDownload'
-import AboutFaq from '../components/about/AboutFaq'
-import CTA from '../components/CTA'
+import ProEcosystemSuite from '../components/home/ProEcosystemSuite'
+import HomeFaqSection from '../components/home/HomeFaqSection'
+import TerminalCTA from '../components/home/TerminalCTA'
 
 function Home() {
   return (
-    <main className="home-page-shell">
-      {/* 1. Hero Section with Quick Onboarding & Trust Ribbon */}
-      <Hero />
+    <main className="relative min-h-screen bg-[#05070a] text-slate-100 overflow-x-hidden">
+      {/* 1. Interactive Ambient Live Network Canvas & Grid Background */}
+      <LiveNetworkBackground />
 
-      {/* 2. Live Top Ticker Strip */}
-      <CryptoTicker />
+      {/* Foreground Content Shell */}
+      <div className="relative z-10 space-y-6 sm:space-y-8 pb-16">
+        {/* 2. Institutional Hero Command Center with Live Interactive Terminal */}
+        <HeroCommandCenter />
 
-      {/* 3. Market Momentum & Spotlight Gainers */}
-      <HomeMarketGainers />
+        {/* 3. Live Payouts & Settlement Stream */}
+        <LiveActivityFeed />
 
-      {/* 4. Complete Market Discovery & Trading Table */}
-      <MarketOverview />
+        {/* 4. Complete Market Discovery Hub, Fear/Greed Sentiment & Network Gas Pulse */}
+        <MarketDiscoveryHub />
 
-      {/* 5. Interactive High-Yield Staking & ROI Calculator */}
-      <RoiCalculator />
+        {/* 5. Interactive High-Yield Staking & Algorithmic Wealth Matrix */}
+        <StakingYieldMatrix />
 
-      {/* 6. Human Onboarding: 3-Step Guide */}
-      <HowItWorks />
+        {/* 6. Algorithmic Copy Trading & Hedge Fund Masters Leaderboard */}
+        <CopyTradingLeaderboard />
 
-      {/* 7. Platform Strengths & Institutional Infrastructure */}
-      <Features />
+        {/* 7. 100% Cryptographic Merkle Proof of Reserves & $125M SAFU Fortress */}
+        <ProofOfReservesSecurity />
 
-      {/* 8. Global Platform Statistics */}
-      <Stats />
+        {/* 8. Omnichannel Pro Ecosystem (Desktop Terminal, Mobile App & REST/WS APIs) */}
+        <ProEcosystemSuite />
 
-      {/* 9. Security Fortress & $125M SAFU Reserve Fund */}
-      <Security />
+        {/* 9. Verified Trader Testimonials & Quantitative Social Proof */}
+        <HomeTestimonials />
 
-      {/* 10. Verified Trader Testimonials & Social Proof */}
-      <HomeTestimonials />
+        {/* 10. Frequently Asked Questions & 24/7 Human Help Desk */}
+        <HomeFaqSection />
 
-      {/* 11. Multi-Platform Mobile App & Desktop Terminal */}
-      <HomeAppDownload />
-
-      {/* 12. Frequently Asked Questions */}
-      <AboutFaq />
-
-      {/* 13. High-Conversion Final Call To Action */}
-      <CTA />
+        {/* 11. High-Conversion Terminal Call To Action */}
+        <TerminalCTA />
+      </div>
     </main>
   )
 }
