@@ -58,21 +58,21 @@ export default function CopyTradingLeaderboard() {
     <section className="relative mx-auto max-w-[1440px] px-3.5 py-4 sm:px-6 lg:px-10">
       <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
         <div>
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-950/40 px-3 py-0.5 text-xs font-semibold text-amber-400">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-[#ff7a00]/30 bg-[#ff7a00]/10 px-3 py-0.5 text-xs font-semibold text-[#ff7a00]">
             <Users size={12} />
             <span>ALGORITHMIC SOCIAL COPY TRADING</span>
           </div>
           <h2 className="mt-1.5 text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-white">
             Mirror Top 0.1% Quant Strategies in 1 Click
           </h2>
-          <p className="text-xs text-slate-400 max-w-2xl">
+          <p className="text-xs text-slate-300 max-w-2xl">
             Automatically duplicate orders of audited hedge fund managers and algorithmic quants. Zero management fees on profits.
           </p>
         </div>
 
         <Link
           to="/signup"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-400 hover:text-amber-300 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-[#ff7a00] hover:text-amber-300 transition-colors"
         >
           <span>Explore All 80+ Master Traders</span>
           <ArrowRight size={13} />
@@ -86,33 +86,33 @@ export default function CopyTradingLeaderboard() {
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="rounded-2xl border border-slate-800 bg-[#090b10]/95 p-4 backdrop-blur-xl shadow-xl hover:border-amber-500/40 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] transition-all group flex flex-col justify-between"
+            className="rounded-2xl border border-white/10 bg-[#15193b]/90 p-4 backdrop-blur-xl shadow-xl hover:border-[#ff7a00]/50 hover:shadow-[0_0_20px_rgba(255,122,0,0.2)] transition-all group flex flex-col justify-between"
           >
             <div>
               {/* Header: Avatar, Name, Badge */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 border border-amber-500/30 font-mono text-sm font-black text-amber-400 shadow">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#1e2454] border border-[#ff7a00]/30 font-mono text-sm font-black text-[#ff7a00] shadow">
                     {trader.avatar}
                   </div>
                   <div>
-                    <div className="font-bold text-white text-xs sm:text-sm group-hover:text-amber-400 transition-colors">
+                    <div className="font-bold text-white text-xs sm:text-sm group-hover:text-[#ff7a00] transition-colors">
                       {trader.name}
                     </div>
                     <div className="text-[10px] text-slate-400 font-mono">{trader.strategy}</div>
                   </div>
                 </div>
 
-                <span className="rounded-full bg-slate-900 border border-slate-800 px-2 py-0.5 text-[9px] font-bold text-amber-400">
+                <span className="rounded-full bg-[#1e2454] border border-white/10 px-2.5 py-0.5 text-[9px] font-bold text-[#ff7a00]">
                   {trader.badge}
                 </span>
               </div>
 
               {/* Main ROI Ticker */}
-              <div className="mt-3.5 rounded-xl border border-slate-800 bg-slate-950 p-2.5 flex items-center justify-between">
+              <div className="mt-3.5 rounded-xl border border-white/10 bg-[#0f1228] p-2.5 flex items-center justify-between">
                 <div>
                   <div className="text-[9px] uppercase font-bold text-slate-400">30-Day Verified ROI</div>
-                  <div className="font-mono text-xl sm:text-2xl font-black text-amber-400">
+                  <div className="font-mono text-xl sm:text-2xl font-black text-[#ff7a00]">
                     {trader.roi30d}
                   </div>
                 </div>
@@ -124,29 +124,29 @@ export default function CopyTradingLeaderboard() {
 
               {/* Metrics Grid */}
               <div className="mt-3 grid grid-cols-3 gap-1.5 text-center font-mono text-xs">
-                <div className="rounded-lg bg-slate-950/80 p-1.5 border border-slate-800/80">
-                  <div className="text-[9px] text-slate-500 font-sans">Win Rate</div>
+                <div className="rounded-lg bg-[#0f1228] p-1.5 border border-white/[0.06]">
+                  <div className="text-[9px] text-slate-400 font-sans">Win Rate</div>
                   <div className="font-bold text-white mt-0.5 text-[11px]">{trader.winRate}</div>
                 </div>
 
-                <div className="rounded-lg bg-slate-950/80 p-1.5 border border-slate-800/80">
-                  <div className="text-[9px] text-slate-500 font-sans">Copied AUM</div>
+                <div className="rounded-lg bg-[#0f1228] p-1.5 border border-white/[0.06]">
+                  <div className="text-[9px] text-slate-400 font-sans">Copied AUM</div>
                   <div className="font-bold text-white mt-0.5 text-[11px]">{trader.aum}</div>
                 </div>
 
-                <div className="rounded-lg bg-slate-950/80 p-1.5 border border-slate-800/80">
-                  <div className="text-[9px] text-slate-500 font-sans">Risk Level</div>
-                  <div className="font-bold text-amber-400 mt-0.5 text-[11px]">{trader.riskScore.split(' ')[0]}</div>
+                <div className="rounded-lg bg-[#0f1228] p-1.5 border border-white/[0.06]">
+                  <div className="text-[9px] text-slate-400 font-sans">Risk Level</div>
+                  <div className="font-bold text-[#ff7a00] mt-0.5 text-[11px]">{trader.riskScore.split(' ')[0]}</div>
                 </div>
               </div>
             </div>
 
             {/* Bottom Copy Trigger */}
-            <div className="mt-3.5 border-t border-slate-800/80 pt-3 flex items-center justify-between">
-              <span className="text-[11px] text-slate-400 font-mono">{trader.copiers}</span>
+            <div className="mt-3.5 border-t border-white/10 pt-3 flex items-center justify-between">
+              <span className="text-[11px] text-slate-300 font-mono">{trader.copiers}</span>
               <Link
                 to="/signup"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 px-3.5 py-1.5 text-xs font-black text-slate-950 shadow hover:scale-[1.03] transition-all cursor-pointer uppercase tracking-wider"
+                className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#ff7a00] to-[#ff9500] px-4 py-1.5 text-xs font-black text-white shadow hover:scale-105 transition-all cursor-pointer uppercase tracking-wider"
               >
                 <Copy size={12} />
                 <span>Auto Copy</span>

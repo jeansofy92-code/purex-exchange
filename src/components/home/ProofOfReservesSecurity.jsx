@@ -44,18 +44,18 @@ const securityPillars = [
 export default function ProofOfReservesSecurity() {
   return (
     <section className="relative mx-auto max-w-[1440px] px-3.5 py-4 sm:px-6 lg:px-10">
-      <div className="rounded-2xl border border-amber-500/20 bg-[#080a0f]/95 p-5 sm:p-7 backdrop-blur-2xl shadow-2xl">
+      <div className="rounded-2xl border border-white/10 bg-[#15193b]/95 p-5 sm:p-7 backdrop-blur-2xl shadow-2xl">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-center">
           {/* Left Side: Merkle Tree Proof of Reserves (6 cols) */}
           <div className="lg:col-span-6 space-y-4">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-950/40 px-3 py-0.5 text-xs font-semibold text-amber-400">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-[#ff7a00]/30 bg-[#ff7a00]/10 px-3 py-0.5 text-xs font-semibold text-[#ff7a00]">
               <FileCheck2 size={12} />
               <span>TRANSPARENCY & AUDITED SOLVENCY</span>
             </div>
 
             <h2 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-white leading-tight">
               100% Asset Backing with <br className="hidden sm:inline" />
-              <span className="text-amber-400">Cryptographic Merkle Proof</span>
+              <span className="text-[#ff7a00]">Cryptographic Merkle Proof</span>
             </h2>
 
             <p className="text-xs text-slate-300 leading-relaxed">
@@ -63,24 +63,24 @@ export default function ProofOfReservesSecurity() {
             </p>
 
             {/* Solvency Ratio Ribbon */}
-            <div className="rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-950 p-3 flex items-center justify-between font-mono">
+            <div className="rounded-xl border border-[#ff7a00]/40 bg-gradient-to-r from-[#ff7a00]/20 via-[#1a1e46] to-[#121532] p-3 flex items-center justify-between font-mono">
               <div>
                 <div className="text-[9px] text-slate-400 uppercase font-sans font-semibold">Total Solvency Ratio</div>
-                <div className="text-2xl font-black text-amber-400">108.4%</div>
+                <div className="text-2xl font-black text-[#ff7a00]">108.4%</div>
               </div>
               <div className="text-right">
                 <div className="text-[9px] text-slate-400 font-sans">Audit Standard</div>
                 <div className="text-xs font-bold text-white flex items-center gap-1">
-                  <CheckCircle2 size={12} className="text-amber-400" />
+                  <CheckCircle2 size={12} className="text-[#ff7a00]" />
                   <span>Merkle Verified</span>
                 </div>
               </div>
             </div>
 
-            {/* Live Reserve Table - Compact */}
-            <div className="rounded-xl border border-slate-800 bg-slate-950 overflow-hidden font-mono text-xs">
+            {/* Live Reserve Table */}
+            <div className="rounded-xl border border-white/10 bg-[#0f1228] overflow-hidden font-mono text-xs">
               <table className="w-full text-left">
-                <thead className="bg-slate-900/80 text-[9px] font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-800">
+                <thead className="bg-white/[0.04] text-[9px] font-semibold text-slate-400 uppercase tracking-wider border-b border-white/10">
                   <tr>
                     <th className="py-2 px-3">Asset</th>
                     <th className="py-2 px-3">User Balances</th>
@@ -88,13 +88,13 @@ export default function ProofOfReservesSecurity() {
                     <th className="py-2 px-3 text-right">Ratio</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
+                <tbody className="divide-y divide-white/[0.06]">
                   {reserveBreakdown.map((row) => (
-                    <tr key={row.asset} className="hover:bg-slate-900/30">
+                    <tr key={row.asset} className="hover:bg-white/[0.02]">
                       <td className="py-2 px-3 font-sans font-semibold text-white text-[11px]">{row.asset}</td>
-                      <td className="py-2 px-3 text-slate-400 text-[11px]">{row.userHoldings}</td>
-                      <td className="py-2 px-3 text-slate-300 text-[11px]">{row.exchangeReserves}</td>
-                      <td className="py-2 px-3 text-right font-bold text-amber-400 text-[11px]">{row.ratio}</td>
+                      <td className="py-2 px-3 text-slate-300 text-[11px]">{row.userHoldings}</td>
+                      <td className="py-2 px-3 text-slate-200 text-[11px]">{row.exchangeReserves}</td>
+                      <td className="py-2 px-3 text-right font-bold text-[#ff7a00] text-[11px]">{row.ratio}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -105,7 +105,7 @@ export default function ProofOfReservesSecurity() {
               <span>Last Audited: <strong className="text-slate-200">Today at 00:00 UTC</strong></span>
               <Link
                 to="/security"
-                className="inline-flex items-center gap-1 font-bold text-amber-400 hover:underline"
+                className="inline-flex items-center gap-1 font-bold text-[#ff7a00] hover:underline"
               >
                 <span>Full Security Report</span>
                 <ExternalLink size={11} />
@@ -121,27 +121,27 @@ export default function ProofOfReservesSecurity() {
                 return (
                   <div
                     key={pillar.title}
-                    className="rounded-xl border border-slate-800 bg-slate-950/80 p-3 hover:border-slate-700 transition-all space-y-1"
+                    className="rounded-xl border border-white/10 bg-[#0f1228] p-3 hover:border-white/20 transition-all space-y-1"
                   >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-950/50 border border-amber-500/30 text-amber-400">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#ff7a00]/15 border border-[#ff7a00]/30 text-[#ff7a00]">
                       <Icon size={16} />
                     </div>
                     <div className="font-bold text-white text-xs">{pillar.title}</div>
-                    <p className="text-[11px] text-slate-400 leading-relaxed">{pillar.description}</p>
+                    <p className="text-[11px] text-slate-300 leading-relaxed">{pillar.description}</p>
                   </div>
                 )
               })}
             </div>
 
             {/* Auditing Partner Logos Ribbon */}
-            <div className="rounded-xl border border-slate-800 bg-slate-950/50 p-3">
+            <div className="rounded-xl border border-white/10 bg-[#0f1228]/60 p-3">
               <div className="text-[9px] uppercase font-bold text-slate-400 tracking-wider mb-2">
                 Security Auditors & Compliance Partners:
               </div>
-              <div className="grid grid-cols-3 gap-2 text-center text-[10px] font-mono font-bold text-slate-300">
-                <div className="rounded-lg bg-slate-900 border border-slate-800 py-1.5 text-amber-400">CERTIK AUDITED</div>
-                <div className="rounded-lg bg-slate-900 border border-slate-800 py-1.5 text-amber-400">HACKEN VERIFIED</div>
-                <div className="rounded-lg bg-slate-900 border border-slate-800 py-1.5 text-amber-400">CHAINALYSIS KYT</div>
+              <div className="grid grid-cols-3 gap-2 text-center text-[10px] font-mono font-bold text-slate-200">
+                <div className="rounded-lg bg-[#1a1e46] border border-white/10 py-1.5 text-[#ff7a00]">CERTIK AUDITED</div>
+                <div className="rounded-lg bg-[#1a1e46] border border-white/10 py-1.5 text-[#ff7a00]">HACKEN VERIFIED</div>
+                <div className="rounded-lg bg-[#1a1e46] border border-white/10 py-1.5 text-[#ff7a00]">CHAINALYSIS KYT</div>
               </div>
             </div>
           </div>

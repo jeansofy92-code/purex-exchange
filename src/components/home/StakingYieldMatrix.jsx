@@ -88,25 +88,25 @@ export default function StakingYieldMatrix() {
       {/* Section Title */}
       <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
         <div>
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-950/40 px-3 py-0.5 text-xs font-semibold text-amber-400">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-[#ff7a00]/30 bg-[#ff7a00]/10 px-3 py-0.5 text-xs font-semibold text-[#ff7a00]">
             <Coins size={12} />
             <span>INSTITUTIONAL DEFI VAULTS & PASSIVE YIELD</span>
           </div>
           <h2 className="mt-1.5 text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-white">
             High-Yield Staking & Algorithmic Vaults
           </h2>
-          <p className="text-xs text-slate-400 max-w-2xl">
+          <p className="text-xs text-slate-300 max-w-2xl">
             Automated compounding strategies managed across top liquidity pools with 100% principal insurance coverage.
           </p>
         </div>
 
-        <div className="flex items-center gap-1.5 text-xs font-mono text-slate-300">
-          <ShieldCheck size={15} className="text-amber-400" />
+        <div className="flex items-center gap-1.5 text-xs font-mono text-slate-200">
+          <ShieldCheck size={15} className="text-[#ff7a00]" />
           <span>$125M SAFU Protected</span>
         </div>
       </div>
 
-      {/* Grid of 4 Vault Cards - Compact */}
+      {/* Grid of 4 Vault Cards */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-4">
         {stakingVaults.map((vault) => {
           const isSelected = selectedVault.id === vault.id
@@ -119,12 +119,12 @@ export default function StakingYieldMatrix() {
               }}
               className={`relative rounded-2xl border p-4 transition-all cursor-pointer backdrop-blur-xl ${
                 isSelected
-                  ? 'border-amber-500/80 bg-gradient-to-b from-amber-950/30 via-slate-900/95 to-[#080a0f] shadow-[0_0_24px_rgba(245,158,11,0.2)] scale-[1.01]'
-                  : 'border-slate-800 bg-[#090b10]/90 hover:border-slate-700 hover:bg-slate-900/60'
+                  ? 'border-[#ff7a00] bg-gradient-to-b from-[#ff7a00]/20 via-[#1a1e42] to-[#121530] shadow-[0_0_24px_rgba(255,122,0,0.25)] scale-[1.01]'
+                  : 'border-white/10 bg-[#15193b]/90 hover:border-white/20 hover:bg-[#1a1f48]'
               }`}
             >
               {vault.highlight && (
-                <span className="absolute -top-2 right-3 rounded-full bg-gradient-to-r from-amber-400 to-yellow-400 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-slate-950 shadow">
+                <span className="absolute -top-2 right-3 rounded-full bg-gradient-to-r from-[#ff7a00] to-[#ff9500] px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-white shadow">
                   TOP YIELD
                 </span>
               )}
@@ -141,21 +141,21 @@ export default function StakingYieldMatrix() {
 
               <div className="mt-3 space-y-0.5">
                 <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Estimated APY</div>
-                <div className="font-mono text-2xl font-black text-amber-400">{vault.apy}</div>
+                <div className="font-mono text-2xl font-black text-[#ff7a00]">{vault.apy}</div>
               </div>
 
-              <div className="mt-3 grid grid-cols-2 gap-2 border-t border-slate-800/80 pt-2 text-[10px] font-mono text-slate-400">
+              <div className="mt-3 grid grid-cols-2 gap-2 border-t border-white/10 pt-2 text-[10px] font-mono text-slate-300">
                 <div>
-                  <span className="text-slate-500 block">TVL Locked</span>
-                  <span className="font-bold text-slate-200">{vault.tvl}</span>
+                  <span className="text-slate-400 block">TVL Locked</span>
+                  <span className="font-bold text-white">{vault.tvl}</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 block">Min Deposit</span>
-                  <span className="font-bold text-slate-200">${vault.minDeposit}</span>
+                  <span className="text-slate-400 block">Min Deposit</span>
+                  <span className="font-bold text-white">${vault.minDeposit}</span>
                 </div>
               </div>
 
-              <div className="mt-2.5 flex items-center justify-between text-[10px] text-amber-400 font-semibold">
+              <div className="mt-2.5 flex items-center justify-between text-[10px] text-[#ff7a00] font-semibold">
                 <span>{isSelected ? '✓ Selected Below' : 'Click to Configure'}</span>
                 <ArrowRight size={12} />
               </div>
@@ -165,19 +165,19 @@ export default function StakingYieldMatrix() {
       </div>
 
       {/* Interactive Staking Calculator Workbench */}
-      <div className="rounded-2xl border border-amber-500/20 bg-[#080a0f]/95 p-4 sm:p-6 backdrop-blur-2xl shadow-2xl">
+      <div className="rounded-2xl border border-white/10 bg-[#15193b]/95 p-4 sm:p-6 backdrop-blur-2xl shadow-2xl">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
           {/* Controls (7 Cols) */}
           <div className="lg:col-span-7 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+            <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
               <div className="flex items-center gap-2">
-                <Calculator size={16} className="text-amber-400" />
+                <Calculator size={16} className="text-[#ff7a00]" />
                 <span className="font-bold text-white text-xs sm:text-sm">
-                  Simulate Yield: <span className="text-amber-400 font-mono">{selectedVault.name}</span>
+                  Simulate Yield: <span className="text-[#ff7a00] font-mono">{selectedVault.name}</span>
                 </span>
               </div>
               <span className="font-mono text-xs text-slate-300">
-                APY: <strong className="text-amber-400">{selectedVault.apy}</strong>
+                APY: <strong className="text-[#ff7a00]">{selectedVault.apy}</strong>
               </span>
             </div>
 
@@ -185,10 +185,10 @@ export default function StakingYieldMatrix() {
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs font-semibold text-slate-300">
                 <span>Deposit Capital (USD):</span>
-                <span className="font-mono text-amber-400">${depositAmount.toLocaleString()}</span>
+                <span className="font-mono text-[#ff7a00]">${depositAmount.toLocaleString()}</span>
               </div>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-base font-bold text-amber-400">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-base font-bold text-[#ff7a00]">
                   $
                 </span>
                 <input
@@ -198,7 +198,7 @@ export default function StakingYieldMatrix() {
                   step={100}
                   value={depositAmount}
                   onChange={(e) => setDepositAmount(Math.max(0, parseFloat(e.target.value) || 0))}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950 pl-8 pr-4 py-2.5 font-mono text-lg font-bold text-white focus:border-amber-400 focus:outline-none"
+                  className="w-full rounded-xl border border-white/15 bg-[#0f1228] pl-8 pr-4 py-2.5 font-mono text-lg font-bold text-white focus:border-[#ff7a00] focus:outline-none"
                 />
               </div>
               <input
@@ -208,7 +208,7 @@ export default function StakingYieldMatrix() {
                 step={250}
                 value={depositAmount}
                 onChange={(e) => setDepositAmount(parseFloat(e.target.value))}
-                className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-400"
+                className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#ff7a00]"
               />
             </div>
 
@@ -228,8 +228,8 @@ export default function StakingYieldMatrix() {
                     onClick={() => setSelectedDuration(term.days)}
                     className={`py-1.5 px-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer text-center ${
                       selectedDuration === term.days
-                        ? 'bg-amber-400 text-slate-950 shadow-[0_0_12px_rgba(245,158,11,0.4)]'
-                        : 'bg-slate-900 border border-slate-800 text-slate-300 hover:text-white'
+                        ? 'bg-[#ff7a00] text-white shadow-[0_0_12px_rgba(255,122,0,0.4)]'
+                        : 'bg-white/5 border border-white/10 text-slate-300 hover:text-white'
                     }`}
                   >
                     {term.label}
@@ -239,9 +239,9 @@ export default function StakingYieldMatrix() {
             </div>
 
             {/* Auto Compound Switch */}
-            <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 p-2.5">
+            <div className="flex items-center justify-between rounded-xl border border-white/10 bg-[#0f1228] p-2.5">
               <div className="flex items-center gap-2">
-                <Sparkles size={15} className="text-amber-400" />
+                <Sparkles size={15} className="text-[#ff7a00]" />
                 <div>
                   <div className="text-xs font-bold text-white">Daily Auto-Compounding</div>
                   <div className="text-[10px] text-slate-400">Automatically reinvests daily earnings for maximum APY</div>
@@ -251,49 +251,49 @@ export default function StakingYieldMatrix() {
                 type="checkbox"
                 checked={autoCompound}
                 onChange={(e) => setAutoCompound(e.target.checked)}
-                className="h-4 w-4 rounded accent-amber-400 cursor-pointer"
+                className="h-4 w-4 rounded accent-[#ff7a00] cursor-pointer"
               />
             </div>
           </div>
 
           {/* Result Output Card (5 Cols) */}
           <div className="lg:col-span-5">
-            <div className="rounded-2xl border-2 border-amber-500/40 bg-gradient-to-b from-amber-950/40 via-slate-950 to-[#080a0f] p-5 shadow-2xl space-y-4 font-mono">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2.5 font-sans">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Estimated Returns</span>
-                <span className="rounded bg-amber-500/20 px-2 py-0.5 text-xs font-bold text-amber-400">
+            <div className="rounded-2xl border-2 border-[#ff7a00]/40 bg-gradient-to-b from-[#ff7a00]/20 via-[#171b3e] to-[#0f122c] p-5 shadow-2xl space-y-4 font-mono">
+              <div className="flex items-center justify-between border-b border-white/10 pb-2.5 font-sans">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Estimated Returns</span>
+                <span className="rounded-full bg-[#ff7a00]/20 px-2.5 py-0.5 text-xs font-bold text-[#ff7a00]">
                   {selectedDuration} Days Term
                 </span>
               </div>
 
               <div>
-                <div className="text-[11px] text-slate-400 font-sans">Daily Projected Profit:</div>
+                <div className="text-[11px] text-slate-300 font-sans">Daily Projected Profit:</div>
                 <div className="text-xl font-bold text-white">
-                  ${dailyReturnUsd.toFixed(2)} <span className="text-xs text-amber-400 font-normal">/ day</span>
+                  ${dailyReturnUsd.toFixed(2)} <span className="text-xs text-[#ff7a00] font-normal">/ day</span>
                 </div>
               </div>
 
               <div>
-                <div className="text-[11px] text-slate-400 font-sans">Total Net Earnings:</div>
-                <div className="text-2xl sm:text-3xl font-black text-amber-400 drop-shadow-[0_0_15px_rgba(245,158,11,0.4)]">
+                <div className="text-[11px] text-slate-300 font-sans">Total Net Earnings:</div>
+                <div className="text-2xl sm:text-3xl font-black text-[#ff7a00] drop-shadow-[0_0_15px_rgba(255,122,0,0.4)]">
                   +${totalEstimatedProfit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-800 bg-slate-950 p-2.5 space-y-1 text-xs text-slate-300">
+              <div className="rounded-xl border border-white/10 bg-[#0c0e22] p-2.5 space-y-1 text-xs text-slate-300">
                 <div className="flex justify-between">
                   <span>Initial Capital:</span>
                   <span className="text-white">${depositAmount.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between font-bold text-white pt-1 border-t border-slate-800">
+                <div className="flex justify-between font-bold text-white pt-1 border-t border-white/10">
                   <span>Total at Maturity:</span>
-                  <span className="text-amber-400 font-mono">${totalPayout.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  <span className="text-[#ff7a00] font-mono">${totalPayout.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
               </div>
 
               <Link
                 to="/signup"
-                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 py-3 font-sans text-xs font-black uppercase tracking-wider text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#ff7a00] to-[#ff9500] py-3 font-sans text-xs font-black uppercase tracking-wider text-white shadow-[0_0_20px_rgba(255,122,0,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
               >
                 <span>Deposit & Stake in {selectedVault.name}</span>
                 <ArrowRight size={14} />

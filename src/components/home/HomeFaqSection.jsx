@@ -36,14 +36,14 @@ export default function HomeFaqSection() {
   return (
     <section className="relative mx-auto max-w-[1000px] px-3.5 py-4 sm:px-6 lg:px-10">
       <div className="text-center mb-5 space-y-1.5">
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-950/40 px-3 py-0.5 text-xs font-semibold text-amber-400">
+        <div className="inline-flex items-center gap-1.5 rounded-full border border-[#ff7a00]/30 bg-[#ff7a00]/10 px-3 py-0.5 text-xs font-semibold text-[#ff7a00]">
           <HelpCircle size={12} />
           <span>FREQUENTLY ASKED QUESTIONS</span>
         </div>
         <h2 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-white">
           Everything You Need to Know
         </h2>
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-slate-300">
           Clear answers regarding platform security, yield mechanics, and instant settlements.
         </p>
       </div>
@@ -56,8 +56,8 @@ export default function HomeFaqSection() {
               key={idx}
               className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                 isOpen
-                  ? 'border-amber-500/40 bg-[#090b10] shadow-[0_0_18px_rgba(245,158,11,0.1)]'
-                  : 'border-slate-800 bg-slate-950/80 hover:border-slate-700'
+                  ? 'border-[#ff7a00]/40 bg-[#15193b] shadow-[0_0_18px_rgba(255,122,0,0.15)]'
+                  : 'border-white/10 bg-[#15193b]/70 hover:border-white/20'
               }`}
             >
               <button
@@ -71,8 +71,8 @@ export default function HomeFaqSection() {
                 <div
                   className={`p-1 rounded-lg border transition-transform duration-200 shrink-0 ${
                     isOpen
-                      ? 'rotate-180 bg-amber-950 text-amber-400 border-amber-500/40'
-                      : 'bg-slate-900 text-slate-400 border-slate-800'
+                      ? 'rotate-180 bg-[#ff7a00]/20 text-[#ff7a00] border-[#ff7a00]/40'
+                      : 'bg-white/5 text-slate-400 border-white/10'
                   }`}
                 >
                   <ChevronDown size={14} />
@@ -87,7 +87,7 @@ export default function HomeFaqSection() {
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <div className="px-3.5 pb-3.5 sm:px-4 sm:pb-4 text-xs sm:text-[13px] text-slate-300 leading-relaxed border-t border-slate-800/60 pt-2.5">
+                    <div className="px-3.5 pb-3.5 sm:px-4 sm:pb-4 text-xs sm:text-[13px] text-slate-300 leading-relaxed border-t border-white/10 pt-2.5">
                       {item.a}
                     </div>
                   </motion.div>
@@ -99,9 +99,9 @@ export default function HomeFaqSection() {
       </div>
 
       {/* 24/7 Human Help Desk Ribbon */}
-      <div className="mt-4 rounded-2xl border border-amber-500/20 bg-slate-950/90 p-3.5 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="mt-4 rounded-2xl border border-white/10 bg-[#15193b]/90 p-3.5 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 text-left">
-          <div className="h-9 w-9 rounded-xl bg-amber-950/50 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+          <div className="h-9 w-9 rounded-xl bg-[#ff7a00]/20 border border-[#ff7a00]/30 flex items-center justify-center text-[#ff7a00] shrink-0">
             <MessageSquare size={16} />
           </div>
           <div>
@@ -111,7 +111,7 @@ export default function HomeFaqSection() {
         </div>
         <Link
           to="/support"
-          className="rounded-xl border border-amber-500/30 bg-slate-900 px-3.5 py-1.5 text-xs font-bold text-white hover:border-amber-400 hover:text-amber-400 transition-colors whitespace-nowrap shrink-0"
+          className="rounded-full border border-[#ff7a00]/40 bg-[#1e2454] px-4 py-1.5 text-xs font-bold text-white hover:border-[#ff7a00] hover:text-[#ff7a00] transition-colors whitespace-nowrap shrink-0"
         >
           Contact Support Desk
         </Link>
