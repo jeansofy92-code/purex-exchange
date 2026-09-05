@@ -11,26 +11,26 @@ const layerIcons = {
 
 function SecurityArchitecture() {
   return (
-    <section id="security-layers" className="relative py-16 sm:py-24 bg-[#050708]">
+    <section id="security-layers" className="relative py-16 sm:py-24 bg-[#0e1124] border-t border-white/10">
       {/* Background ambient lighting */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-[#58e65b]/5 blur-[160px] rounded-full pointer-events-none -z-10" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-[#ff7a00]/5 blur-[160px] rounded-full pointer-events-none -z-10" />
 
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-20 space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#58e65b]/30 bg-[#183a1d]/60 px-4 py-1.5 text-xs font-bold text-[#58e65b] backdrop-blur-md">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#ff7a00]/30 bg-[#ff7a00]/10 px-4 py-1.5 text-xs font-bold text-[#ff7a00] backdrop-blur-md">
             <Lock size={14} />
             <span>Layered Defense in Depth</span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
             The Four Pillars of{' '}
-            <span className="bg-gradient-to-r from-[#58e65b] via-[#85f487] to-[#38bdf8] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#ff7a00] via-[#ffaa33] to-[#38bdf8] bg-clip-text text-transparent">
               PUREX Security Architecture
             </span>
           </h2>
 
-          <p className="text-sm sm:text-base text-[#8d9691] leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
             Every transaction, account login, and smart contract interaction is fortified by overlapping, redundant layers of cryptographic and physical defense.
           </p>
         </div>
@@ -47,7 +47,7 @@ function SecurityArchitecture() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-50px' }}
                 transition={{ duration: 0.5, delay: index * 0.12 }}
-                className={`relative flex flex-col justify-between rounded-3xl border border-white/10 bg-[#080d0e]/90 p-7 sm:p-9 backdrop-blur-xl transition-all duration-300 group ${pillar.borderGlow}`}
+                className={`relative flex flex-col justify-between rounded-3xl border border-white/10 bg-[#15193b]/90 p-7 sm:p-9 backdrop-blur-xl transition-all duration-300 group ${pillar.borderGlow}`}
               >
                 <div>
                   {/* Layer Number & Icon */}
@@ -76,17 +76,17 @@ function SecurityArchitecture() {
                   </div>
 
                   {/* Title & Subtitle */}
-                  <h3 className="text-xl sm:text-2xl font-black text-white mb-1.5 group-hover:text-[#58e65b] transition-colors">
+                  <h3 className="text-xl sm:text-2xl font-black text-white mb-1.5 group-hover:text-[#ff7a00] transition-colors">
                     {pillar.name}
                   </h3>
-                  <p className="text-xs text-[#8d9691] mb-6 font-medium">
+                  <p className="text-xs text-slate-400 mb-6 font-medium">
                     {pillar.subtitle}
                   </p>
 
                   {/* Bullet Points */}
                   <div className="space-y-3">
                     {pillar.points.map((point, pIndex) => (
-                      <div key={pIndex} className="flex items-start gap-2.5 text-xs sm:text-sm text-[#dfe9e2]">
+                      <div key={pIndex} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-200">
                         <div
                           className="mt-0.5 rounded-full p-0.5 shrink-0"
                           style={{
@@ -102,10 +102,10 @@ function SecurityArchitecture() {
                   </div>
                 </div>
 
-                {/* Bottom Status Tag */}
-                <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between text-xs text-[#8d9691]">
-                  <span>Status: Active & Continuous</span>
-                  <span className="font-bold text-white font-mono">100% Enforced</span>
+                {/* Bottom Assurance */}
+                <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400 font-mono">
+                  <span>Zero Single-Point of Failure</span>
+                  <span style={{ color: pillar.accent }}>Strictly Active</span>
                 </div>
               </motion.div>
             )

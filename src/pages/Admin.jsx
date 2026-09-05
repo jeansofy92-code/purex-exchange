@@ -128,15 +128,15 @@ function Admin() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          className="w-full max-w-md rounded-3xl border border-white/15 bg-[#080d0e]/95 p-8 backdrop-blur-2xl shadow-[0_24px_70px_rgba(0,0,0,0.9)] text-center space-y-6"
+          className="w-full max-w-md rounded-3xl border border-white/15 bg-[#11142c]/95 p-8 backdrop-blur-2xl shadow-[0_24px_70px_rgba(0,0,0,0.9)] text-center space-y-6"
         >
-          <div className="mx-auto h-16 w-16 rounded-3xl bg-[#183a1d] border-2 border-[#58e65b] flex items-center justify-center text-[#58e65b] shadow-[0_0_30px_rgba(88,230,91,0.4)]">
+          <div className="mx-auto h-16 w-16 rounded-3xl bg-[#ff7a00]/15 border-2 border-[#ff7a00] flex items-center justify-center text-[#ff7a00] shadow-[0_0_30px_rgba(255,122,0,0.4)]">
             <Lock size={30} />
           </div>
 
           <div>
             <h1 className="text-2xl font-black text-white">Moderator & Admin Portal</h1>
-            <p className="text-xs text-[#8d9691] mt-1">
+            <p className="text-xs text-slate-400 mt-1">
               Restricted executive console for support chat & investment management.
             </p>
           </div>
@@ -148,12 +148,12 @@ function Admin() {
                 value={pinInput}
                 onChange={(e) => setPinInput(e.target.value)}
                 placeholder="Enter Master Security Key..."
-                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3.5 text-center text-sm font-mono text-white placeholder-[#8d9691] focus:border-[#58e65b] focus:outline-none"
+                className="w-full rounded-2xl border border-white/15 bg-[#0c0e22] px-4 py-3.5 text-center text-sm font-mono text-white placeholder-slate-500 focus:border-[#ff7a00] focus:outline-none"
               />
             </div>
 
             {pinError && (
-              <div className="text-xs text-[#ff6b6b] font-bold flex items-center justify-center gap-1.5">
+              <div className="text-xs text-rose-400 font-bold flex items-center justify-center gap-1.5">
                 <AlertCircle size={14} />
                 <span>Invalid Security Key. Default: purex-admin-2026</span>
               </div>
@@ -161,7 +161,7 @@ function Admin() {
 
             <button
               type="submit"
-              className="w-full py-3.5 rounded-2xl bg-[#58e65b] text-black font-extrabold text-sm uppercase tracking-wider hover:bg-[#48db50] shadow-[0_0_20px_rgba(88,230,91,0.4)] transition-all"
+              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#ff7a00] to-[#ff9500] text-black font-extrabold text-sm uppercase tracking-wider hover:brightness-110 shadow-[0_0_20px_rgba(255,122,0,0.4)] transition-all cursor-pointer"
             >
               Authenticate & Enter
             </button>
@@ -169,9 +169,9 @@ function Admin() {
             <button
               type="button"
               onClick={handleQuickUnlock}
-              className="w-full py-2.5 rounded-xl border border-white/10 bg-white/5 text-xs font-semibold text-[#dfe9e2] hover:bg-white/10 transition-colors flex items-center justify-center gap-1.5"
+              className="w-full py-2.5 rounded-xl border border-white/10 bg-white/5 text-xs font-semibold text-slate-300 hover:bg-white/10 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <Sparkles size={14} className="text-[#58e65b]" />
+              <Sparkles size={14} className="text-[#ff7a00]" />
               <span>Instant Quick Moderator Unlock (One-Click)</span>
             </button>
           </form>
@@ -184,20 +184,20 @@ function Admin() {
   return (
     <main className="home-page-shell min-h-screen text-white pb-20">
       {/* Top Header Bar */}
-      <header className="border-b border-white/10 bg-[#060a0b]/95 backdrop-blur-xl px-4 py-4 sm:px-8">
+      <header className="border-b border-white/10 bg-[#0c0e22]/95 backdrop-blur-xl px-4 py-4 sm:px-8">
         <div className="mx-auto max-w-[1500px] flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-2xl bg-[#183a1d] border border-[#58e65b] flex items-center justify-center text-[#58e65b] shadow-[0_0_15px_rgba(88,230,91,0.3)]">
+            <div className="h-10 w-10 rounded-2xl bg-[#ff7a00]/15 border border-[#ff7a00] flex items-center justify-center text-[#ff7a00] shadow-[0_0_15px_rgba(255,122,0,0.3)]">
               <ShieldCheck size={22} />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-lg font-black text-white">PUREX Moderator Control Hub</h1>
-                <span className="text-[0.65rem] bg-[#58e65b] text-black font-black px-2 py-0.2 rounded-full uppercase">
+                <span className="text-[0.65rem] bg-[#ff7a00] text-black font-black px-2 py-0.2 rounded-full uppercase">
                   Live Operations
                 </span>
               </div>
-              <p className="text-[0.7rem] text-[#8d9691]">
+              <p className="text-[0.7rem] text-slate-400">
                 Real-Time User Support Chat, Investment Allocation & Fund Settlements
               </p>
             </div>
@@ -206,11 +206,11 @@ function Admin() {
           {/* Right Header Status & Logout */}
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex items-center gap-4 text-xs font-mono">
-              <div className="text-[#8d9691]">
-                Active Yield: <strong className="text-[#58e65b]">${totalInvestedCapital.toLocaleString()}</strong>
+              <div className="text-slate-400">
+                Active Yield: <strong className="text-emerald-400">${totalInvestedCapital.toLocaleString()}</strong>
               </div>
               <div className="h-4 w-[1px] bg-white/10" />
-              <div className="text-[#8d9691]">
+              <div className="text-slate-400">
                 Users: <strong className="text-white">{users.length}</strong>
               </div>
             </div>
@@ -218,7 +218,7 @@ function Admin() {
             <button
               type="button"
               onClick={() => setIsAuthenticated(false)}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-white/15 bg-white/5 text-xs font-bold text-[#ff6b6b] hover:bg-red-950/40 hover:border-red-500/40 transition-all"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-xs font-bold text-rose-400 hover:bg-rose-500/20 transition-all cursor-pointer"
             >
               <LogOut size={14} />
               <span>Lock Console</span>
@@ -228,7 +228,7 @@ function Admin() {
       </header>
 
       {/* Main Navigation Tabs */}
-      <div className="border-b border-white/10 bg-[#070c0d]">
+      <div className="border-b border-white/10 bg-[#0e1124]">
         <div className="mx-auto max-w-[1500px] px-4 sm:px-8">
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-3">
             {[
@@ -237,21 +237,21 @@ function Admin() {
                 label: 'Support Chat Desk',
                 icon: MessageSquare,
                 badge: pendingTicketsCount > 0 ? `${pendingTicketsCount} New` : null,
-                badgeColor: 'bg-[#ff6b6b]',
+                badgeColor: 'bg-rose-500 text-white',
               },
               {
                 id: 'investments',
                 label: 'User Investments',
                 icon: TrendingUp,
                 badge: `${investments.filter((i) => i.status === 'active').length} Active`,
-                badgeColor: 'bg-[#58e65b] text-black',
+                badgeColor: 'bg-emerald-500 text-black',
               },
               {
                 id: 'transactions',
                 label: 'Deposits & Withdrawals',
                 icon: DollarSign,
                 badge: pendingDepositsCount + pendingWithdrawalsCount > 0 ? `${pendingDepositsCount + pendingWithdrawalsCount} Pending` : null,
-                badgeColor: 'bg-yellow-500 text-black',
+                badgeColor: 'bg-[#ff7a00] text-black',
               },
               {
                 id: 'users',
@@ -269,17 +269,17 @@ function Admin() {
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all shrink-0 ${
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all shrink-0 cursor-pointer ${
                     isSelected
-                      ? 'bg-[#58e65b] text-black shadow-[0_0_20px_rgba(88,230,91,0.35)]'
-                      : 'text-[#8d9691] hover:text-white hover:bg-white/5'
+                      ? 'bg-gradient-to-r from-[#ff7a00] to-[#ff9500] text-black shadow-[0_0_20px_rgba(255,122,0,0.35)]'
+                      : 'text-slate-400 hover:text-white hover:bg-white/5'
                   }`}
                 >
                   <Icon size={16} />
                   <span>{tab.label}</span>
                   {tab.badge && (
                     <span
-                      className={`px-2 py-0.5 rounded-full text-[0.65rem] font-black ${tab.badgeColor || 'bg-black text-[#58e65b]'}`}
+                      className={`px-2 py-0.5 rounded-full text-[0.65rem] font-black ${tab.badgeColor || 'bg-black text-white'}`}
                     >
                       {tab.badge}
                     </span>

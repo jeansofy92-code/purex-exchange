@@ -72,7 +72,7 @@ function SecurityScoreSimulator() {
 
   if (totalScore >= 85) {
     scoreTier = 'Fortress Grade 🛡️'
-    scoreColor = '#58e65b'
+    scoreColor = '#ff7a00'
     scoreDescription = 'Maximum institutional-grade defense active. Your account is exceptionally secure.'
   } else if (totalScore < 50) {
     scoreTier = 'Vulnerable ⚠️'
@@ -81,36 +81,36 @@ function SecurityScoreSimulator() {
   }
 
   return (
-    <section className="relative py-16 sm:py-24 bg-[#060a0b] border-y border-white/10">
+    <section className="relative py-16 sm:py-24 bg-[#0e1124] border-y border-white/10">
       {/* Background ambient lighting */}
-      <div className="absolute top-1/3 left-1/4 w-[600px] h-[350px] bg-[#58e65b]/10 blur-[150px] rounded-full pointer-events-none -z-10" />
+      <div className="absolute top-1/3 left-1/4 w-[600px] h-[350px] bg-[#ff7a00]/10 blur-[150px] rounded-full pointer-events-none -z-10" />
 
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#58e65b]/30 bg-[#183a1d]/60 px-4 py-1.5 text-xs font-bold text-[#58e65b]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#ff7a00]/30 bg-[#ff7a00]/10 px-4 py-1.5 text-xs font-bold text-[#ff7a00]">
             <ShieldCheck size={14} />
             <span>Interactive Security Health Audit</span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
             Simulate Your{' '}
-            <span className="bg-gradient-to-r from-[#58e65b] via-[#85f487] to-[#38bdf8] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#ff7a00] via-[#ffaa33] to-[#38bdf8] bg-clip-text text-transparent">
               Account Defense Score
             </span>
           </h2>
 
-          <p className="text-sm sm:text-base text-[#8d9691]">
+          <p className="text-sm sm:text-base text-slate-300">
             Toggle security controls to see how layered safeguards instantly elevate your account defense profile.
           </p>
         </div>
 
         {/* Simulator Grid */}
-        <div className="max-w-5xl mx-auto rounded-3xl border border-white/15 bg-[#080d0e]/95 p-6 sm:p-10 backdrop-blur-2xl shadow-[0_24px_70px_rgba(0,0,0,0.85)]">
+        <div className="max-w-5xl mx-auto rounded-3xl border border-white/15 bg-[#15193b]/95 p-6 sm:p-10 backdrop-blur-2xl shadow-[0_24px_70px_rgba(0,0,0,0.85)]">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Left Column: Interactive Checkbox List */}
             <div className="lg:col-span-7 space-y-3.5">
-              <div className="text-xs font-bold uppercase tracking-wider text-[#8d9691] mb-2">
+              <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                 Available Account Safeguards:
               </div>
 
@@ -124,14 +124,14 @@ function SecurityScoreSimulator() {
                     onClick={() => toggleItem(item.id)}
                     className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${
                       isChecked
-                        ? 'border-[#58e65b]/40 bg-[#183a1d]/40 shadow-[0_0_15px_rgba(88,230,91,0.1)]'
-                        : 'border-white/10 bg-black/40 hover:border-white/20'
+                        ? 'border-[#ff7a00]/40 bg-[#ff7a00]/10 shadow-[0_0_15px_rgba(255,122,0,0.1)]'
+                        : 'border-white/10 bg-[#0c0e22]/60 hover:border-white/20'
                     }`}
                   >
                     <div className="flex items-center gap-3.5 pr-4">
                       <div
                         className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
-                          isChecked ? 'bg-[#58e65b] text-black' : 'bg-white/5 text-[#8d9691]'
+                          isChecked ? 'bg-[#ff7a00] text-black font-bold' : 'bg-white/5 text-slate-400'
                         }`}
                       >
                         <Icon size={18} />
@@ -139,11 +139,11 @@ function SecurityScoreSimulator() {
                       <div>
                         <div className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
                           <span>{item.title}</span>
-                          <span className="text-[0.65rem] font-bold text-[#58e65b] bg-[#183a1d] px-1.5 py-0.2 rounded">
+                          <span className="text-[0.65rem] font-bold text-[#ff7a00] bg-[#ff7a00]/20 px-1.5 py-0.2 rounded border border-[#ff7a00]/30">
                             +{item.points} pts
                           </span>
                         </div>
-                        <div className="text-[0.72rem] text-[#8d9691] leading-snug mt-0.5">
+                        <div className="text-[0.72rem] text-slate-400 leading-snug mt-0.5">
                           {item.description}
                         </div>
                       </div>
@@ -154,7 +154,7 @@ function SecurityScoreSimulator() {
                       type="checkbox"
                       checked={isChecked}
                       onChange={() => {}}
-                      className="h-5 w-5 rounded accent-[#58e65b] cursor-pointer shrink-0"
+                      className="h-5 w-5 rounded accent-[#ff7a00] cursor-pointer shrink-0"
                     />
                   </div>
                 )
@@ -163,9 +163,9 @@ function SecurityScoreSimulator() {
 
             {/* Right Column: Score Gauge & Recommendation Output */}
             <div className="lg:col-span-5">
-              <div className="rounded-3xl border-2 border-white/15 bg-gradient-to-b from-[#101b13] via-[#09110d] to-[#070b0d] p-6 sm:p-8 text-center space-y-6 shadow-2xl relative overflow-hidden">
+              <div className="rounded-3xl border-2 border-white/15 bg-gradient-to-b from-[#1c2146] via-[#15193b] to-[#0e1124] p-6 sm:p-8 text-center space-y-6 shadow-2xl relative overflow-hidden">
                 {/* Top Title */}
-                <div className="text-xs font-bold uppercase tracking-wider text-[#8d9691]">
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-400">
                   Defense Health Rating
                 </div>
 
@@ -213,22 +213,22 @@ function SecurityScoreSimulator() {
                 </div>
 
                 {/* Recommendation Box */}
-                <div className="rounded-2xl border border-white/10 bg-black/50 p-4 text-xs text-[#dfe9e2] leading-relaxed">
+                <div className="rounded-2xl border border-white/10 bg-[#0c0e22]/70 p-4 text-xs text-slate-200 leading-relaxed">
                   <div className="flex items-center justify-center gap-1.5 font-bold text-white mb-1">
                     {totalScore >= 85 ? (
-                      <CheckCircle2 size={14} className="text-[#58e65b]" />
+                      <CheckCircle2 size={14} className="text-[#10b981]" />
                     ) : (
                       <ShieldAlert size={14} className="text-yellow-400" />
                     )}
                     <span>Security Assessment</span>
                   </div>
-                  <p className="text-[0.75rem] text-[#8d9691]">{scoreDescription}</p>
+                  <p className="text-[0.75rem] text-slate-400">{scoreDescription}</p>
                 </div>
 
                 {/* Call to Action button */}
                 <NavLink
                   to="/signup"
-                  className="w-full py-3.5 rounded-2xl bg-[#58e65b] text-black font-extrabold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#48db50] shadow-[0_0_20px_rgba(88,230,91,0.4)] transition-all hover:scale-105"
+                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#ff7a00] to-[#ff9500] text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(255,122,0,0.4)] hover:brightness-110 transition-all hover:scale-105"
                 >
                   <span>Activate Fortress Protection</span>
                   <ArrowRight size={15} />

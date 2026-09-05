@@ -64,7 +64,7 @@ function Trade() {
   }
 
   return (
-    <main className="flex flex-col min-h-screen bg-[#050708] text-white">
+    <main className="flex flex-col min-h-screen bg-[#0c0e22] text-white">
       {/* Top Trading Header Bar */}
       <TradingHeader
         activeCoin={activeCoin}
@@ -148,10 +148,10 @@ function Trade() {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-2xl border px-5 py-3.5 shadow-[0_16px_36px_rgba(0,0,0,0.8)] backdrop-blur-xl ${
               toastMessage.type === 'error'
-                ? 'border-[#ff6b6b]/40 bg-[#250d0d]/95 text-[#ff6b6b]'
+                ? 'border-rose-500/40 bg-[#2b1016]/95 text-rose-400'
                 : toastMessage.type === 'warning'
-                ? 'border-yellow-500/40 bg-[#251f0d]/95 text-yellow-400'
-                : 'border-[#58e65b]/40 bg-[#0d2512]/95 text-[#58e65b]'
+                ? 'border-amber-500/40 bg-[#2b2010]/95 text-amber-400'
+                : 'border-[#ff7a00]/40 bg-[#221738]/95 text-[#ff7a00]'
             }`}
           >
             {toastMessage.type === 'error' ? (

@@ -96,9 +96,9 @@ function TradingChart({
   const currentPriceY = getPriceY(currentPrice)
 
   return (
-    <div className="flex flex-col h-full bg-[#050809] border-r border-b border-white/10 select-none">
+    <div className="flex flex-col h-full bg-[#0b0e24] border-r border-b border-white/10 select-none">
       {/* Chart Top Controls Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 border-b border-white/10 bg-[#070c0d]">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 border-b border-white/10 bg-[#0f132e]">
         {/* Timeframe Pills */}
         <div className="flex items-center gap-1">
           {timeframes.map((tf) => (
@@ -108,8 +108,8 @@ function TradingChart({
               onClick={() => setTimeframe(tf)}
               className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-all ${
                 timeframe === tf
-                  ? 'bg-[#183a1d] text-[#58e65b] border border-[#58e65b]/40 shadow-[0_0_8px_rgba(88,230,91,0.2)]'
-                  : 'text-[#8d9691] hover:text-white'
+                  ? 'bg-[#ff7a00] text-white shadow-[0_0_10px_rgba(255,122,0,0.35)]'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
               {tf}
@@ -125,7 +125,7 @@ function TradingChart({
               type="button"
               onClick={() => setChartMode('candles')}
               className={`p-1.5 rounded-md transition-colors ${
-                chartMode === 'candles' ? 'bg-white/15 text-[#58e65b]' : 'text-[#8d9691] hover:text-white'
+                chartMode === 'candles' ? 'bg-white/15 text-[#ff7a00]' : 'text-slate-400 hover:text-white'
               }`}
               title="Candlestick Chart"
             >
@@ -135,7 +135,7 @@ function TradingChart({
               type="button"
               onClick={() => setChartMode('line')}
               className={`p-1.5 rounded-md transition-colors ${
-                chartMode === 'line' ? 'bg-white/15 text-[#58e65b]' : 'text-[#8d9691] hover:text-white'
+                chartMode === 'line' ? 'bg-white/15 text-[#ff7a00]' : 'text-slate-400 hover:text-white'
               }`}
               title="Line Area Chart"
             >
@@ -149,8 +149,8 @@ function TradingChart({
             onClick={() => setShowEMA(!showEMA)}
             className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-all ${
               showEMA
-                ? 'bg-[#183a1d]/60 border-[#58e65b]/40 text-[#58e65b]'
-                : 'bg-transparent border-white/10 text-[#8d9691] hover:text-white'
+                ? 'bg-[#ff7a00]/20 border-[#ff7a00]/40 text-[#ff7a00]'
+                : 'bg-transparent border-white/10 text-slate-400 hover:text-white'
             }`}
           >
             EMA (20/50)
@@ -161,8 +161,8 @@ function TradingChart({
             onClick={() => setShowVolume(!showVolume)}
             className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-all ${
               showVolume
-                ? 'bg-[#183a1d]/60 border-[#58e65b]/40 text-[#58e65b]'
-                : 'bg-transparent border-white/10 text-[#8d9691] hover:text-white'
+                ? 'bg-[#ff7a00]/20 border-[#ff7a00]/40 text-[#ff7a00]'
+                : 'bg-transparent border-white/10 text-slate-400 hover:text-white'
             }`}
           >
             Vol
@@ -172,7 +172,7 @@ function TradingChart({
 
       {/* OHLC Bar Top Info */}
       {displayedCandle && (
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-1.5 bg-[#060a0b]/90 text-[0.72rem] border-b border-white/5 text-[#8d9691]">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-1.5 bg-[#0e122b]/90 text-[0.72rem] border-b border-white/5 text-slate-400">
           <div><span className="text-white font-semibold">{activeSymbol}/USDT</span></div>
           <div>O: <span className="text-white font-semibold">${displayedCandle.open?.toFixed(2)}</span></div>
           <div>H: <span className="text-white font-semibold">${displayedCandle.high?.toFixed(2)}</span></div>
@@ -182,7 +182,7 @@ function TradingChart({
             Change:{' '}
             <span
               className={`font-bold ${
-                displayedCandle.close >= displayedCandle.open ? 'text-[#58e65b]' : 'text-[#ff6b6b]'
+                displayedCandle.close >= displayedCandle.open ? 'text-emerald-400' : 'text-rose-400'
               }`}
             >
               {((displayedCandle.close - displayedCandle.open) / displayedCandle.open * 100).toFixed(2)}%
@@ -191,8 +191,8 @@ function TradingChart({
           <div>Vol: <span className="text-white font-semibold">{displayedCandle.volume} BTC</span></div>
           {showEMA && (
             <>
-              <div className="text-[#38bdf8] font-bold">EMA 20</div>
-              <div className="text-[#facc15] font-bold">EMA 50</div>
+              <div className="text-sky-400 font-bold">EMA 20</div>
+              <div className="text-amber-400 font-bold">EMA 50</div>
             </>
           )}
         </div>
@@ -210,8 +210,8 @@ function TradingChart({
             <defs>
               {/* Line chart area gradient */}
               <linearGradient id="chartAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#58e65b" stopOpacity="0.3" />
-                <stop offset="100%" stopColor="#58e65b" stopOpacity="0.0" />
+                <stop offset="0%" stopColor="#ff7a00" stopOpacity="0.35" />
+                <stop offset="100%" stopColor="#ff7a00" stopOpacity="0.0" />
               </linearGradient>
             </defs>
 
@@ -232,7 +232,7 @@ function TradingChart({
                   <text
                     x={plotWidth + 8}
                     y={y + 3}
-                    fill="#8d9691"
+                    fill="#94a3b8"
                     fontSize="9"
                     fontFamily="monospace"
                   >
@@ -258,7 +258,7 @@ function TradingChart({
                   <text
                     x={x - 12}
                     y={svgHeight - 6}
-                    fill="#8d9691"
+                    fill="#94a3b8"
                     fontSize="9"
                     fontFamily="monospace"
                   >
@@ -282,7 +282,7 @@ function TradingChart({
                     y={y}
                     width={candleWidth}
                     height={h}
-                    fill={c.isUp ? 'rgba(88, 230, 91, 0.35)' : 'rgba(255, 107, 107, 0.35)'}
+                    fill={c.isUp ? 'rgba(16, 185, 129, 0.35)' : 'rgba(244, 63, 94, 0.35)'}
                   />
                 )
               })}
@@ -299,7 +299,7 @@ function TradingChart({
 
                 const candleBodyY = Math.min(openY, closeY)
                 const candleBodyH = Math.max(2, Math.abs(closeY - openY))
-                const color = c.isUp ? '#58e65b' : '#ff6b6b'
+                const color = c.isUp ? '#10b981' : '#f43f5e'
 
                 return (
                   <g
@@ -347,7 +347,7 @@ function TradingChart({
                     .map((c, i) => `${i * candleStep + candleStep / 2},${getPriceY(c.close)}`)
                     .join(' ')}
                   fill="none"
-                  stroke="#58e65b"
+                  stroke="#ff7a00"
                   strokeWidth="2.5"
                 />
               </>
@@ -383,7 +383,7 @@ function TradingChart({
               y1={currentPriceY}
               x2={plotWidth}
               y2={currentPriceY}
-              stroke="#58e65b"
+              stroke="#ff7a00"
               strokeWidth="1"
               strokeDasharray="4 4"
             />
@@ -394,15 +394,15 @@ function TradingChart({
                 y="0"
                 width={rightAxisWidth}
                 height="20"
-                fill="#183a1d"
-                stroke="#58e65b"
+                fill="#271c42"
+                stroke="#ff7a00"
                 strokeWidth="1"
                 rx="4"
               />
               <text
                 x="6"
                 y="14"
-                fill="#58e65b"
+                fill="#ff7a00"
                 fontSize="10"
                 fontWeight="bold"
                 fontFamily="monospace"

@@ -43,18 +43,18 @@ function PairSelectorModal({ isOpen, onClose, coinsList, activeSymbol, onSelectP
           initial={{ opacity: 0, scale: 0.95, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 15 }}
-          className="relative z-10 w-full max-w-xl max-h-[85vh] flex flex-col rounded-3xl border border-white/15 bg-[#080d0e] p-5 shadow-[0_24px_60px_rgba(0,0,0,0.9)] text-xs text-white"
+          className="relative z-10 w-full max-w-xl max-h-[85vh] flex flex-col rounded-3xl border border-white/15 bg-[#15193b] p-5 shadow-[0_24px_60px_rgba(0,0,0,0.9)] text-xs text-white"
         >
           {/* Header */}
           <div className="flex items-center justify-between pb-3.5 border-b border-white/10">
             <div>
               <h2 className="text-base font-extrabold text-white">Select Trading Market</h2>
-              <p className="text-[0.7rem] text-[#8d9691]">Search across 150+ cryptocurrency spot and futures pairs</p>
+              <p className="text-[0.7rem] text-slate-400">Search across 150+ cryptocurrency spot and futures pairs</p>
             </div>
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-lg border border-white/10 bg-white/5 text-[#8d9691] hover:text-white transition-colors"
+              className="p-1.5 rounded-lg border border-white/10 bg-white/5 text-slate-400 hover:text-white transition-colors cursor-pointer"
             >
               <X size={16} />
             </button>
@@ -63,13 +63,13 @@ function PairSelectorModal({ isOpen, onClose, coinsList, activeSymbol, onSelectP
           {/* Search Bar */}
           <div className="py-3">
             <div className="relative">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8d9691]" />
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by coin name or symbol (e.g. BTC, Solana)..."
-                className="w-full rounded-xl border border-white/10 bg-[#050809] pl-9 pr-4 py-2.5 text-xs text-white placeholder-[#8d9691] focus:border-[#58e65b] focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-[#0e122b] pl-9 pr-4 py-2.5 text-xs text-white placeholder-slate-400 focus:border-[#ff7a00] focus:outline-none"
               />
             </div>
           </div>
@@ -87,10 +87,10 @@ function PairSelectorModal({ isOpen, onClose, coinsList, activeSymbol, onSelectP
                 key={cat.id}
                 type="button"
                 onClick={() => setCategory(cat.id)}
-                className={`px-3 py-1 rounded-lg text-[0.7rem] font-bold transition-all ${
+                className={`px-3 py-1 rounded-lg text-[0.7rem] font-bold transition-all cursor-pointer ${
                   category === cat.id
-                    ? 'bg-[#58e65b] text-black shadow-[0_0_10px_rgba(88,230,91,0.3)]'
-                    : 'bg-white/5 border border-white/10 text-[#8d9691] hover:text-white'
+                    ? 'bg-[#ff7a00] text-white shadow-[0_0_10px_rgba(255,122,0,0.35)]'
+                    : 'bg-white/5 border border-white/10 text-slate-400 hover:text-white'
                 }`}
               >
                 {cat.label}
@@ -111,7 +111,7 @@ function PairSelectorModal({ isOpen, onClose, coinsList, activeSymbol, onSelectP
                   }}
                   className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all ${
                     isSelected
-                      ? 'bg-[#183a1d]/60 border border-[#58e65b]/40'
+                      ? 'bg-[#ff7a00]/15 border border-[#ff7a00]/40'
                       : 'hover:bg-white/5'
                   }`}
                 >
@@ -121,13 +121,13 @@ function PairSelectorModal({ isOpen, onClose, coinsList, activeSymbol, onSelectP
                       <div className="flex items-center gap-1.5 font-bold text-white text-[0.85rem]">
                         <span>{coin.symbol}/USDT</span>
                         {coin.isFeatured && (
-                          <span className="text-[0.6rem] bg-[#58e65b] text-black px-1.5 py-0.2 rounded font-black">
+                          <span className="text-[0.6rem] bg-[#ff7a00] text-white px-1.5 py-0.2 rounded font-black">
                             PUREX
                           </span>
                         )}
-                        {coin.isHot && <Flame size={12} className="text-orange-500 fill-orange-500" />}
+                        {coin.isHot && <Flame size={12} className="text-[#ff7a00] fill-[#ff7a00]" />}
                       </div>
-                      <div className="text-[0.68rem] text-[#8d9691]">{coin.name}</div>
+                      <div className="text-[0.68rem] text-slate-400">{coin.name}</div>
                     </div>
                   </div>
 
@@ -139,7 +139,7 @@ function PairSelectorModal({ isOpen, onClose, coinsList, activeSymbol, onSelectP
                     <div className="font-mono font-bold text-white text-[0.85rem]">${coin.price}</div>
                     <div
                       className={`inline-flex items-center gap-0.5 text-[0.68rem] font-bold ${
-                        coin.positive ? 'text-[#58e65b]' : 'text-[#ff6b6b]'
+                        coin.positive ? 'text-emerald-400' : 'text-rose-400'
                       }`}
                     >
                       {coin.positive ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
@@ -151,7 +151,7 @@ function PairSelectorModal({ isOpen, onClose, coinsList, activeSymbol, onSelectP
             })}
 
             {filteredCoins.length === 0 && (
-              <div className="py-8 text-center text-[#8d9691]">No trading pairs match your query.</div>
+              <div className="py-8 text-center text-slate-400">No trading pairs match your query.</div>
             )}
           </div>
         </motion.div>

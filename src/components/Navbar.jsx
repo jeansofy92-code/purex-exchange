@@ -193,7 +193,7 @@ function Navbar({ theme, setTheme }) {
 
       {/* Mobile Drawer */}
       {isOpen && (
-        <div className="border-t border-white/10 bg-[#050708] lg:hidden">
+        <div className="border-t border-white/10 bg-[#11142c] lg:hidden shadow-2xl">
           <div className="mx-auto flex max-w-[1440px] flex-col gap-2 px-4 py-4 sm:px-6">
             {navItems.map((item) => (
               <NavLink
@@ -201,8 +201,8 @@ function Navbar({ theme, setTheme }) {
                 to={item.path}
                 onClick={() => setIsOpen(false)}
                 className={({ isActive }) =>
-                  `rounded-lg px-3 py-2 text-sm transition-colors ${
-                    isActive ? 'bg-[#0d1213] text-white' : 'text-[#8d9691] hover:bg-white/5 hover:text-white'
+                  `rounded-xl px-3 py-2 text-sm font-semibold transition-colors ${
+                    isActive ? 'bg-[#1c2146] text-[#ff7a00]' : 'text-slate-300 hover:bg-white/5 hover:text-white'
                   }`
                 }
               >
@@ -214,7 +214,7 @@ function Navbar({ theme, setTheme }) {
               <div className="mt-2 border-t border-white/10 pt-3 space-y-2">
                 <div className="flex items-center justify-between px-2">
                   <div className="text-xs font-bold text-white">{user.fullName || user.email}</div>
-                  <div className="text-xs font-mono text-[#58e65b]">
+                  <div className="text-xs font-mono font-bold text-emerald-400">
                     ${(user.totalBalance || 0).toLocaleString()}
                   </div>
                 </div>
@@ -222,14 +222,14 @@ function Navbar({ theme, setTheme }) {
                   <Link
                     to="/trade"
                     onClick={() => setIsOpen(false)}
-                    className="nav-cta-btn flex-1 text-center text-xs py-2.5"
+                    className="flex-1 rounded-xl bg-gradient-to-r from-[#ff7a00] to-[#ff9500] text-center text-xs font-bold py-2.5 text-white shadow-[0_0_15px_rgba(255,122,0,0.4)]"
                   >
                     Trade
                   </Link>
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="nav-link-btn flex-1 text-center text-xs py-2.5 text-[#ff6b6b]"
+                    className="flex-1 rounded-xl border border-rose-500/30 bg-rose-500/10 text-center text-xs font-bold py-2.5 text-rose-400 hover:bg-rose-500/20 transition-all cursor-pointer"
                   >
                     Log Out
                   </button>
@@ -240,16 +240,16 @@ function Navbar({ theme, setTheme }) {
                 <Link
                   to="/login"
                   onClick={() => setIsOpen(false)}
-                  className="flex-1 rounded-xl border border-amber-500/40 bg-slate-900 py-3 text-center text-xs font-bold text-white shadow"
+                  className="flex-1 rounded-xl border border-white/15 bg-[#171b3c] py-3 text-center text-xs font-bold text-white shadow hover:border-[#ff7a00]/50"
                 >
                   Log In
                 </Link>
                 <Link
                   to="/signup"
                   onClick={() => setIsOpen(false)}
-                  className="flex-1 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 py-3 text-center text-xs font-black text-slate-950 shadow-[0_0_15px_rgba(245,158,11,0.5)] uppercase tracking-wider"
+                  className="flex-1 rounded-xl bg-gradient-to-r from-[#ff7a00] to-[#ff9500] py-3 text-center text-xs font-black text-white shadow-[0_0_15px_rgba(255,122,0,0.4)] uppercase tracking-wider"
                 >
-                  Sign Up
+                  Become a Pro
                 </Link>
               </div>
             )}

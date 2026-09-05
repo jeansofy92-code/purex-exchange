@@ -12,11 +12,11 @@ function SecurityFaq() {
   }
 
   return (
-    <section id="security-faq" className="relative py-16 sm:py-24 bg-[#050708] border-t border-white/10">
+    <section id="security-faq" className="relative py-16 sm:py-24 bg-[#0c0e22] border-t border-white/10">
       <div className="mx-auto max-w-[1000px] px-4 sm:px-6 lg:px-10">
         {/* Section Header */}
         <div className="text-center mb-14 space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#58e65b]/30 bg-[#183a1d]/60 px-4 py-1.5 text-xs font-bold text-[#58e65b]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#ff7a00]/30 bg-[#ff7a00]/10 px-4 py-1.5 text-xs font-bold text-[#ff7a00]">
             <HelpCircle size={14} />
             <span>Security FAQs</span>
           </div>
@@ -25,7 +25,7 @@ function SecurityFaq() {
             Security & Custody Questions
           </h2>
 
-          <p className="text-sm sm:text-base text-[#8d9691]">
+          <p className="text-sm sm:text-base text-slate-300">
             Clear answers on how we protect your capital, manage private keys, and respond to threats.
           </p>
         </div>
@@ -40,8 +40,8 @@ function SecurityFaq() {
                 key={index}
                 className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                   isOpen
-                    ? 'border-[#58e65b]/40 bg-[#080f10] shadow-[0_0_20px_rgba(88,230,91,0.1)]'
-                    : 'border-white/10 bg-[#080d0e]/70 hover:border-white/20'
+                    ? 'border-[#ff7a00]/40 bg-[#15193b] shadow-[0_0_20px_rgba(255,122,0,0.1)]'
+                    : 'border-white/10 bg-[#11142c]/70 hover:border-white/20'
                 }`}
               >
                 <button
@@ -55,8 +55,8 @@ function SecurityFaq() {
                   <div
                     className={`p-1.5 rounded-lg border transition-transform duration-200 shrink-0 ${
                       isOpen
-                        ? 'rotate-180 bg-[#183a1d] text-[#58e65b] border-[#58e65b]/40'
-                        : 'bg-white/5 text-[#8d9691] border-white/10'
+                        ? 'rotate-180 bg-[#ff7a00]/15 text-[#ff7a00] border-[#ff7a00]/40'
+                        : 'bg-white/5 text-slate-400 border-white/10'
                     }`}
                   >
                     <ChevronDown size={16} />
@@ -71,7 +71,7 @@ function SecurityFaq() {
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.25 }}
                     >
-                      <div className="px-5 pb-5 sm:px-6 sm:pb-6 text-xs sm:text-sm text-[#8d9691] leading-relaxed border-t border-white/5 pt-4">
+                      <div className="px-5 pb-5 sm:px-6 sm:pb-6 text-xs sm:text-sm text-slate-300 leading-relaxed border-t border-white/10 pt-4">
                         {faq.answer}
                       </div>
                     </motion.div>
@@ -83,19 +83,19 @@ function SecurityFaq() {
         </div>
 
         {/* Emergency Kill-Switch Callout */}
-        <div className="mt-12 p-6 rounded-2xl border border-red-500/30 bg-red-950/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-12 p-6 rounded-2xl border border-rose-500/30 bg-[#15193b] flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 text-left">
-            <div className="h-10 w-10 rounded-xl bg-red-900/40 border border-red-500/40 flex items-center justify-center text-[#ff6b6b] shrink-0">
+            <div className="h-10 w-10 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
               <ShieldAlert size={20} />
             </div>
             <div>
               <div className="text-sm font-bold text-white">Suspect unauthorized activity?</div>
-              <div className="text-xs text-[#8d9691]">Trigger an instant 1-click self-freeze or reach our emergency Red Team SOC.</div>
+              <div className="text-xs text-slate-400">Trigger an instant 1-click self-freeze or reach our emergency Red Team SOC.</div>
             </div>
           </div>
           <NavLink
             to="/support"
-            className="px-5 py-2.5 rounded-xl border border-red-500/40 bg-red-900/30 text-xs font-bold text-[#ff6b6b] hover:bg-red-900/50 transition-colors shrink-0"
+            className="px-5 py-2.5 rounded-xl border border-rose-500/40 bg-rose-500/20 text-xs font-bold text-rose-300 hover:bg-rose-500/30 transition-colors shrink-0"
           >
             Emergency SOC Support
           </NavLink>

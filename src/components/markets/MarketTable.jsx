@@ -35,20 +35,20 @@ function MarketTable({
       return <ArrowUpDown size={12} className="opacity-40" />
     }
     return sortOrder === 'asc' ? (
-      <ArrowUp size={12} className="text-[#58e65b]" />
+      <ArrowUp size={12} className="text-[#ff7a00]" />
     ) : (
-      <ArrowDown size={12} className="text-[#58e65b]" />
+      <ArrowDown size={12} className="text-[#ff7a00]" />
     )
   }
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#060a0b]/90 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.6)] overflow-hidden">
+    <div className="rounded-2xl border border-white/10 bg-[#15193b]/90 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.6)] overflow-hidden">
       {/* Table Container */}
       <div className="overflow-x-auto scrollbar-thin">
         <table className="w-full text-left border-collapse">
           {/* Table Header */}
           <thead>
-            <tr className="border-b border-white/10 bg-[#080e0f] text-[0.72rem] font-bold uppercase tracking-[0.1em] text-[#8d9691] select-none">
+            <tr className="border-b border-white/10 bg-[#1a1f46] text-[0.72rem] font-bold uppercase tracking-[0.1em] text-slate-300 select-none">
               <th className="py-4 pl-5 pr-2 w-10 text-center">⭐</th>
               <th
                 onClick={() => onSort('rank')}
@@ -118,7 +118,7 @@ function MarketTable({
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.25, delay: index * 0.02 }}
                     onClick={() => onSelectCoin && onSelectCoin(coin)}
-                    className="hover:bg-white/[0.03] transition-colors group cursor-pointer"
+                    className="hover:bg-white/[0.04] transition-colors group cursor-pointer"
                   >
                     {/* Watchlist Star */}
                     <td
@@ -131,17 +131,17 @@ function MarketTable({
                       <button
                         type="button"
                         aria-label="Toggle watchlist"
-                        className="p-1 rounded-md text-[#8d9691] hover:text-yellow-400 transition-colors"
+                        className="p-1 rounded-md text-slate-400 hover:text-amber-400 transition-colors cursor-pointer"
                       >
                         <Star
                           size={15}
-                          className={isSaved ? 'fill-yellow-400 text-yellow-400 filter drop-shadow-[0_0_6px_rgba(250,204,21,0.5)]' : ''}
+                          className={isSaved ? 'fill-amber-400 text-amber-400 filter drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]' : ''}
                         />
                       </button>
                     </td>
 
                     {/* Rank */}
-                    <td className="py-4 px-3 text-[#8d9691] font-semibold">{coin.rank}</td>
+                    <td className="py-4 px-3 text-slate-400 font-semibold">{coin.rank}</td>
 
                     {/* Asset Name + Symbol + Badges */}
                     <td className="py-4 px-4">
@@ -149,7 +149,7 @@ function MarketTable({
                         <div className="relative shrink-0">
                           <CoinLogo symbol={coin.symbol} size={28} />
                           {coin.isFeatured && (
-                            <span className="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full bg-[#58e65b] text-[0.55rem] font-black text-black">
+                            <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#ff7a00] text-[0.55rem] font-black text-white shadow-sm">
                               ★
                             </span>
                           )}
@@ -158,14 +158,14 @@ function MarketTable({
                           <div className="flex items-center gap-1.5 font-bold text-white text-[0.88rem]">
                             <span>{coin.name}</span>
                             {coin.isHot && (
-                              <Flame size={12} className="text-orange-500 fill-orange-500" />
+                              <Flame size={12} className="text-[#ff7a00] fill-[#ff7a00]" />
                             )}
                           </div>
                           <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-[0.7rem] uppercase tracking-wider text-[#8d9691] font-semibold">
+                            <span className="text-[0.7rem] uppercase tracking-wider text-slate-400 font-semibold">
                               {coin.symbol}
                             </span>
-                            <span className="text-[0.65rem] text-[#8d9691]/70 bg-white/5 border border-white/10 px-1.5 py-0.2 rounded font-medium">
+                            <span className="text-[0.65rem] text-slate-400 bg-white/5 border border-white/10 px-1.5 py-0.2 rounded font-medium">
                               {coin.pair}
                             </span>
                           </div>
@@ -178,13 +178,13 @@ function MarketTable({
                       <div className="text-[0.92rem] font-bold text-white tracking-tight">
                         ${coin.price}
                       </div>
-                      <div className="text-[0.68rem] text-[#8d9691] mt-0.5">
+                      <div className="text-[0.68rem] text-slate-400 mt-0.5">
                         ≈ ${coin.price} USD
                       </div>
                     </td>
 
                     {/* 1h Change */}
-                    <td className="py-4 px-3 text-right hidden sm:table-cell font-semibold text-[#dfe9e2]">
+                    <td className="py-4 px-3 text-right hidden sm:table-cell font-semibold text-slate-300">
                       {coin.change1h || '0.00%'}
                     </td>
 
@@ -193,8 +193,8 @@ function MarketTable({
                       <span
                         className={`inline-flex items-center justify-end rounded-lg px-2.5 py-1 text-xs font-bold ${
                           coin.positive
-                            ? 'bg-[#183a1d]/60 border border-[#58e65b]/30 text-[#58e65b] shadow-[0_0_10px_rgba(88,230,91,0.15)]'
-                            : 'bg-[#3a1818]/60 border border-[#ff6b6b]/30 text-[#ff6b6b] shadow-[0_0_10px_rgba(255,107,107,0.15)]'
+                            ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.15)]'
+                            : 'bg-rose-500/15 border border-rose-500/30 text-rose-400 shadow-[0_0_10px_rgba(244,63,94,0.15)]'
                         }`}
                       >
                         {coin.change24h}
@@ -204,7 +204,7 @@ function MarketTable({
                     {/* 7d Change */}
                     <td
                       className={`py-4 px-3 text-right hidden lg:table-cell font-semibold ${
-                        coin.change7d?.startsWith('+') ? 'text-[#58e65b]' : 'text-[#ff6b6b]'
+                        coin.change7d?.startsWith('+') ? 'text-emerald-400' : 'text-rose-400'
                       }`}
                     >
                       {coin.change7d || coin.change24h}
@@ -213,13 +213,13 @@ function MarketTable({
                     {/* 24h Range Meter */}
                     <td className="py-4 px-4 text-center hidden xl:table-cell">
                       <div className="w-full max-w-[130px] mx-auto">
-                        <div className="flex justify-between text-[0.65rem] text-[#8d9691] mb-1">
+                        <div className="flex justify-between text-[0.65rem] text-slate-400 mb-1">
                           <span>${coin.low24h || '0.00'}</span>
                           <span>${coin.high24h || '0.00'}</span>
                         </div>
                         <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden relative">
                           <div
-                            className="h-full bg-gradient-to-r from-yellow-500 to-[#58e65b] rounded-full"
+                            className="h-full bg-gradient-to-r from-amber-500 to-emerald-400 rounded-full"
                             style={{ width: `${rangePct}%` }}
                           />
                         </div>
@@ -227,12 +227,12 @@ function MarketTable({
                     </td>
 
                     {/* 24h Volume */}
-                    <td className="py-4 px-4 text-right hidden md:table-cell font-semibold text-[#dfe9e2]">
+                    <td className="py-4 px-4 text-right hidden md:table-cell font-semibold text-slate-300">
                       {coin.volume24h}
                     </td>
 
                     {/* Market Cap */}
-                    <td className="py-4 px-4 text-right hidden lg:table-cell font-semibold text-[#dfe9e2]">
+                    <td className="py-4 px-4 text-right hidden lg:table-cell font-semibold text-slate-300">
                       {coin.marketCap}
                     </td>
 
@@ -248,7 +248,7 @@ function MarketTable({
                       <div className="flex items-center justify-end gap-2">
                         <NavLink
                           to={`/trade?pair=${coin.symbol}_USDT`}
-                          className="inline-flex items-center gap-1 bg-[#58e65b] hover:bg-[#48db50] text-black px-3.5 py-1.5 rounded-lg text-xs font-bold shadow-[0_0_12px_rgba(88,230,91,0.25)] hover:shadow-[0_0_20px_rgba(88,230,91,0.45)] transition-all hover:scale-105"
+                          className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#ff7a00] to-[#ff9500] px-3.5 py-1.5 text-xs font-bold text-white shadow-[0_0_12px_rgba(255,122,0,0.35)] hover:from-[#ff9500] hover:to-[#ffaa33] hover:shadow-[0_0_18px_rgba(255,122,0,0.5)] transition-all hover:scale-105 cursor-pointer"
                         >
                           Trade
                           <ArrowRight size={12} />
@@ -266,18 +266,18 @@ function MarketTable({
       {/* Empty Search Result State */}
       {paginatedCoins.length === 0 && (
         <div className="py-16 px-4 text-center">
-          <div className="mx-auto w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#8d9691] mb-3">
+          <div className="mx-auto w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 mb-3">
             <Sparkles size={20} />
           </div>
           <h3 className="text-base font-bold text-white">No digital assets found</h3>
-          <p className="text-xs text-[#8d9691] mt-1 max-w-sm mx-auto">
+          <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
             Try adjusting your search query or switching to another category tab to view available pairs.
           </p>
         </div>
       )}
 
       {/* Pagination Footer */}
-      <div className="border-t border-white/10 bg-[#080e0f] px-5 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#8d9691]">
+      <div className="border-t border-white/10 bg-[#1a1f46] px-5 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
         <div className="flex items-center gap-2">
           <span>Rows per page:</span>
           <select
@@ -286,7 +286,7 @@ function MarketTable({
               setPageSize(Number(e.target.value))
               setCurrentPage(1)
             }}
-            className="bg-[#0a0f10] border border-white/15 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-[#58e65b]"
+            className="bg-[#121639] border border-white/15 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-[#ff7a00]"
           >
             <option value={10}>10</option>
             <option value={20}>20</option>
@@ -305,7 +305,7 @@ function MarketTable({
             type="button"
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            className="px-3 py-1.5 rounded-lg border border-white/10 bg-[#0a0f10] text-white disabled:opacity-40 disabled:pointer-events-none hover:border-white/25 transition-colors font-semibold"
+            className="px-3 py-1.5 rounded-lg border border-white/10 bg-[#121639] text-white disabled:opacity-40 disabled:pointer-events-none hover:border-white/25 transition-colors font-semibold cursor-pointer"
           >
             Previous
           </button>
@@ -315,10 +315,10 @@ function MarketTable({
               key={pageNum}
               type="button"
               onClick={() => setCurrentPage(pageNum)}
-              className={`h-8 w-8 rounded-lg font-bold transition-all ${
+              className={`h-8 w-8 rounded-lg font-bold transition-all cursor-pointer ${
                 currentPage === pageNum
-                  ? 'bg-[#58e65b] text-black shadow-[0_0_12px_rgba(88,230,91,0.3)]'
-                  : 'border border-white/10 bg-[#0a0f10] text-[#8d9691] hover:text-white hover:border-white/20'
+                  ? 'bg-[#ff7a00] text-white shadow-[0_0_12px_rgba(255,122,0,0.35)]'
+                  : 'border border-white/10 bg-[#121639] text-slate-400 hover:text-white hover:border-white/20'
               }`}
             >
               {pageNum}
@@ -329,7 +329,7 @@ function MarketTable({
             type="button"
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            className="px-3 py-1.5 rounded-lg border border-white/10 bg-[#0a0f10] text-white disabled:opacity-40 disabled:pointer-events-none hover:border-white/25 transition-colors font-semibold"
+            className="px-3 py-1.5 rounded-lg border border-white/10 bg-[#121639] text-white disabled:opacity-40 disabled:pointer-events-none hover:border-white/25 transition-colors font-semibold cursor-pointer"
           >
             Next
           </button>

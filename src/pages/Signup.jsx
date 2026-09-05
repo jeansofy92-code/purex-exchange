@@ -215,7 +215,7 @@ export default function Signup() {
   return (
     <main className="home-page-shell min-h-[calc(100vh-80px)] flex flex-col justify-start lg:justify-center items-center px-4 pt-2 pb-5 sm:px-6 lg:px-8 text-white relative">
       {/* Background ambient lighting effects */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[380px] bg-gradient-to-tr from-[#58e65b]/12 via-[#183a1d]/15 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[380px] bg-gradient-to-tr from-[#ff7a00]/12 via-[#ff9500]/10 to-transparent rounded-full blur-3xl pointer-events-none" />
 
       {/* Main Centered Wrapper Raised Up Above the Fold */}
       <div className="w-full max-w-5xl z-10 mx-auto flex flex-col justify-center">
@@ -223,15 +223,15 @@ export default function Signup() {
         {/* Compact Centered Brand Header */}
         <div className="text-center mb-2.5">
           <Link to="/" className="inline-flex items-center gap-2.5 group justify-center" aria-label="PUREX Exchange home">
-            <div className="brand-mark-wrap !w-8 !h-8 !rounded-lg transition-transform duration-300 group-hover:scale-105 shadow-[0_0_15px_rgba(88,230,91,0.25)]">
+            <div className="brand-mark-wrap !w-8 !h-8 !rounded-lg transition-transform duration-300 group-hover:scale-105 shadow-[0_0_15px_rgba(255,122,0,0.25)]">
               <CoinLogo symbol="PUREX" size={28} className="brand-mark-svg" />
             </div>
             <div className="text-left leading-none">
               <div className="text-xl font-black tracking-[0.16em] text-white">PUREX</div>
-              <div className="text-[0.6rem] font-bold tracking-[0.28em] text-[#8d9691]">EXCHANGE</div>
+              <div className="text-[0.6rem] font-bold tracking-[0.28em] text-slate-400">EXCHANGE</div>
             </div>
           </Link>
-          <p className="mt-1 text-[11px] text-[#8d9691] font-medium tracking-wide">
+          <p className="mt-1 text-[11px] text-slate-400 font-medium tracking-wide">
             Open an Institutional Crypto Account with Email Verification
           </p>
         </div>
@@ -245,10 +245,10 @@ export default function Signup() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25 }}
-              className="h-full rounded-2xl border border-white/15 bg-[#080d0e]/95 p-4 sm:p-5 backdrop-blur-2xl shadow-[0_18px_60px_rgba(0,0,0,0.85)] relative overflow-hidden flex flex-col justify-between"
+              className="h-full rounded-2xl border border-white/15 bg-[#15193b]/95 p-4 sm:p-5 backdrop-blur-2xl shadow-[0_18px_60px_rgba(0,0,0,0.85)] relative overflow-hidden flex flex-col justify-between"
             >
               {/* Top neon border accent line */}
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#58e65b] to-transparent opacity-90" />
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#ff7a00] to-transparent opacity-90" />
 
               <div>
                 {/* Header & Step navigation */}
@@ -257,7 +257,7 @@ export default function Signup() {
                     <h1 className="text-lg font-bold text-white tracking-tight">
                       {step === 'form' ? 'Create Account' : 'Verify Email Address'}
                     </h1>
-                    <p className="text-[11px] text-[#8d9691]">
+                    <p className="text-[11px] text-slate-400">
                       {step === 'form'
                         ? 'Institutional deep liquidity access'
                         : `Enter the 6-digit code sent to ${email}`}
@@ -267,7 +267,7 @@ export default function Signup() {
                     <button
                       type="button"
                       onClick={handleQuickPrefill}
-                      className="rounded-lg border border-[#58e65b]/30 bg-[#183a1d]/60 px-2.5 py-1 text-[11px] font-bold text-[#58e65b] hover:bg-[#58e65b] hover:text-black transition-all flex items-center gap-1 cursor-pointer"
+                      className="rounded-lg border border-[#ff7a00]/30 bg-[#ff7a00]/15 px-2.5 py-1 text-[11px] font-bold text-[#ff7a00] hover:bg-[#ff7a00] hover:text-white transition-all flex items-center gap-1 cursor-pointer"
                     >
                       <Sparkles size={11} />
                       <span>Quick Prefill</span>
@@ -276,7 +276,7 @@ export default function Signup() {
                     <button
                       type="button"
                       onClick={() => setStep('form')}
-                      className="rounded-lg border border-white/15 bg-black/40 px-2.5 py-1 text-[11px] font-semibold text-[#8d9691] hover:text-white transition-all flex items-center gap-1 cursor-pointer"
+                      className="rounded-lg border border-white/15 bg-[#0c0e22] px-2.5 py-1 text-[11px] font-semibold text-slate-400 hover:text-white transition-all flex items-center gap-1 cursor-pointer"
                     >
                       <ArrowLeft size={11} />
                       <span>Edit Email</span>
@@ -303,7 +303,7 @@ export default function Signup() {
                       initial={{ opacity: 0, y: -4 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -4 }}
-                      className="mb-2.5 flex items-start gap-2 rounded-lg border border-[#58e65b]/30 bg-[#183a1d]/60 p-2 text-[11px] text-[#58e65b]"
+                      className="mb-2.5 flex items-start gap-2 rounded-lg border border-[#10b981]/30 bg-[#10b981]/15 p-2 text-[11px] text-[#10b981]"
                     >
                       <CheckCircle2 size={13} className="shrink-0 mt-0.5" />
                       <span>{successMessage}</span>
@@ -315,7 +315,7 @@ export default function Signup() {
                 {step === 'form' && (
                   <form onSubmit={handleRequestCode} className="space-y-2">
                     <div>
-                      <label htmlFor="signup-name" className="block text-[11px] font-semibold text-[#dfe9e2] mb-0.5">
+                      <label htmlFor="signup-name" className="block text-[11px] font-semibold text-slate-200 mb-0.5">
                         Full Name / Entity
                       </label>
                       <div className="relative">
@@ -326,14 +326,14 @@ export default function Signup() {
                           onChange={(e) => setFullName(e.target.value)}
                           placeholder="Alex Vance"
                           required
-                          className="w-full rounded-xl border border-white/15 bg-black/60 px-3.5 py-1.5 pl-9 text-xs sm:text-sm text-white placeholder-[#5a6560] transition-all focus:border-[#58e65b] focus:bg-black/80 focus:outline-none focus:ring-1 focus:ring-[#58e65b]"
+                          className="w-full rounded-xl border border-white/15 bg-[#0c0e22] px-3.5 py-1.5 pl-9 text-xs sm:text-sm text-white placeholder-slate-400 transition-all focus:border-[#ff7a00] focus:bg-[#0c0e22] focus:outline-none focus:ring-1 focus:ring-[#ff7a00]"
                         />
-                        <User size={14} className="absolute left-3 top-2.5 text-[#8d9691]" />
+                        <User size={14} className="absolute left-3 top-2.5 text-slate-400" />
                       </div>
                     </div>
 
                     <div>
-                      <label htmlFor="signup-email" className="block text-[11px] font-semibold text-[#dfe9e2] mb-0.5">
+                      <label htmlFor="signup-email" className="block text-[11px] font-semibold text-slate-200 mb-0.5">
                         Email Address
                       </label>
                       <div className="relative">
@@ -344,14 +344,14 @@ export default function Signup() {
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="trader@purex.exchange"
                           required
-                          className="w-full rounded-xl border border-white/15 bg-black/60 px-3.5 py-1.5 pl-9 text-xs sm:text-sm text-white placeholder-[#5a6560] transition-all focus:border-[#58e65b] focus:bg-black/80 focus:outline-none focus:ring-1 focus:ring-[#58e65b]"
+                          className="w-full rounded-xl border border-white/15 bg-[#0c0e22] px-3.5 py-1.5 pl-9 text-xs sm:text-sm text-white placeholder-slate-400 transition-all focus:border-[#ff7a00] focus:bg-[#0c0e22] focus:outline-none focus:ring-1 focus:ring-[#ff7a00]"
                         />
-                        <Mail size={14} className="absolute left-3 top-2.5 text-[#8d9691]" />
+                        <Mail size={14} className="absolute left-3 top-2.5 text-slate-400" />
                       </div>
                     </div>
 
                     <div>
-                      <label htmlFor="signup-password" className="block text-[11px] font-semibold text-[#dfe9e2] mb-0.5">
+                      <label htmlFor="signup-password" className="block text-[11px] font-semibold text-slate-200 mb-0.5">
                         Password
                       </label>
                       <div className="relative">
@@ -362,13 +362,13 @@ export default function Signup() {
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="Min. 8 characters"
                           required
-                          className="w-full rounded-xl border border-white/15 bg-black/60 px-3.5 py-1.5 pl-9 pr-9 text-xs sm:text-sm text-white placeholder-[#5a6560] transition-all focus:border-[#58e65b] focus:bg-black/80 focus:outline-none focus:ring-1 focus:ring-[#58e65b]"
+                          className="w-full rounded-xl border border-white/15 bg-[#0c0e22] px-3.5 py-1.5 pl-9 pr-9 text-xs sm:text-sm text-white placeholder-slate-400 transition-all focus:border-[#ff7a00] focus:bg-[#0c0e22] focus:outline-none focus:ring-1 focus:ring-[#ff7a00]"
                         />
-                        <Lock size={14} className="absolute left-3 top-2.5 text-[#8d9691]" />
+                        <Lock size={14} className="absolute left-3 top-2.5 text-slate-400" />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-2.5 text-[#8d9691] hover:text-white transition-colors cursor-pointer"
+                          className="absolute right-3 top-2.5 text-slate-400 hover:text-white transition-colors cursor-pointer"
                         >
                           {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                         </button>
@@ -377,7 +377,7 @@ export default function Signup() {
                       {password && (
                         <div className="mt-1 space-y-0.5">
                           <div className="flex items-center justify-between text-[10px]">
-                            <span className="text-[#8d9691]">Strength:</span>
+                            <span className="text-slate-400">Strength:</span>
                             <span className="font-bold text-white">{pwdStrength.label}</span>
                           </div>
                           <div className="h-1 w-full overflow-hidden rounded-full bg-white/10">
@@ -391,7 +391,7 @@ export default function Signup() {
                     </div>
 
                     <div>
-                      <label htmlFor="signup-confirm-password" className="block text-[11px] font-semibold text-[#dfe9e2] mb-0.5">
+                      <label htmlFor="signup-confirm-password" className="block text-[11px] font-semibold text-slate-200 mb-0.5">
                         Confirm Password
                       </label>
                       <div className="relative">
@@ -402,13 +402,13 @@ export default function Signup() {
                           onChange={(e) => setConfirmPassword(e.target.value)}
                           placeholder="Re-enter password"
                           required
-                          className="w-full rounded-xl border border-white/15 bg-black/60 px-3.5 py-1.5 pl-9 pr-9 text-xs sm:text-sm text-white placeholder-[#5a6560] transition-all focus:border-[#58e65b] focus:bg-black/80 focus:outline-none focus:ring-1 focus:ring-[#58e65b]"
+                          className="w-full rounded-xl border border-white/15 bg-[#0c0e22] px-3.5 py-1.5 pl-9 pr-9 text-xs sm:text-sm text-white placeholder-slate-400 transition-all focus:border-[#ff7a00] focus:bg-[#0c0e22] focus:outline-none focus:ring-1 focus:ring-[#ff7a00]"
                         />
-                        <Lock size={14} className="absolute left-3 top-2.5 text-[#8d9691]" />
+                        <Lock size={14} className="absolute left-3 top-2.5 text-slate-400" />
                         <button
                           type="button"
                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                          className="absolute right-3 top-2.5 text-[#8d9691] hover:text-white transition-colors cursor-pointer"
+                          className="absolute right-3 top-2.5 text-slate-400 hover:text-white transition-colors cursor-pointer"
                         >
                           {showConfirmPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                         </button>
@@ -420,17 +420,17 @@ export default function Signup() {
                     </div>
 
                     <div className="pt-0.5">
-                      <label className="flex items-start gap-1.5 cursor-pointer select-none text-[11px] text-[#8d9691] hover:text-[#dfe9e2]">
+                      <label className="flex items-start gap-1.5 cursor-pointer select-none text-[11px] text-slate-400 hover:text-slate-200">
                         <input
                           type="checkbox"
                           checked={agreeTerms}
                           onChange={(e) => setAgreeTerms(e.target.checked)}
-                          className="mt-0.5 h-3.5 w-3.5 rounded border-white/20 bg-black/50 text-[#58e65b] focus:ring-0 focus:ring-offset-0 accent-[#58e65b]"
+                          className="mt-0.5 h-3.5 w-3.5 rounded border-white/20 bg-black/50 text-[#ff7a00] focus:ring-0 focus:ring-offset-0 accent-[#ff7a00]"
                         />
                         <span className="leading-snug">
                           I agree to PUREX Exchange's{' '}
-                          <span className="text-[#58e65b] hover:underline">Terms</span> &{' '}
-                          <span className="text-[#58e65b] hover:underline">Privacy Policy</span>.
+                          <span className="text-[#ff7a00] hover:underline">Terms</span> &{' '}
+                          <span className="text-[#ff7a00] hover:underline">Privacy Policy</span>.
                         </span>
                       </label>
                     </div>
@@ -438,7 +438,7 @@ export default function Signup() {
                     <button
                       type="submit"
                       disabled={isLoading || !agreeTerms}
-                      className="w-full rounded-xl bg-[#58e65b] py-2.5 text-xs font-bold text-black uppercase tracking-wider shadow-[0_0_20px_rgba(88,230,91,0.3)] transition-all hover:bg-[#48db50] hover:shadow-[0_0_30px_rgba(88,230,91,0.45)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 cursor-pointer mt-1"
+                      className="w-full rounded-xl bg-gradient-to-r from-[#ff7a00] to-[#ff9500] py-2.5 text-xs font-bold text-white uppercase tracking-wider shadow-[0_4px_15px_rgba(255,122,0,0.3)] transition-all hover:brightness-110 hover:shadow-[0_4px_25px_rgba(255,122,0,0.45)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 cursor-pointer mt-1"
                     >
                       {isLoading ? (
                         <>
@@ -463,20 +463,20 @@ export default function Signup() {
                       <motion.div
                         initial={{ scale: 0.95, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        className="rounded-xl border border-[#58e65b]/40 bg-[#183a1d]/60 p-2.5 backdrop-blur-md"
+                        className="rounded-xl border border-[#ff7a00]/40 bg-[#ff7a00]/15 p-2.5 backdrop-blur-md"
                       >
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-1.5">
-                            <span className="flex h-1.5 w-1.5 rounded-full bg-[#58e65b] animate-ping" />
-                            <span className="text-[10px] font-bold text-[#dfe9e2]">Inbox Code:</span>
-                            <span className="font-mono text-sm font-black tracking-widest text-[#58e65b] bg-black/70 px-2 py-0.5 rounded border border-[#58e65b]/30">
+                            <span className="flex h-1.5 w-1.5 rounded-full bg-[#10b981] animate-ping" />
+                            <span className="text-[10px] font-bold text-slate-200">Inbox Code:</span>
+                            <span className="font-mono text-sm font-black tracking-widest text-[#ff7a00] bg-black/70 px-2 py-0.5 rounded border border-[#ff7a00]/30">
                               {devCode}
                             </span>
                           </div>
                           <button
                             type="button"
                             onClick={handleQuickFillOtp}
-                            className="rounded bg-[#58e65b]/20 px-2 py-0.5 text-[10px] font-bold text-[#58e65b] hover:bg-[#58e65b] hover:text-black transition-all flex items-center gap-1 cursor-pointer"
+                            className="rounded bg-[#ff7a00]/20 px-2 py-0.5 text-[10px] font-bold text-[#ff7a00] hover:bg-[#ff7a00] hover:text-white transition-all flex items-center gap-1 cursor-pointer"
                           >
                             {copiedDevCode ? <Check size={10} /> : <Copy size={10} />}
                             <span>{copiedDevCode ? 'Filled!' : 'Quick Fill'}</span>
@@ -487,7 +487,7 @@ export default function Signup() {
 
                     <form onSubmit={handleVerifySignup} className="space-y-3">
                       <div>
-                        <label className="block text-[11px] font-semibold text-[#dfe9e2] mb-1.5 text-center">
+                        <label className="block text-[11px] font-semibold text-slate-200 mb-1.5 text-center">
                           Enter 6-Digit Email Verification Code
                         </label>
                         <div className="flex justify-between gap-1.5 sm:gap-2">
@@ -501,7 +501,7 @@ export default function Signup() {
                               value={digit}
                               onChange={(e) => handleOtpChange(index, e.target.value)}
                               onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                              className="h-10 w-full max-w-[42px] rounded-lg border border-white/15 bg-black/70 text-center font-mono text-base font-bold text-white transition-all focus:border-[#58e65b] focus:bg-black focus:shadow-[0_0_12px_rgba(88,230,91,0.3)] focus:outline-none"
+                              className="h-10 w-full max-w-[42px] rounded-lg border border-white/15 bg-[#0c0e22] text-center font-mono text-base font-bold text-white transition-all focus:border-[#ff7a00] focus:bg-[#0c0e22] focus:shadow-[0_0_12px_rgba(255,122,0,0.3)] focus:outline-none"
                             />
                           ))}
                         </div>
@@ -510,7 +510,7 @@ export default function Signup() {
                       <button
                         type="submit"
                         disabled={isVerifying || otp.join('').length < 6}
-                        className="w-full rounded-xl bg-[#58e65b] py-2.5 text-xs font-bold text-black uppercase tracking-wider shadow-[0_0_20px_rgba(88,230,91,0.3)] transition-all hover:bg-[#48db50] hover:shadow-[0_0_30px_rgba(88,230,91,0.45)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 cursor-pointer mt-1"
+                        className="w-full rounded-xl bg-gradient-to-r from-[#ff7a00] to-[#ff9500] py-2.5 text-xs font-bold text-white uppercase tracking-wider shadow-[0_4px_15px_rgba(255,122,0,0.3)] transition-all hover:brightness-110 hover:shadow-[0_4px_25px_rgba(255,122,0,0.45)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 cursor-pointer mt-1"
                       >
                         {isVerifying ? (
                           <>
@@ -523,18 +523,18 @@ export default function Signup() {
                       </button>
 
                       {/* Resend timer */}
-                      <div className="flex items-center justify-between text-[11px] text-[#8d9691] pt-1">
+                      <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
                         <span>Didn't receive email?</span>
                         {cooldown > 0 ? (
-                          <div className="flex items-center gap-1 text-[#dfe9e2]">
-                            <Clock size={11} className="text-[#58e65b]" />
+                          <div className="flex items-center gap-1 text-slate-200">
+                            <Clock size={11} className="text-[#ff7a00]" />
                             <span>Resend in {cooldown}s</span>
                           </div>
                         ) : (
                           <button
                             type="button"
                             onClick={() => handleRequestCode()}
-                            className="font-semibold text-[#58e65b] hover:underline cursor-pointer"
+                            className="font-semibold text-[#ff7a00] hover:underline cursor-pointer"
                           >
                             Resend Code Now
                           </button>
@@ -546,11 +546,11 @@ export default function Signup() {
               </div>
 
               {/* Bottom Login Link */}
-              <div className="mt-2.5 border-t border-white/10 pt-2 text-center text-[11px] text-[#8d9691]">
+              <div className="mt-2.5 border-t border-white/10 pt-2 text-center text-[11px] text-slate-400">
                 Already have an account?{' '}
                 <Link
                   to="/login"
-                  className="font-bold text-[#58e65b] hover:text-[#78f17b] hover:underline transition-colors"
+                  className="font-bold text-[#ff7a00] hover:text-[#ff9500] hover:underline transition-colors"
                 >
                   Log In Instead
                 </Link>
@@ -566,46 +566,46 @@ export default function Signup() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25, delay: 0.1 }}
-              className="rounded-2xl border border-white/15 bg-[#080d0e]/90 p-3.5 backdrop-blur-xl shadow-[0_16px_50px_rgba(0,0,0,0.5)]"
+              className="rounded-2xl border border-white/15 bg-[#15193b]/90 p-3.5 backdrop-blur-xl shadow-[0_16px_50px_rgba(0,0,0,0.5)]"
             >
               <div className="flex items-center justify-between pb-2 border-b border-white/10 mb-2">
                 <div className="flex items-center gap-1.5">
-                  <Zap size={13} className="text-[#58e65b]" />
+                  <Zap size={13} className="text-[#ff7a00]" />
                   <span className="text-[11px] font-bold uppercase tracking-wider text-white">Institutional Benefits</span>
                 </div>
-                <span className="text-[9px] font-mono text-[#58e65b] bg-[#183a1d] px-1.5 py-0.5 rounded-full border border-[#58e65b]/30">
+                <span className="text-[9px] font-mono text-[#ff7a00] bg-[#ff7a00]/15 px-1.5 py-0.5 rounded-full border border-[#ff7a00]/30">
                   Instant Access
                 </span>
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-start gap-2.5 rounded-lg bg-white/[0.02] p-2">
-                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#183a1d] text-[#58e65b]">
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#ff7a00]/15 text-[#ff7a00]">
                     <TrendingUp size={12} />
                   </div>
                   <div>
                     <div className="text-[11px] font-bold text-white">0.01% Maker Fee Tier</div>
-                    <div className="text-[9px] text-[#8d9691] mt-0.5">Industry-lowest execution costs with deep orderbook liquidity.</div>
+                    <div className="text-[9px] text-slate-400 mt-0.5">Industry-lowest execution costs with deep orderbook liquidity.</div>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-2.5 rounded-lg bg-white/[0.02] p-2">
-                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#183a1d] text-[#58e65b]">
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#ff7a00]/15 text-[#ff7a00]">
                     <Shield size={12} />
                   </div>
                   <div>
                     <div className="text-[11px] font-bold text-white">$500M SAFU Insurance</div>
-                    <div className="text-[9px] text-[#8d9691] mt-0.5">Cold storage security backed by Multi-Party Computation (MPC).</div>
+                    <div className="text-[9px] text-slate-400 mt-0.5">Cold storage security backed by Multi-Party Computation (MPC).</div>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-2.5 rounded-lg bg-white/[0.02] p-2">
-                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#183a1d] text-[#58e65b]">
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-[#ff7a00]/15 text-[#ff7a00]">
                     <Globe size={12} />
                   </div>
                   <div>
                     <div className="text-[11px] font-bold text-white">Global Gateway Clearing</div>
-                    <div className="text-[9px] text-[#8d9691] mt-0.5">Instant SEPA, SWIFT, and crypto on-ramps in 150+ countries.</div>
+                    <div className="text-[9px] text-slate-400 mt-0.5">Instant SEPA, SWIFT, and crypto on-ramps in 150+ countries.</div>
                   </div>
                 </div>
               </div>
@@ -616,43 +616,43 @@ export default function Signup() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25, delay: 0.15 }}
-              className="rounded-2xl border border-white/15 bg-[#080d0e]/90 p-3 backdrop-blur-xl shadow-[0_16px_50px_rgba(0,0,0,0.5)]"
+              className="rounded-2xl border border-white/15 bg-[#15193b]/90 p-3 backdrop-blur-xl shadow-[0_16px_50px_rgba(0,0,0,0.5)]"
             >
-              <div className="flex items-center gap-2 text-xs text-[#dfe9e2]">
-                <div className="flex h-5 w-5 items-center justify-center rounded bg-[#183a1d] text-[#58e65b]">
+              <div className="flex items-center gap-2 text-xs text-slate-200">
+                <div className="flex h-5 w-5 items-center justify-center rounded bg-[#ff7a00]/15 text-[#ff7a00]">
                   <Check size={12} />
                 </div>
                 <div>
                   <span className="font-bold text-white text-[11px]">100% Proof of Reserves Verified</span>
-                  <p className="text-[9px] text-[#8d9691]">User assets backed 1:1 with real-time on-chain audits.</p>
+                  <p className="text-[9px] text-slate-400">User assets backed 1:1 with real-time on-chain audits.</p>
                 </div>
               </div>
             </motion.div>
 
             {/* Active Network Status */}
-            <div className="rounded-xl border border-[#58e65b]/20 bg-[#183a1d]/30 p-2.5 flex items-center justify-between text-xs">
+            <div className="rounded-xl border border-[#ff7a00]/20 bg-[#ff7a00]/10 p-2.5 flex items-center justify-between text-xs">
               <div className="flex items-center gap-1.5">
-                <span className="flex h-1.5 w-1.5 rounded-full bg-[#58e65b] animate-ping" />
-                <span className="font-semibold text-[#dfe9e2] text-[11px]">Network Health: Optimal</span>
+                <span className="flex h-1.5 w-1.5 rounded-full bg-[#10b981] animate-ping" />
+                <span className="font-semibold text-slate-200 text-[11px]">Network Health: Optimal</span>
               </div>
-              <span className="text-[9px] font-mono text-[#58e65b]">&lt; 4.2ms NY4</span>
+              <span className="text-[9px] font-mono text-[#ff7a00]">&lt; 4.2ms NY4</span>
             </div>
 
           </div>
         </div>
 
         {/* Compact Centered Security Compliance Bar */}
-        <div className="mt-3 flex items-center justify-center gap-5 text-[10px] text-[#8d9691]">
+        <div className="mt-3 flex items-center justify-center gap-5 text-[10px] text-slate-400">
           <div className="flex items-center gap-1">
-            <LockKeyhole size={11} className="text-[#58e65b]" />
+            <LockKeyhole size={11} className="text-[#ff7a00]" />
             <span>256-Bit TLS Encryption</span>
           </div>
           <div className="flex items-center gap-1">
-            <Shield size={11} className="text-[#58e65b]" />
+            <Shield size={11} className="text-[#ff7a00]" />
             <span>Multi-Sig Cold Storage</span>
           </div>
           <div className="flex items-center gap-1">
-            <Globe size={11} className="text-[#58e65b]" />
+            <Globe size={11} className="text-[#ff7a00]" />
             <span>99.99% Uptime</span>
           </div>
         </div>

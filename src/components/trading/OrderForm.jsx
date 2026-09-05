@@ -72,20 +72,20 @@ function OrderForm({
 
   const isBuy = side === 'Buy'
   const buttonColor = isBuy
-    ? 'bg-[#58e65b] text-black hover:bg-[#48db50] shadow-[0_0_20px_rgba(88,230,91,0.35)]'
-    : 'bg-[#ff6b6b] text-white hover:bg-[#f85252] shadow-[0_0_20px_rgba(255,107,107,0.35)]'
+    ? 'bg-gradient-to-r from-emerald-500 to-emerald-400 text-slate-950 hover:from-emerald-400 hover:to-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.35)]'
+    : 'bg-gradient-to-r from-rose-500 to-rose-400 text-white hover:from-rose-400 hover:to-rose-300 shadow-[0_0_20px_rgba(244,63,94,0.35)]'
 
   return (
-    <div className="flex flex-col h-full bg-[#060a0b] p-4 text-xs select-none">
+    <div className="flex flex-col h-full bg-[#0d1029] p-4 text-xs select-none">
       {/* Side Selector (Buy / Long vs Sell / Short) */}
-      <div className="grid grid-cols-2 gap-2 mb-4 p-1 rounded-xl bg-[#080e0f] border border-white/10">
+      <div className="grid grid-cols-2 gap-2 mb-4 p-1 rounded-xl bg-[#111536] border border-white/10">
         <button
           type="button"
           onClick={() => setSide('Buy')}
           className={`py-2 rounded-lg font-extrabold text-sm transition-all ${
             isBuy
-              ? 'bg-[#58e65b] text-black shadow-[0_0_12px_rgba(88,230,91,0.4)]'
-              : 'text-[#8d9691] hover:text-white'
+              ? 'bg-emerald-500 text-slate-950 shadow-[0_0_12px_rgba(16,185,129,0.4)]'
+              : 'text-slate-400 hover:text-white'
           }`}
         >
           {tradeMode === 'futures' ? 'Open Long' : 'Buy ' + activeSymbol}
@@ -95,8 +95,8 @@ function OrderForm({
           onClick={() => setSide('Sell')}
           className={`py-2 rounded-lg font-extrabold text-sm transition-all ${
             !isBuy
-              ? 'bg-[#ff6b6b] text-white shadow-[0_0_12px_rgba(255,107,107,0.4)]'
-              : 'text-[#8d9691] hover:text-white'
+              ? 'bg-rose-500 text-white shadow-[0_0_12px_rgba(244,63,94,0.4)]'
+              : 'text-slate-400 hover:text-white'
           }`}
         >
           {tradeMode === 'futures' ? 'Open Short' : 'Sell ' + activeSymbol}
@@ -112,8 +112,8 @@ function OrderForm({
             onClick={() => setOrderType(type)}
             className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${
               orderType === type
-                ? 'bg-white/15 text-white'
-                : 'text-[#8d9691] hover:text-white'
+                ? 'bg-[#ff7a00] text-white shadow-[0_0_10px_rgba(255,122,0,0.3)]'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             {type}
@@ -123,10 +123,10 @@ function OrderForm({
 
       {/* Leverage Slider for Futures */}
       {tradeMode === 'futures' && (
-        <div className="mb-4 rounded-xl border border-white/10 bg-[#080e0f] p-3">
+        <div className="mb-4 rounded-xl border border-white/10 bg-[#111536] p-3">
           <div className="flex items-center justify-between text-xs mb-2">
-            <span className="text-[#8d9691] font-semibold">Leverage</span>
-            <span className="font-extrabold text-[#58e65b] bg-[#183a1d] px-2 py-0.5 rounded border border-[#58e65b]/30">
+            <span className="text-slate-400 font-semibold">Leverage</span>
+            <span className="font-extrabold text-[#ff7a00] bg-[#ff7a00]/15 px-2 py-0.5 rounded border border-[#ff7a00]/30">
               {leverage}x
             </span>
           </div>
@@ -138,8 +138,8 @@ function OrderForm({
                 onClick={() => setLeverage(lev)}
                 className={`py-1 rounded text-[0.7rem] font-bold border transition-all ${
                   leverage === lev
-                    ? 'bg-[#58e65b] text-black border-[#58e65b]'
-                    : 'border-white/10 bg-white/5 text-[#8d9691] hover:text-white'
+                    ? 'bg-[#ff7a00] text-white border-[#ff7a00]'
+                    : 'border-white/10 bg-white/5 text-slate-400 hover:text-white'
                 }`}
               >
                 {lev}x
@@ -154,7 +154,7 @@ function OrderForm({
         <div className="space-y-3">
           {/* Price Input (if not Market) */}
           <div>
-            <div className="flex justify-between text-[#8d9691] mb-1 font-semibold">
+            <div className="flex justify-between text-slate-400 mb-1 font-semibold">
               <span>Price</span>
               <span>USDT</span>
             </div>
@@ -166,14 +166,14 @@ function OrderForm({
                 value={orderType === 'Market' ? '' : price}
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder={orderType === 'Market' ? 'Best Market Price' : '0.00'}
-                className="w-full rounded-xl border border-white/10 bg-[#080d0e] px-3.5 py-2.5 text-sm font-mono font-bold text-white placeholder-[#8d9691] focus:border-[#58e65b] focus:outline-none disabled:opacity-60 disabled:bg-white/[0.02]"
+                className="w-full rounded-xl border border-white/10 bg-[#121639] px-3.5 py-2.5 text-sm font-mono font-bold text-white placeholder-slate-500 focus:border-[#ff7a00] focus:outline-none disabled:opacity-60 disabled:bg-white/[0.02]"
               />
             </div>
           </div>
 
           {/* Amount Input */}
           <div>
-            <div className="flex justify-between text-[#8d9691] mb-1 font-semibold">
+            <div className="flex justify-between text-slate-400 mb-1 font-semibold">
               <span>Amount</span>
               <span>{activeSymbol}</span>
             </div>
@@ -184,7 +184,7 @@ function OrderForm({
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.0000"
-                className="w-full rounded-xl border border-white/10 bg-[#080d0e] px-3.5 py-2.5 text-sm font-mono font-bold text-white placeholder-[#8d9691] focus:border-[#58e65b] focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-[#121639] px-3.5 py-2.5 text-sm font-mono font-bold text-white placeholder-slate-500 focus:border-[#ff7a00] focus:outline-none"
               />
             </div>
           </div>
@@ -196,7 +196,7 @@ function OrderForm({
                 key={pct}
                 type="button"
                 onClick={() => handlePercentage(pct)}
-                className="rounded-lg border border-white/10 bg-white/[0.03] py-1 text-[0.7rem] font-bold text-[#8d9691] hover:border-[#58e65b]/40 hover:bg-[#183a1d]/40 hover:text-[#58e65b] transition-all"
+                className="rounded-lg border border-white/10 bg-white/[0.03] py-1 text-[0.7rem] font-bold text-slate-400 hover:border-[#ff7a00]/40 hover:bg-[#ff7a00]/10 hover:text-[#ff7a00] transition-all"
               >
                 {pct}%
               </button>
@@ -204,12 +204,12 @@ function OrderForm({
           </div>
 
           {/* Order Total */}
-          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 space-y-1.5 text-[0.72rem]">
-            <div className="flex justify-between text-[#8d9691]">
+          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 space-y-1.5 text-[0.72rem]">
+            <div className="flex justify-between text-slate-400">
               <span>Order Value:</span>
               <span className="font-mono font-bold text-white">${total} USDT</span>
             </div>
-            <div className="flex justify-between text-[#8d9691]">
+            <div className="flex justify-between text-slate-400">
               <span>Available:</span>
               <span className="font-mono font-semibold text-white">
                 {isBuy
@@ -217,9 +217,9 @@ function OrderForm({
                   : `${availableCoin.toFixed(4)} ${activeSymbol}`}
               </span>
             </div>
-            <div className="flex justify-between text-[#8d9691]">
+            <div className="flex justify-between text-slate-400">
               <span>Est. Fee (0.1%):</span>
-              <span className="font-mono text-[#8d9691]">
+              <span className="font-mono text-slate-400">
                 ${(parseFloat(total) * 0.001).toFixed(2)} USDT
               </span>
             </div>
@@ -227,12 +227,12 @@ function OrderForm({
 
           {/* TP / SL Toggle */}
           <div className="pt-1">
-            <label className="flex items-center gap-2 cursor-pointer text-[#8d9691] hover:text-white">
+            <label className="flex items-center gap-2 cursor-pointer text-slate-400 hover:text-white">
               <input
                 type="checkbox"
                 checked={useTPSL}
                 onChange={(e) => setUseTPSL(e.target.checked)}
-                className="rounded accent-[#58e65b]"
+                className="rounded accent-[#ff7a00]"
               />
               <span className="font-semibold text-xs">Take Profit / Stop Loss (TP/SL)</span>
             </label>
@@ -244,14 +244,14 @@ function OrderForm({
                   value={tpPrice}
                   onChange={(e) => setTpPrice(e.target.value)}
                   placeholder="TP Price"
-                  className="rounded-lg border border-white/10 bg-[#080d0e] px-2.5 py-1.5 text-xs text-white placeholder-[#8d9691] focus:border-[#58e65b] focus:outline-none font-mono"
+                  className="rounded-lg border border-white/10 bg-[#121639] px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:border-emerald-400 focus:outline-none font-mono"
                 />
                 <input
                   type="number"
                   value={slPrice}
                   onChange={(e) => setSlPrice(e.target.value)}
                   placeholder="SL Price"
-                  className="rounded-lg border border-white/10 bg-[#080d0e] px-2.5 py-1.5 text-xs text-white placeholder-[#8d9691] focus:border-[#ff6b6b] focus:outline-none font-mono"
+                  className="rounded-lg border border-white/10 bg-[#121639] px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:border-rose-400 focus:outline-none font-mono"
                 />
               </div>
             )}
@@ -262,7 +262,7 @@ function OrderForm({
         <div className="pt-4">
           <button
             type="submit"
-            className={`w-full py-3.5 rounded-xl text-sm font-extrabold tracking-wide uppercase flex items-center justify-center gap-2 transition-all hover:scale-[1.01] ${buttonColor}`}
+            className={`w-full py-3.5 rounded-xl text-sm font-extrabold tracking-wide uppercase flex items-center justify-center gap-2 transition-all hover:scale-[1.01] cursor-pointer ${buttonColor}`}
           >
             <span>
               {isBuy

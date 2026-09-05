@@ -4,8 +4,8 @@ export const securityPillars = [
     name: 'Account & Identity Shield',
     subtitle: 'Zero-Trust Client Authentication & Access Control',
     icon: 'Fingerprint',
-    accent: '#58e65b',
-    borderGlow: 'hover:border-[#58e65b]/50 hover:shadow-[0_0_30px_rgba(88,230,91,0.2)]',
+    accent: '#ff7a00',
+    borderGlow: 'hover:border-[#ff7a00]/50 hover:shadow-[0_0_30px_rgba(255,122,0,0.2)]',
     points: [
       'Hardware security keys (FIDO2, YubiKey) & WebAuthn support',
       'Time-based One-Time Password (TOTP via Google Authenticator/Authy)',
@@ -49,8 +49,8 @@ export const securityPillars = [
     name: '$100M SAFU & Proof of Reserves',
     subtitle: 'Transparent On-Chain Backing & Emergency Guarantee',
     icon: 'ShieldCheck',
-    accent: '#eab308',
-    borderGlow: 'hover:border-[#eab308]/50 hover:shadow-[0_0_30px_rgba(234,179,8,0.2)]',
+    accent: '#ff9500',
+    borderGlow: 'hover:border-[#ff9500]/50 hover:shadow-[0_0_30px_rgba(255,149,0,0.2)]',
     points: [
       'Dedicated $100,000,000 Secure Asset Fund for Users (SAFU)',
       '100% 1:1 on-chain reserve backing with Merkle-tree verification',
@@ -62,8 +62,8 @@ export const securityPillars = [
 ]
 
 export const safuAllocations = [
-  { asset: 'Bitcoin (BTC)', share: '40%', value: '$40,000,000', color: '#f59e0b', barPct: 40 },
-  { asset: 'Tether (USDT) & Cash', share: '35%', value: '$35,000,000', color: '#58e65b', barPct: 35 },
+  { asset: 'Bitcoin (BTC)', share: '40%', value: '$40,000,000', color: '#ff7a00', barPct: 40 },
+  { asset: 'Tether (USDT) & Cash', share: '35%', value: '$35,000,000', color: '#10b981', barPct: 35 },
   { asset: 'Ethereum (ETH)', share: '25%', value: '$25,000,000', color: '#38bdf8', barPct: 25 },
 ]
 
