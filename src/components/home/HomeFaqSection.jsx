@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronDown, HelpCircle, MessageSquare, ShieldCheck, Zap } from 'lucide-react'
+import { ChevronDown, HelpCircle, MessageSquare } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const homeFaqItems = [
@@ -34,21 +34,21 @@ export default function HomeFaqSection() {
   }
 
   return (
-    <section className="relative mx-auto max-w-[1000px] px-3.5 py-12 sm:px-6 lg:px-10">
-      <div className="text-center mb-10 space-y-2">
-        <div className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900/80 px-3 py-1 text-xs font-semibold text-emerald-400">
-          <HelpCircle size={13} />
+    <section className="relative mx-auto max-w-[1000px] px-3.5 py-4 sm:px-6 lg:px-10">
+      <div className="text-center mb-5 space-y-1.5">
+        <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-950/40 px-3 py-0.5 text-xs font-semibold text-amber-400">
+          <HelpCircle size={12} />
           <span>FREQUENTLY ASKED QUESTIONS</span>
         </div>
-        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white">
+        <h2 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-white">
           Everything You Need to Know
         </h2>
-        <p className="text-xs sm:text-sm text-slate-400">
+        <p className="text-xs text-slate-400">
           Clear answers regarding platform security, yield mechanics, and instant settlements.
         </p>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         {homeFaqItems.map((item, idx) => {
           const isOpen = openIdx === idx
           return (
@@ -56,26 +56,26 @@ export default function HomeFaqSection() {
               key={idx}
               className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                 isOpen
-                  ? 'border-emerald-500/40 bg-[#090d14] shadow-[0_0_20px_rgba(52,211,153,0.08)]'
-                  : 'border-slate-800 bg-slate-950/70 hover:border-slate-700'
+                  ? 'border-amber-500/40 bg-[#090b10] shadow-[0_0_18px_rgba(245,158,11,0.1)]'
+                  : 'border-slate-800 bg-slate-950/80 hover:border-slate-700'
               }`}
             >
               <button
                 type="button"
                 onClick={() => toggle(idx)}
-                className="w-full flex items-center justify-between p-4 sm:p-5 text-left cursor-pointer"
+                className="w-full flex items-center justify-between p-3.5 sm:p-4 text-left cursor-pointer"
               >
-                <span className="text-sm sm:text-base font-bold text-white pr-4">
+                <span className="text-xs sm:text-sm font-bold text-white pr-3">
                   {item.q}
                 </span>
                 <div
-                  className={`p-1.5 rounded-lg border transition-transform duration-200 shrink-0 ${
+                  className={`p-1 rounded-lg border transition-transform duration-200 shrink-0 ${
                     isOpen
-                      ? 'rotate-180 bg-emerald-950 text-emerald-400 border-emerald-500/30'
+                      ? 'rotate-180 bg-amber-950 text-amber-400 border-amber-500/40'
                       : 'bg-slate-900 text-slate-400 border-slate-800'
                   }`}
                 >
-                  <ChevronDown size={16} />
+                  <ChevronDown size={14} />
                 </div>
               </button>
 
@@ -87,7 +87,7 @@ export default function HomeFaqSection() {
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <div className="px-4 pb-4 sm:px-5 sm:pb-5 text-xs sm:text-sm text-slate-300 leading-relaxed border-t border-slate-800/60 pt-3">
+                    <div className="px-3.5 pb-3.5 sm:px-4 sm:pb-4 text-xs sm:text-[13px] text-slate-300 leading-relaxed border-t border-slate-800/60 pt-2.5">
                       {item.a}
                     </div>
                   </motion.div>
@@ -99,19 +99,19 @@ export default function HomeFaqSection() {
       </div>
 
       {/* 24/7 Human Help Desk Ribbon */}
-      <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-950/80 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-3 text-left">
-          <div className="h-10 w-10 rounded-xl bg-emerald-950/50 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
-            <MessageSquare size={18} />
+      <div className="mt-4 rounded-2xl border border-amber-500/20 bg-slate-950/90 p-3.5 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5 text-left">
+          <div className="h-9 w-9 rounded-xl bg-amber-950/50 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+            <MessageSquare size={16} />
           </div>
           <div>
             <div className="text-xs sm:text-sm font-bold text-white">Need personal assistance or custom VIP limits?</div>
-            <div className="text-[11px] text-slate-400">Our 24/7 institutional desk responds in under 4 minutes.</div>
+            <div className="text-[10px] text-slate-400">Our 24/7 institutional desk responds in under 4 minutes.</div>
           </div>
         </div>
         <Link
           to="/support"
-          className="rounded-xl border border-slate-700 bg-slate-900 px-4 py-2 text-xs font-bold text-white hover:border-emerald-400 hover:text-emerald-400 transition-colors whitespace-nowrap shrink-0"
+          className="rounded-xl border border-amber-500/30 bg-slate-900 px-3.5 py-1.5 text-xs font-bold text-white hover:border-amber-400 hover:text-amber-400 transition-colors whitespace-nowrap shrink-0"
         >
           Contact Support Desk
         </Link>

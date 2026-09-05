@@ -1,21 +1,25 @@
 @import 'tailwindcss';
 
 :root {
-  --bg: #050708;
-  --bg-secondary: #0a0e10;
-  --card: #0c1214;
-  --card-soft: rgba(12, 18, 20, 0.85);
-  --border: rgba(88, 230, 91, 0.15);
-  --green: #58e65b;
-  --green-bright: #48db50;
-  --green-deep: #0e2614;
-  --green-glow: rgba(88, 230, 91, 0.35);
-  --red: #ff5252;
+  --bg: #050608;
+  --bg-secondary: #090b10;
+  --card: #0c0e14;
+  --card-soft: rgba(12, 14, 20, 0.88);
+  --border: rgba(245, 158, 11, 0.18);
+  --gold: #f59e0b;
+  --gold-bright: #fbbf24;
+  --gold-deep: #2a1b05;
+  --gold-glow: rgba(245, 158, 11, 0.4);
+  --green: #f59e0b;
+  --green-bright: #fbbf24;
+  --green-deep: #2a1b05;
+  --green-glow: rgba(245, 158, 11, 0.4);
+  --red: #ff4757;
   --text: #ffffff;
-  --text-dim: #d1dad4;
-  --muted: #8d9691;
-  --muted-strong: #dfe9e2;
-  --shadow-green: 0 10px 30px -10px rgba(88, 230, 91, 0.35);
+  --text-dim: #e2e8f0;
+  --muted: #94a3b8;
+  --muted-strong: #f1f5f9;
+  --shadow-gold: 0 10px 30px -10px rgba(245, 158, 11, 0.4);
 }
 
 html {

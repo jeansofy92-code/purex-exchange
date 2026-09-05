@@ -146,15 +146,21 @@ function Navbar({ theme, setTheme }) {
               )}
             </div>
           ) : (
-            /* Unauthenticated Login & Sign Up links */
-            <>
-              <Link to="/login" className="nav-link-btn text-[#dfe9e2] hover:text-[#58e65b] transition-colors">
+            /* Highly visible Unauthenticated Login & Sign Up buttons */
+            <div className="flex items-center gap-2.5">
+              <Link
+                to="/login"
+                className="rounded-xl border border-amber-500/30 bg-slate-900/80 px-4 py-2 text-xs font-bold text-white hover:border-amber-400 hover:text-amber-400 hover:bg-slate-800 transition-all shadow-sm"
+              >
                 Log In
               </Link>
-              <Link to="/signup" className="nav-cta-btn">
-                Sign Up
+              <Link
+                to="/signup"
+                className="rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 px-5 py-2 text-xs font-black text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.5)] hover:shadow-[0_0_28px_rgba(245,158,11,0.7)] hover:scale-[1.03] active:scale-[0.98] transition-all cursor-pointer uppercase tracking-wider"
+              >
+                Sign Up Free
               </Link>
-            </>
+            </div>
           )}
 
           <button
@@ -238,14 +244,14 @@ function Navbar({ theme, setTheme }) {
                 <Link
                   to="/login"
                   onClick={() => setIsOpen(false)}
-                  className="nav-link-btn flex-1 text-center text-xs py-2.5"
+                  className="flex-1 rounded-xl border border-amber-500/40 bg-slate-900 py-3 text-center text-xs font-bold text-white shadow"
                 >
                   Log In
                 </Link>
                 <Link
                   to="/signup"
                   onClick={() => setIsOpen(false)}
-                  className="nav-cta-btn flex-1 text-center text-xs py-2.5"
+                  className="flex-1 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 py-3 text-center text-xs font-black text-slate-950 shadow-[0_0_15px_rgba(245,158,11,0.5)] uppercase tracking-wider"
                 >
                   Sign Up
                 </Link>

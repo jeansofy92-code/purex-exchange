@@ -12,12 +12,12 @@ import TerminalCTA from '../components/home/TerminalCTA'
 
 function Home() {
   return (
-    <main className="relative min-h-screen bg-[#05070a] text-slate-100 overflow-x-hidden">
-      {/* 1. Interactive Ambient Live Network Canvas & Grid Background */}
+    <main className="relative min-h-screen bg-[#050608] text-slate-100 overflow-x-hidden">
+      {/* 1. Interactive Ambient Live Network Canvas & Warm Gold Grid Background */}
       <LiveNetworkBackground />
 
-      {/* Foreground Content Shell */}
-      <div className="relative z-10 space-y-6 sm:space-y-8 pb-16">
+      {/* Foreground Content Shell - Tight, dense spacing */}
+      <div className="relative z-10 space-y-3 sm:space-y-4 pb-8">
         {/* 2. Institutional Hero Command Center with Live Interactive Terminal */}
         <HeroCommandCenter />
 

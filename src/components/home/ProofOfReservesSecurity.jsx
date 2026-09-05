@@ -7,8 +7,7 @@ import {
   ExternalLink,
   Shield,
   Key,
-  Server,
-  Fingerprint
+  Server
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
@@ -37,112 +36,112 @@ const securityPillars = [
   },
   {
     icon: Server,
-    title: 'SOC 2 Type II & ISO 27001 Certified',
+    title: 'SOC 2 Type II & ISO 27001',
     description: 'Rigorously audited infrastructure tested by industry-leading cybersecurity firms quarterly.',
   },
 ]
 
 export default function ProofOfReservesSecurity() {
   return (
-    <section className="relative mx-auto max-w-[1440px] px-3.5 py-12 sm:px-6 lg:px-10">
-      <div className="rounded-3xl border border-slate-800 bg-[#070b12]/95 p-6 sm:p-10 backdrop-blur-2xl shadow-2xl">
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 items-center">
+    <section className="relative mx-auto max-w-[1440px] px-3.5 py-4 sm:px-6 lg:px-10">
+      <div className="rounded-2xl border border-amber-500/20 bg-[#080a0f]/95 p-5 sm:p-7 backdrop-blur-2xl shadow-2xl">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-center">
           {/* Left Side: Merkle Tree Proof of Reserves (6 cols) */}
-          <div className="lg:col-span-6 space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-950/40 px-3 py-1 text-xs font-semibold text-emerald-400">
-              <FileCheck2 size={13} />
+          <div className="lg:col-span-6 space-y-4">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-950/40 px-3 py-0.5 text-xs font-semibold text-amber-400">
+              <FileCheck2 size={12} />
               <span>TRANSPARENCY & AUDITED SOLVENCY</span>
             </div>
 
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-white leading-tight">
               100% Asset Backing with <br className="hidden sm:inline" />
-              <span className="text-emerald-400">Cryptographic Merkle Proof</span>
+              <span className="text-amber-400">Cryptographic Merkle Proof</span>
             </h2>
 
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Every single user deposit is backed 1:1 or greater. We never rehypothecate, lend, or trade with customer assets. Independently verified on-chain.
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Every user deposit is backed 1:1 or greater. We never rehypothecate, lend, or trade with customer assets. Independently verified on-chain.
             </p>
 
-            {/* Overall Solvency Ratio Ribbon */}
-            <div className="rounded-2xl border border-emerald-500/40 bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-950 p-4 flex items-center justify-between font-mono">
+            {/* Solvency Ratio Ribbon */}
+            <div className="rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-950 p-3 flex items-center justify-between font-mono">
               <div>
-                <div className="text-[10px] text-slate-400 uppercase font-sans font-semibold">Total Exchange Solvency Ratio</div>
-                <div className="text-2xl sm:text-3xl font-black text-emerald-400">108.4%</div>
+                <div className="text-[9px] text-slate-400 uppercase font-sans font-semibold">Total Solvency Ratio</div>
+                <div className="text-2xl font-black text-amber-400">108.4%</div>
               </div>
               <div className="text-right">
-                <div className="text-[10px] text-slate-400 font-sans">Audit Standard</div>
+                <div className="text-[9px] text-slate-400 font-sans">Audit Standard</div>
                 <div className="text-xs font-bold text-white flex items-center gap-1">
-                  <CheckCircle2 size={13} className="text-emerald-400" />
-                  <span>Merkle Tree Verified</span>
+                  <CheckCircle2 size={12} className="text-amber-400" />
+                  <span>Merkle Verified</span>
                 </div>
               </div>
             </div>
 
-            {/* Live Reserve Table */}
-            <div className="rounded-xl border border-slate-800 bg-slate-950/80 overflow-hidden font-mono text-xs">
+            {/* Live Reserve Table - Compact */}
+            <div className="rounded-xl border border-slate-800 bg-slate-950 overflow-hidden font-mono text-xs">
               <table className="w-full text-left">
-                <thead className="bg-slate-900/60 text-[10px] font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-800">
+                <thead className="bg-slate-900/80 text-[9px] font-semibold text-slate-400 uppercase tracking-wider border-b border-slate-800">
                   <tr>
-                    <th className="py-2.5 px-3">Asset</th>
-                    <th className="py-2.5 px-3">User Balances</th>
-                    <th className="py-2.5 px-3">Reserves</th>
-                    <th className="py-2.5 px-3 text-right">Ratio</th>
+                    <th className="py-2 px-3">Asset</th>
+                    <th className="py-2 px-3">User Balances</th>
+                    <th className="py-2 px-3">Reserves</th>
+                    <th className="py-2 px-3 text-right">Ratio</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
                   {reserveBreakdown.map((row) => (
                     <tr key={row.asset} className="hover:bg-slate-900/30">
-                      <td className="py-2.5 px-3 font-sans font-semibold text-white">{row.asset}</td>
-                      <td className="py-2.5 px-3 text-slate-400">{row.userHoldings}</td>
-                      <td className="py-2.5 px-3 text-slate-300">{row.exchangeReserves}</td>
-                      <td className="py-2.5 px-3 text-right font-bold text-emerald-400">{row.ratio}</td>
+                      <td className="py-2 px-3 font-sans font-semibold text-white text-[11px]">{row.asset}</td>
+                      <td className="py-2 px-3 text-slate-400 text-[11px]">{row.userHoldings}</td>
+                      <td className="py-2 px-3 text-slate-300 text-[11px]">{row.exchangeReserves}</td>
+                      <td className="py-2 px-3 text-right font-bold text-amber-400 text-[11px]">{row.ratio}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
 
-            <div className="flex items-center justify-between text-xs text-slate-400 pt-1">
+            <div className="flex items-center justify-between text-[11px] text-slate-400">
               <span>Last Audited: <strong className="text-slate-200">Today at 00:00 UTC</strong></span>
               <Link
                 to="/security"
-                className="inline-flex items-center gap-1 font-bold text-emerald-400 hover:underline"
+                className="inline-flex items-center gap-1 font-bold text-amber-400 hover:underline"
               >
                 <span>Full Security Report</span>
-                <ExternalLink size={12} />
+                <ExternalLink size={11} />
               </Link>
             </div>
           </div>
 
           {/* Right Side: Security Infrastructure & Certs (6 cols) */}
-          <div className="lg:col-span-6 space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div className="lg:col-span-6 space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {securityPillars.map((pillar) => {
                 const Icon = pillar.icon
                 return (
                   <div
                     key={pillar.title}
-                    className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4 hover:border-slate-700 transition-all space-y-2"
+                    className="rounded-xl border border-slate-800 bg-slate-950/80 p-3 hover:border-slate-700 transition-all space-y-1"
                   >
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-950/50 border border-emerald-500/30 text-emerald-400">
-                      <Icon size={18} />
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-950/50 border border-amber-500/30 text-amber-400">
+                      <Icon size={16} />
                     </div>
-                    <div className="font-bold text-white text-sm">{pillar.title}</div>
-                    <p className="text-xs text-slate-400 leading-relaxed">{pillar.description}</p>
+                    <div className="font-bold text-white text-xs">{pillar.title}</div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">{pillar.description}</p>
                   </div>
                 )
               })}
             </div>
 
             {/* Auditing Partner Logos Ribbon */}
-            <div className="rounded-2xl border border-slate-800 bg-slate-950/40 p-4">
-              <div className="text-[10px] uppercase font-bold text-slate-500 tracking-wider mb-2.5">
+            <div className="rounded-xl border border-slate-800 bg-slate-950/50 p-3">
+              <div className="text-[9px] uppercase font-bold text-slate-400 tracking-wider mb-2">
                 Security Auditors & Compliance Partners:
               </div>
-              <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono font-bold text-slate-300">
-                <div className="rounded-lg bg-slate-900/80 border border-slate-800 py-2">CERTIK AUDITED</div>
-                <div className="rounded-lg bg-slate-900/80 border border-slate-800 py-2">HACKEN VERIFIED</div>
-                <div className="rounded-lg bg-slate-900/80 border border-slate-800 py-2">CHAINALYSIS KYT</div>
+              <div className="grid grid-cols-3 gap-2 text-center text-[10px] font-mono font-bold text-slate-300">
+                <div className="rounded-lg bg-slate-900 border border-slate-800 py-1.5 text-amber-400">CERTIK AUDITED</div>
+                <div className="rounded-lg bg-slate-900 border border-slate-800 py-1.5 text-amber-400">HACKEN VERIFIED</div>
+                <div className="rounded-lg bg-slate-900 border border-slate-800 py-1.5 text-amber-400">CHAINALYSIS KYT</div>
               </div>
             </div>
           </div>

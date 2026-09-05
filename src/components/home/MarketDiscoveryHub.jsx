@@ -11,14 +11,11 @@ import {
   Activity,
   Gauge,
   Zap,
-  Globe,
-  CheckCircle2,
   ExternalLink
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import CoinLogo from '../CoinLogo'
 import RealisticChart from '../RealisticChart'
-import { useMarketData } from '../../hooks/useMarketData'
 
 const marketCategories = [
   { id: 'hot', label: 'Spotlight & Hot', icon: Flame },
@@ -165,49 +162,49 @@ export default function MarketDiscoveryHub() {
   })
 
   return (
-    <section className="relative mx-auto max-w-[1440px] px-3.5 py-8 sm:px-6 lg:px-10">
-      {/* Section Header & Subtitle */}
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <section className="relative mx-auto max-w-[1440px] px-3.5 py-4 sm:px-6 lg:px-10">
+      {/* Section Header & Compact Toolbar */}
+      <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-slate-800 bg-slate-900/80 px-3 py-1 text-xs font-semibold text-emerald-400">
-            <Activity size={13} />
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-950/40 px-3 py-0.5 text-xs font-semibold text-amber-400">
+            <Activity size={12} />
             <span>REAL-TIME SPOT & DERIVATIVES TICKER</span>
           </div>
-          <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+          <h2 className="mt-1.5 text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-white">
             Market Discovery & Institutional Order Flow
           </h2>
-          <p className="mt-1 text-xs sm:text-sm text-slate-400">
-            High-frequency liquidity depth across 150+ verified digital asset pairs.
+          <p className="text-xs text-slate-400">
+            Deep high-frequency order book liquidity across 150+ verified pairs.
           </p>
         </div>
 
         {/* Search Bar & Full Market Navigation */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
           <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search ticker (BTC, SOL...)"
-              className="w-48 sm:w-56 rounded-xl border border-slate-800 bg-slate-950/90 pl-8 pr-3 py-2 text-xs font-mono text-white placeholder-slate-500 focus:border-emerald-400 focus:outline-none"
+              className="w-44 sm:w-52 rounded-xl border border-slate-800 bg-slate-950/90 pl-8 pr-3 py-1.5 text-xs font-mono text-white placeholder-slate-500 focus:border-amber-400 focus:outline-none"
             />
           </div>
           <Link
             to="/markets"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-2 text-xs font-bold text-white hover:border-emerald-400 hover:text-emerald-400 transition-all"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-slate-900 px-3.5 py-1.5 text-xs font-bold text-white hover:border-amber-400 hover:text-amber-400 transition-all"
           >
             <span>All 150+ Markets</span>
-            <ExternalLink size={13} />
+            <ExternalLink size={12} />
           </Link>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_340px]">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_320px]">
         {/* ================= LEFT / MAIN: HIGH DENSITY MARKET TABLE ================= */}
-        <div className="rounded-2xl border border-slate-800/90 bg-[#090d14]/90 backdrop-blur-xl shadow-2xl overflow-hidden">
+        <div className="rounded-2xl border border-slate-800 bg-[#090b10]/95 backdrop-blur-xl shadow-2xl overflow-hidden">
           {/* Category Tabs Strip */}
-          <div className="flex items-center gap-1 border-b border-slate-800/80 bg-slate-950/60 p-2 overflow-x-auto scrollbar-none">
+          <div className="flex items-center gap-1 border-b border-slate-800 bg-slate-950/70 p-1.5 overflow-x-auto scrollbar-none">
             {marketCategories.map((cat) => {
               const Icon = cat.icon
               const isActive = activeCategory === cat.id
@@ -216,13 +213,13 @@ export default function MarketDiscoveryHub() {
                   key={cat.id}
                   type="button"
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                  className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                     isActive
-                      ? 'bg-slate-800 text-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.15)] border border-slate-700'
+                      ? 'bg-amber-500/20 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.2)] border border-amber-500/40'
                       : 'text-slate-400 hover:text-white hover:bg-slate-900/60'
                   }`}
                 >
-                  <Icon size={14} className={isActive ? 'text-emerald-400' : 'text-slate-500'} />
+                  <Icon size={13} className={isActive ? 'text-amber-400' : 'text-slate-500'} />
                   <span>{cat.label}</span>
                 </button>
               )
@@ -232,89 +229,87 @@ export default function MarketDiscoveryHub() {
           {/* Table Container */}
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-800/80 bg-slate-950/40 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+              <thead className="border-b border-slate-800 bg-slate-950/40 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
                 <tr>
-                  <th className="py-3 px-4 sm:px-6">Asset</th>
-                  <th className="py-3 px-4">Last Price</th>
-                  <th className="py-3 px-4">24h Change</th>
-                  <th className="py-3 px-4 hidden md:table-cell">24h Range</th>
-                  <th className="py-3 px-4 hidden sm:table-cell">24h Volume</th>
-                  <th className="py-3 px-4 hidden lg:table-cell">Depth Flow</th>
-                  <th className="py-3 px-4 hidden md:table-cell">7D Chart</th>
-                  <th className="py-3 px-4 text-right">Quick Action</th>
+                  <th className="py-2.5 px-4 sm:px-5">Asset</th>
+                  <th className="py-2.5 px-3">Last Price</th>
+                  <th className="py-2.5 px-3">24h Change</th>
+                  <th className="py-2.5 px-3 hidden md:table-cell">24h Range</th>
+                  <th className="py-2.5 px-3 hidden sm:table-cell">24h Volume</th>
+                  <th className="py-2.5 px-3 hidden lg:table-cell">Depth Flow</th>
+                  <th className="py-2.5 px-3 hidden md:table-cell">7D Trend</th>
+                  <th className="py-2.5 px-4 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/50">
                 {filteredCoins.map((coin) => (
                   <tr
                     key={coin.symbol}
-                    className="hover:bg-slate-900/40 transition-colors group cursor-pointer font-mono"
+                    className="hover:bg-slate-900/50 transition-colors group cursor-pointer font-mono"
                   >
                     {/* Asset Name & Logo */}
-                    <td className="py-3.5 px-4 sm:px-6 font-sans">
-                      <div className="flex items-center gap-3">
-                        <CoinLogo symbol={coin.symbol} size={28} />
+                    <td className="py-2.5 px-4 sm:px-5 font-sans">
+                      <div className="flex items-center gap-2.5">
+                        <CoinLogo symbol={coin.symbol} size={24} />
                         <div>
-                          <div className="font-bold text-white group-hover:text-emerald-400 transition-colors flex items-center gap-1.5">
+                          <div className="font-bold text-white group-hover:text-amber-400 transition-colors flex items-center gap-1">
                             <span>{coin.name}</span>
                             <span className="text-[10px] font-mono text-slate-500">{coin.symbol}</span>
                           </div>
-                          <div className="text-[11px] text-slate-500 font-mono">{coin.pair}</div>
+                          <div className="text-[10px] text-slate-500 font-mono">{coin.pair}</div>
                         </div>
                       </div>
                     </td>
 
                     {/* Price */}
-                    <td className="py-3.5 px-4 font-bold text-white text-sm">
+                    <td className="py-2.5 px-3 font-bold text-white text-xs sm:text-sm">
                       ${coin.price}
                     </td>
 
                     {/* 24h Change */}
-                    <td className="py-3.5 px-4">
-                      <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-xs font-bold text-emerald-400">
-                        <TrendingUp size={11} />
+                    <td className="py-2.5 px-3">
+                      <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.5 text-[11px] font-bold text-amber-400">
+                        <TrendingUp size={10} />
                         {coin.change}
                       </span>
                     </td>
 
                     {/* 24h High/Low */}
-                    <td className="py-3.5 px-4 hidden md:table-cell text-slate-400 text-[11px]">
+                    <td className="py-2.5 px-3 hidden md:table-cell text-slate-400 text-[10px]">
                       <div>H: ${coin.high24}</div>
                       <div className="text-slate-500">L: ${coin.low24}</div>
                     </td>
 
                     {/* 24h Volume */}
-                    <td className="py-3.5 px-4 hidden sm:table-cell font-semibold text-slate-300">
+                    <td className="py-2.5 px-3 hidden sm:table-cell font-semibold text-slate-300 text-xs">
                       {coin.volume}
                     </td>
 
                     {/* Depth Flow */}
-                    <td className="py-3.5 px-4 hidden lg:table-cell">
-                      <div className="w-24">
-                        <div className="text-[10px] text-slate-400">{coin.depthRatio}</div>
-                        <div className="mt-1 h-1.5 w-full rounded-full bg-slate-800 overflow-hidden">
-                          <div className="h-full bg-emerald-400 rounded-full" style={{ width: '68%' }} />
+                    <td className="py-2.5 px-3 hidden lg:table-cell">
+                      <div className="w-20">
+                        <div className="text-[9px] text-slate-400">{coin.depthRatio}</div>
+                        <div className="mt-0.5 h-1.5 w-full rounded-full bg-slate-800 overflow-hidden">
+                          <div className="h-full bg-amber-400 rounded-full" style={{ width: '68%' }} />
                         </div>
                       </div>
                     </td>
 
                     {/* 7D Mini Sparkline */}
-                    <td className="py-3.5 px-4 hidden md:table-cell">
-                      <div className="w-20">
-                        <RealisticChart values={coin.trend} positive={coin.isPositive} height={28} />
+                    <td className="py-2.5 px-3 hidden md:table-cell">
+                      <div className="w-18">
+                        <RealisticChart values={coin.trend} positive={coin.isPositive} height={24} />
                       </div>
                     </td>
 
                     {/* Action Button */}
-                    <td className="py-3.5 px-4 text-right font-sans">
-                      <div className="inline-flex items-center gap-2">
-                        <Link
-                          to={`/trade?pair=${coin.symbol}_USDT`}
-                          className="rounded-lg bg-emerald-400/10 border border-emerald-400/30 px-3 py-1.5 text-xs font-bold text-emerald-400 hover:bg-emerald-400 hover:text-slate-950 transition-all"
-                        >
-                          Trade
-                        </Link>
-                      </div>
+                    <td className="py-2.5 px-4 text-right font-sans">
+                      <Link
+                        to={`/trade?pair=${coin.symbol}_USDT`}
+                        className="rounded-lg bg-amber-400/10 border border-amber-400/30 px-2.5 py-1 text-xs font-bold text-amber-400 hover:bg-amber-400 hover:text-slate-950 transition-all"
+                      >
+                        Trade
+                      </Link>
                     </td>
                   </tr>
                 ))}
@@ -324,27 +319,27 @@ export default function MarketDiscoveryHub() {
         </div>
 
         {/* ================= RIGHT SIDEBAR: SENTIMENT & GAS NETWORK PULSE ================= */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           {/* Market Sentiment Gauge (Fear & Greed) */}
-          <div className="rounded-2xl border border-slate-800 bg-[#090d14]/90 p-5 backdrop-blur-xl shadow-xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
-              <div className="flex items-center gap-2">
-                <Gauge size={16} className="text-emerald-400" />
+          <div className="rounded-2xl border border-amber-500/20 bg-[#090b10]/95 p-4 backdrop-blur-xl shadow-xl space-y-3">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <div className="flex items-center gap-1.5">
+                <Gauge size={14} className="text-amber-400" />
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                  Market Sentiment Index
+                  Sentiment Index
                 </span>
               </div>
-              <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-400">
+              <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[9px] font-mono font-bold text-amber-400">
                 LIVE
               </span>
             </div>
 
             <div className="flex items-center justify-between">
               <div>
-                <div className="font-mono text-3xl font-black text-white">76</div>
-                <div className="text-xs font-bold text-emerald-400">EXTREME GREED</div>
+                <div className="font-mono text-2xl sm:text-3xl font-black text-white">76</div>
+                <div className="text-xs font-bold text-amber-400">EXTREME GREED</div>
               </div>
-              <div className="text-right text-[11px] font-mono text-slate-400">
+              <div className="text-right text-[10px] font-mono text-slate-400">
                 <div>Yesterday: <span className="text-slate-200">72</span></div>
                 <div>Last Week: <span className="text-slate-200">68</span></div>
                 <div>Last Month: <span className="text-slate-200">54</span></div>
@@ -353,48 +348,48 @@ export default function MarketDiscoveryHub() {
 
             {/* Gauge Indicator Bar */}
             <div className="space-y-1">
-              <div className="h-2 w-full rounded-full bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-400 p-[1px] relative">
+              <div className="h-2 w-full rounded-full bg-gradient-to-r from-rose-500 via-yellow-400 to-amber-400 p-[1px] relative">
                 <div
                   className="absolute -top-1 h-4 w-1.5 rounded bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"
                   style={{ left: '76%' }}
                 />
               </div>
               <div className="flex justify-between text-[9px] font-mono text-slate-500 pt-0.5">
-                <span>0 (Extreme Fear)</span>
+                <span>0 (Fear)</span>
                 <span>50</span>
-                <span>100 (Extreme Greed)</span>
+                <span>100 (Greed)</span>
               </div>
             </div>
           </div>
 
           {/* Real-time Network & Gas Monitor */}
-          <div className="rounded-2xl border border-slate-800 bg-[#090d14]/90 p-5 backdrop-blur-xl shadow-xl space-y-3 font-mono">
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-3 font-sans">
-              <div className="flex items-center gap-2">
-                <Zap size={16} className="text-emerald-400" />
+          <div className="rounded-2xl border border-slate-800 bg-[#090b10]/95 p-4 backdrop-blur-xl shadow-xl space-y-2.5 font-mono">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2 font-sans">
+              <div className="flex items-center gap-1.5">
+                <Zap size={14} className="text-amber-400" />
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                  Global Network Pulse
+                  Network Pulse
                 </span>
               </div>
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse"></span>
             </div>
 
-            <div className="space-y-2.5 text-xs">
+            <div className="space-y-2 text-xs">
               <div className="flex items-center justify-between">
-                <span className="text-slate-400">Ethereum Gas</span>
-                <span className="font-bold text-emerald-400">12 Gwei ($0.42)</span>
+                <span className="text-slate-400 font-sans text-[11px]">Ethereum Gas</span>
+                <span className="font-bold text-amber-400">12 Gwei ($0.42)</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-slate-400">Solana TPS</span>
+                <span className="text-slate-400 font-sans text-[11px]">Solana TPS</span>
                 <span className="font-bold text-white">2,940 TPS</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-slate-400">Bitcoin Mempool</span>
+                <span className="text-slate-400 font-sans text-[11px]">Bitcoin Mempool</span>
                 <span className="font-bold text-white">14 sat/vB</span>
               </div>
-              <div className="flex items-center justify-between border-t border-slate-800/60 pt-2 font-sans">
-                <span className="text-slate-400">Purex Engine Latency</span>
-                <span className="font-mono font-bold text-emerald-400">0.85 ms</span>
+              <div className="flex items-center justify-between border-t border-slate-800 pt-1.5 font-sans">
+                <span className="text-slate-400 text-[11px]">Engine Latency</span>
+                <span className="font-mono font-bold text-amber-400">0.85 ms</span>
               </div>
             </div>
           </div>

@@ -17,66 +17,66 @@ export default function TerminalCTA() {
   }
 
   return (
-    <section className="relative mx-auto max-w-[1440px] px-3.5 py-12 sm:px-6 lg:px-10">
-      <div className="relative rounded-3xl border border-emerald-500/30 bg-gradient-to-b from-[#0e1b15] via-[#090e14] to-[#050709] p-8 sm:p-12 lg:p-16 text-center shadow-[0_20px_60px_rgba(0,0,0,0.9)] overflow-hidden">
+    <section className="relative mx-auto max-w-[1440px] px-3.5 py-4 sm:px-6 lg:px-10">
+      <div className="relative rounded-3xl border border-amber-500/30 bg-gradient-to-b from-[#161208] via-[#090b10] to-[#040507] p-6 sm:p-9 lg:p-10 text-center shadow-[0_20px_60px_rgba(0,0,0,0.9)] overflow-hidden">
         {/* Glow ambient background element */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[550px] h-[260px] bg-amber-500/10 blur-[100px] rounded-full pointer-events-none" />
 
-        <div className="relative z-10 max-w-3xl mx-auto space-y-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-950/60 px-4 py-1.5 text-xs font-bold text-emerald-400 backdrop-blur-md">
-            <Sparkles size={14} />
+        <div className="relative z-10 max-w-3xl mx-auto space-y-4">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-950/60 px-3.5 py-1 text-xs font-bold text-amber-400 backdrop-blur-md">
+            <Sparkles size={13} />
             <span>EXCLUSIVE NEW TRADER INCENTIVE</span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
-            Start Trading with Zero Fees & <br />
-            <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight">
+            Start Trading with 0% Fees & <br />
+            <span className="bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 bg-clip-text text-transparent">
               Earn Daily Automated Yield
             </span>
           </h2>
 
-          <p className="text-xs sm:text-base text-slate-300 leading-relaxed max-w-xl mx-auto">
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl mx-auto">
             Create an account in less than 60 seconds. Claim your $100 fee credit and unlock deep institutional crypto liquidity.
           </p>
 
-          {/* Quick Onboarding Form */}
+          {/* Quick Onboarding Form with Ultra Visible Gold Button */}
           <form
             onSubmit={handleStart}
-            className="flex flex-col sm:flex-row items-center justify-center gap-2.5 max-w-md mx-auto pt-2"
+            className="flex flex-col sm:flex-row items-center justify-center gap-2 max-w-md mx-auto pt-1"
           >
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              className="w-full sm:flex-1 rounded-xl border border-slate-700 bg-slate-950/90 px-4 py-3.5 text-sm font-mono text-white placeholder-slate-500 focus:border-emerald-400 focus:outline-none"
+              placeholder="Enter your email to sign up"
+              className="w-full sm:flex-1 rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-xs sm:text-sm font-mono text-white placeholder-slate-500 focus:border-amber-400 focus:outline-none"
               required
             />
             <button
               type="submit"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-400 px-6 py-3.5 text-sm font-bold text-slate-950 shadow-[0_0_20px_rgba(52,211,153,0.35)] hover:bg-emerald-300 transition-all cursor-pointer whitespace-nowrap active:scale-[0.98]"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 px-6 py-3 text-xs sm:text-sm font-black text-slate-950 shadow-[0_0_24px_rgba(245,158,11,0.6)] hover:shadow-[0_0_32px_rgba(245,158,11,0.8)] hover:scale-[1.03] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap uppercase tracking-wider"
             >
-              <span>Get Started</span>
-              <ArrowRight size={16} />
+              <span>Get Started Free</span>
+              <ArrowRight size={15} />
             </button>
           </form>
 
           {/* Trust Highlights Strip */}
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-4 text-xs text-slate-400 border-t border-slate-800/80 max-w-2xl mx-auto">
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 size={14} className="text-emerald-400" />
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 pt-3 text-[11px] text-slate-400 border-t border-slate-800/80 max-w-2xl mx-auto">
+            <div className="flex items-center gap-1">
+              <CheckCircle2 size={13} className="text-amber-400" />
               <span>0% Deposit Fees</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <ShieldCheck size={14} className="text-emerald-400" />
+            <div className="flex items-center gap-1">
+              <ShieldCheck size={13} className="text-amber-400" />
               <span>$125M SAFU Protected</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <Zap size={14} className="text-emerald-400" />
+            <div className="flex items-center gap-1">
+              <Zap size={13} className="text-amber-400" />
               <span>Instant Settlements</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 size={14} className="text-emerald-400" />
+            <div className="flex items-center gap-1">
+              <CheckCircle2 size={13} className="text-amber-400" />
               <span>24/7 Live Desk</span>
             </div>
           </div>
