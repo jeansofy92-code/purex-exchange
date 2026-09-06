@@ -8,78 +8,26 @@ import {
   Lock,
   ArrowRight,
   Zap,
-  Coins
+  Flame,
+  Bot
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import CoinLogo from '../CoinLogo'
-
-const stakingVaults = [
-  {
-    id: 'purex-diamond',
-    name: 'Purex Diamond Tier',
-    symbol: 'PUREX',
-    coin: 'Purex Token',
-    apy: '24.8%',
-    dailyRate: 0.068,
-    minDeposit: 500,
-    lockDays: 'Flexible / 30D',
-    tvl: '$48.5M',
-    risk: 'Principal Protected',
-    highlight: true,
-  },
-  {
-    id: 'eth-liquid',
-    name: 'ETH Liquid Yield Vault',
-    symbol: 'ETH',
-    coin: 'Ethereum',
-    apy: '8.9%',
-    dailyRate: 0.0244,
-    minDeposit: 1000,
-    lockDays: 'Instant Unstake',
-    tvl: '$184.2M',
-    risk: 'Audited Smart Contract',
-    highlight: false,
-  },
-  {
-    id: 'btc-yield',
-    name: 'BTC Prime Staking Pool',
-    symbol: 'BTC',
-    coin: 'Bitcoin',
-    apy: '7.2%',
-    dailyRate: 0.0197,
-    minDeposit: 2500,
-    lockDays: '30D - 90D',
-    tvl: '$310.0M',
-    risk: 'Cold Storage Vaults',
-    highlight: false,
-  },
-  {
-    id: 'usdt-highyield',
-    name: 'USDT Stable Vault',
-    symbol: 'USDT',
-    coin: 'Tether USD',
-    apy: '14.5%',
-    dailyRate: 0.0397,
-    minDeposit: 250,
-    lockDays: 'Flexible Daily Payout',
-    tvl: '$126.8M',
-    risk: '1:1 Cash Backed',
-    highlight: false,
-  },
-]
+import { investmentPlans } from '../../data/investmentPlans'
 
 export default function StakingYieldMatrix() {
-  const [selectedVault, setSelectedVault] = useState(stakingVaults[0])
-  const [depositAmount, setDepositAmount] = useState(5000)
-  const [selectedDuration, setSelectedDuration] = useState(30)
+  const [selectedPlan, setSelectedPlan] = useState(investmentPlans[1] || investmentPlans[0])
+  const [depositAmount, setDepositAmount] = useState(2500)
   const [autoCompound, setAutoCompound] = useState(true)
 
-  const dailyReturnUsd = depositAmount * (selectedVault.dailyRate / 100)
+  const dailyReturnRate = (selectedPlan.dailyMin + selectedPlan.dailyMax) / 2
+  const dailyRoiDecimal = dailyReturnRate / 100
+  const dailyReturnUsd = depositAmount * dailyRoiDecimal
+
   let totalEstimatedProfit = 0
   if (autoCompound) {
-    totalEstimatedProfit = depositAmount * Math.pow(1 + selectedVault.dailyRate / 100, selectedDuration) - depositAmount
+    totalEstimatedProfit = depositAmount * Math.pow(1 + dailyRoiDecimal, selectedPlan.durationDays) - depositAmount
   } else {
-    totalEstimatedProfit = dailyReturnUsd * selectedDuration
+    totalEstimatedProfit = dailyReturnUsd * selectedPlan.durationDays
   }
   const totalPayout = depositAmount + totalEstimatedProfit
 
@@ -106,57 +54,62 @@ export default function StakingYieldMatrix() {
         </div>
       </div>
 
-      {/* Grid of 4 Vault Cards */}
+      {/* Grid of 4 Cyber Cat Trading Bot Cards */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-4">
-        {stakingVaults.map((vault) => {
-          const isSelected = selectedVault.id === vault.id
+        {investmentPlans.map((plan) => {
+          const isSelected = selectedPlan.id === plan.id
           return (
             <div
-              key={vault.id}
+              key={plan.id}
               onClick={() => {
-                setSelectedVault(vault)
-                if (depositAmount < vault.minDeposit) setDepositAmount(vault.minDeposit)
+                setSelectedPlan(plan)
+                if (depositAmount < plan.minDeposit) setDepositAmount(plan.minDeposit)
               }}
-              className={`relative rounded-2xl border p-4 transition-all cursor-pointer backdrop-blur-xl ${
+              className={`relative rounded-2xl border p-4 transition-all cursor-pointer backdrop-blur-xl group overflow-hidden ${
                 isSelected
-                  ? 'border-[#ff7a00] bg-gradient-to-b from-[#ff7a00]/20 via-[#1a1e42] to-[#121530] shadow-[0_0_24px_rgba(255,122,0,0.25)] scale-[1.01]'
+                  ? 'border-[#ff7a00] bg-gradient-to-b from-[#ff7a00]/20 via-[#1a1e42] to-[#121530] shadow-[0_0_24px_rgba(255,122,0,0.3)] scale-[1.01]'
                   : 'border-white/10 bg-[#15193b]/90 hover:border-white/20 hover:bg-[#1a1f48]'
               }`}
             >
-              {vault.highlight && (
-                <span className="absolute -top-2 right-3 rounded-full bg-gradient-to-r from-[#ff7a00] to-[#ff9500] px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-white shadow">
-                  TOP YIELD
+              {plan.popular && (
+                <span className="absolute -top-1.5 right-3 z-10 rounded-full bg-gradient-to-r from-[#ff7a00] to-[#ff9500] px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-white shadow">
+                  TOP YIELD 🔥
                 </span>
               )}
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <CoinLogo symbol={vault.symbol} size={24} />
-                  <div>
-                    <div className="font-bold text-white text-xs sm:text-sm">{vault.name}</div>
-                    <div className="text-[10px] font-mono text-slate-400">{vault.coin}</div>
-                  </div>
+              {/* Bot Avatar & Name */}
+              <div className="flex items-center gap-2.5">
+                <div className="relative h-12 w-12 rounded-xl overflow-hidden border border-white/20 shrink-0 shadow-md">
+                  <img
+                    src={plan.avatar}
+                    alt={plan.name}
+                    className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-black text-white text-xs sm:text-sm truncate">{plan.name}</div>
+                  <div className="text-[10px] font-bold text-[#ff7a00] truncate">{plan.botRole}</div>
                 </div>
               </div>
 
               <div className="mt-3 space-y-0.5">
-                <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Estimated APY</div>
-                <div className="font-mono text-2xl font-black text-[#ff7a00]">{vault.apy}</div>
+                <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Daily Guaranteed ROI</div>
+                <div className="font-mono text-2xl font-black text-[#ff7a00]">{plan.dailyReturn}</div>
               </div>
 
               <div className="mt-3 grid grid-cols-2 gap-2 border-t border-white/10 pt-2 text-[10px] font-mono text-slate-300">
                 <div>
-                  <span className="text-slate-400 block">TVL Locked</span>
-                  <span className="font-bold text-white">{vault.tvl}</span>
+                  <span className="text-slate-400 block">Duration</span>
+                  <span className="font-bold text-white">{plan.durationDisplay}</span>
                 </div>
                 <div>
                   <span className="text-slate-400 block">Min Deposit</span>
-                  <span className="font-bold text-white">${vault.minDeposit}</span>
+                  <span className="font-bold text-white">${plan.minDeposit.toLocaleString()}</span>
                 </div>
               </div>
 
               <div className="mt-2.5 flex items-center justify-between text-[10px] text-[#ff7a00] font-semibold">
-                <span>{isSelected ? '✓ Selected Below' : 'Click to Configure'}</span>
+                <span>{isSelected ? '✓ Active in Simulator' : 'Select Bot Simulator'}</span>
                 <ArrowRight size={12} />
               </div>
             </div>
@@ -170,14 +123,19 @@ export default function StakingYieldMatrix() {
           {/* Controls (7 Cols) */}
           <div className="lg:col-span-7 space-y-4">
             <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
-              <div className="flex items-center gap-2">
-                <Calculator size={16} className="text-[#ff7a00]" />
-                <span className="font-bold text-white text-xs sm:text-sm">
-                  Simulate Yield: <span className="text-[#ff7a00] font-mono">{selectedVault.name}</span>
-                </span>
+              <div className="flex items-center gap-2.5">
+                <div className="h-9 w-9 rounded-xl overflow-hidden border border-[#ff7a00]/40 shrink-0 shadow-md">
+                  <img src={selectedPlan.avatar} alt={selectedPlan.name} className="h-full w-full object-cover" />
+                </div>
+                <div>
+                  <div className="font-bold text-white text-xs sm:text-sm flex items-center gap-1.5">
+                    <span>Selected Bot: <strong className="text-[#ff7a00] font-mono">{selectedPlan.name}</strong></span>
+                  </div>
+                  <div className="text-[10px] text-slate-400">{selectedPlan.botRole}</div>
+                </div>
               </div>
               <span className="font-mono text-xs text-slate-300">
-                APY: <strong className="text-[#ff7a00]">{selectedVault.apy}</strong>
+                Daily Rate: <strong className="text-[#ff7a00]">{selectedPlan.dailyReturn}</strong>
               </span>
             </div>
 
@@ -193,8 +151,8 @@ export default function StakingYieldMatrix() {
                 </span>
                 <input
                   type="number"
-                  min={selectedVault.minDeposit}
-                  max={250000}
+                  min={selectedPlan.minDeposit}
+                  max={selectedPlan.maxDeposit || 500000}
                   step={100}
                   value={depositAmount}
                   onChange={(e) => setDepositAmount(Math.max(0, parseFloat(e.target.value) || 0))}
@@ -203,8 +161,8 @@ export default function StakingYieldMatrix() {
               </div>
               <input
                 type="range"
-                min={selectedVault.minDeposit}
-                max={50000}
+                min={selectedPlan.minDeposit}
+                max={selectedPlan.maxDeposit || 50000}
                 step={250}
                 value={depositAmount}
                 onChange={(e) => setDepositAmount(parseFloat(e.target.value))}
@@ -212,29 +170,19 @@ export default function StakingYieldMatrix() {
               />
             </div>
 
-            {/* Lock Duration Pills */}
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-semibold text-slate-300">Lockup Term:</label>
-              <div className="grid grid-cols-4 gap-2">
-                {[
-                  { label: 'Flexible (7D)', days: 7 },
-                  { label: '30 Days', days: 30 },
-                  { label: '90 Days (+2%)', days: 90 },
-                  { label: '180 Days (+5%)', days: 180 },
-                ].map((term) => (
-                  <button
-                    key={term.days}
-                    type="button"
-                    onClick={() => setSelectedDuration(term.days)}
-                    className={`py-1.5 px-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer text-center ${
-                      selectedDuration === term.days
-                        ? 'bg-[#ff7a00] text-white shadow-[0_0_12px_rgba(255,122,0,0.4)]'
-                        : 'bg-white/5 border border-white/10 text-slate-300 hover:text-white'
-                    }`}
-                  >
-                    {term.label}
-                  </button>
-                ))}
+            {/* Lock Duration Info */}
+            <div className="rounded-xl border border-white/10 bg-black/30 p-3 flex items-center justify-between text-xs font-mono">
+              <div>
+                <span className="text-slate-400 block text-[10px]">Algorithm Term</span>
+                <span className="text-white font-bold">{selectedPlan.durationDisplay} Automated Cycle</span>
+              </div>
+              <div>
+                <span className="text-slate-400 block text-[10px]">Capital Security</span>
+                <span className="text-emerald-400 font-bold">100% Principal Release</span>
+              </div>
+              <div>
+                <span className="text-slate-400 block text-[10px]">Settlement</span>
+                <span className="text-[#ff7a00] font-bold">Daily 00:00 UTC</span>
               </div>
             </div>
 
@@ -260,9 +208,9 @@ export default function StakingYieldMatrix() {
           <div className="lg:col-span-5">
             <div className="rounded-2xl border-2 border-[#ff7a00]/40 bg-gradient-to-b from-[#ff7a00]/20 via-[#171b3e] to-[#0f122c] p-5 shadow-2xl space-y-4 font-mono">
               <div className="flex items-center justify-between border-b border-white/10 pb-2.5 font-sans">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Estimated Returns</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Projected Returns</span>
                 <span className="rounded-full bg-[#ff7a00]/20 px-2.5 py-0.5 text-xs font-bold text-[#ff7a00]">
-                  {selectedDuration} Days Term
+                  {selectedPlan.durationDisplay} Cycle
                 </span>
               </div>
 
@@ -295,7 +243,7 @@ export default function StakingYieldMatrix() {
                 to="/signup"
                 className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#ff7a00] to-[#ff9500] py-3 font-sans text-xs font-black uppercase tracking-wider text-white shadow-[0_0_20px_rgba(255,122,0,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
               >
-                <span>Deposit & Stake in {selectedVault.name}</span>
+                <span>Deploy {selectedPlan.name}</span>
                 <ArrowRight size={14} />
               </Link>
             </div>

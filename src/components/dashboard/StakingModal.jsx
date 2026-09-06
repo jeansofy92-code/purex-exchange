@@ -159,7 +159,7 @@ export default function StakingModal({ isOpen, onClose, onStakeSuccess, availabl
 
           {/* Main Content Area */}
           <div className="overflow-y-auto flex-1 pr-1 space-y-4 py-2">
-            {/* 4 Investment Plans Grid */}
+            {/* 4 Investment Cyber Cat Trading Bots Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {investmentPlans.map((plan) => {
                 const isSelected = selectedPlanId === plan.id
@@ -167,39 +167,55 @@ export default function StakingModal({ isOpen, onClose, onStakeSuccess, availabl
                   <div
                     key={plan.id}
                     onClick={() => handleSelectPlan(plan)}
-                    className={`relative cursor-pointer rounded-2xl p-4 transition-all duration-200 flex flex-col justify-between ${
+                    className={`relative cursor-pointer rounded-2xl p-4 transition-all duration-200 flex flex-col justify-between overflow-hidden group ${
                       isSelected
-                        ? 'border-2 border-[#ff7a00] bg-gradient-to-b from-[#222858] to-[#171b3c] shadow-[0_0_25px_rgba(255,122,0,0.35)] scale-[1.02]'
+                        ? 'border-2 border-[#ff7a00] bg-gradient-to-b from-[#222858] to-[#171b3c] shadow-[0_0_25px_rgba(255,122,0,0.4)] scale-[1.02]'
                         : 'border border-white/10 bg-[#0f1228] hover:border-white/20 hover:bg-[#121634]'
                     }`}
                   >
                     {plan.popular && (
-                      <span className="absolute -top-2.5 right-3 rounded-full bg-gradient-to-r from-[#ff7a00] to-[#ff9500] px-2.5 py-0.5 text-[9px] font-black uppercase text-white shadow-[0_0_10px_rgba(255,122,0,0.5)]">
+                      <span className="absolute -top-1.5 right-3 z-10 rounded-full bg-gradient-to-r from-[#ff7a00] to-[#ff9500] px-2.5 py-0.5 text-[9px] font-black uppercase text-white shadow-[0_0_10px_rgba(255,122,0,0.5)]">
                         Popular 🔥
                       </span>
                     )}
 
                     <div>
-                      <div className="flex items-center justify-between gap-1 mb-1">
-                        <span className="text-sm font-bold text-white">{plan.name}</span>
-                        {isSelected && (
-                          <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#ff7a00] text-white">
-                            <Check size={10} />
+                      {/* Bot Avatar & Header */}
+                      <div className="flex items-center gap-2.5 mb-2.5">
+                        <div className="relative h-12 w-12 rounded-xl overflow-hidden border border-white/20 shrink-0 shadow-md">
+                          <img
+                            src={plan.avatar}
+                            alt={plan.name}
+                            className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="text-xs font-black text-white truncate">{plan.name}</span>
+                            {isSelected && (
+                              <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#ff7a00] text-white shrink-0">
+                                <Check size={10} />
+                              </div>
+                            )}
                           </div>
-                        )}
+                          <div className="text-[10px] text-[#ff7a00] font-bold truncate">
+                            {plan.botRole || 'AI Trading Bot'}
+                          </div>
+                        </div>
                       </div>
 
-                      <div className="text-[10px] text-slate-400 mb-3 line-clamp-2">
+                      <div className="text-[10px] text-slate-400 mb-2.5 line-clamp-2">
                         {plan.subtitle}
                       </div>
 
-                      <div className="rounded-xl border border-white/10 bg-black/40 p-2.5 mb-3 text-center">
+                      <div className="rounded-xl border border-white/10 bg-black/40 p-2 mb-2.5 text-center">
                         <div className="text-[9px] uppercase font-bold text-slate-400">Daily Return</div>
                         <div className="text-xl font-black text-[#ff7a00] font-mono">{plan.dailyReturn}</div>
                         <div className="text-[10px] text-slate-400">Avg Net: {plan.totalReturnAvg}</div>
                       </div>
 
-                      <div className="space-y-1.5 text-[11px] text-slate-300 border-t border-white/10 pt-2.5">
+                      <div className="space-y-1.5 text-[11px] text-slate-300 border-t border-white/10 pt-2">
                         <div className="flex justify-between">
                           <span className="text-slate-400">Min Deposit:</span>
                           <span className="font-bold text-white">${plan.minDeposit.toLocaleString()}</span>
@@ -222,13 +238,22 @@ export default function StakingModal({ isOpen, onClose, onStakeSuccess, availabl
             {/* Staking Execution & Yield Calculator Card */}
             <div className="rounded-2xl border border-white/15 bg-[#0f1228] p-4 space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                    <DollarSign size={14} className="text-[#ff7a00]" />
-                    <span>Selected Plan: <strong className="text-[#ff7a00]">{selectedPlan.name}</strong></span>
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl overflow-hidden border border-[#ff7a00]/40 shrink-0 shadow-[0_0_12px_rgba(255,122,0,0.3)]">
+                    <img
+                      src={selectedPlan.avatar}
+                      alt={selectedPlan.name}
+                      className="h-full w-full object-cover"
+                    />
                   </div>
-                  <div className="text-[10px] text-slate-400 mt-0.5">
-                    Deposit range: ${selectedPlan.minDeposit.toLocaleString()} - ${selectedPlan.maxDeposit ? selectedPlan.maxDeposit.toLocaleString() : 'Unlimited'}
+                  <div>
+                    <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <Zap size={14} className="text-[#ff7a00]" />
+                      <span>Deploying Bot: <strong className="text-[#ff7a00]">{selectedPlan.name}</strong></span>
+                    </div>
+                    <div className="text-[10px] text-slate-400 mt-0.5">
+                      {selectedPlan.botRole} • Deposit range: ${selectedPlan.minDeposit.toLocaleString()} - {selectedPlan.maxDeposit ? `$${selectedPlan.maxDeposit.toLocaleString()}` : 'Unlimited'}
+                    </div>
                   </div>
                 </div>
 

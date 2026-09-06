@@ -284,6 +284,7 @@ export default function UserDashboardHeader({
         {userInvestments.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {userInvestments.map((inv) => {
+              const matchingPlan = investmentPlans.find((p) => p.id === inv.planId || p.name === inv.planName) || investmentPlans[1]
               const daysLeft = Math.max(0, (inv.durationDays || 14) - (inv.daysElapsed || 1))
               const progressPct = Math.min(100, Math.round(((inv.daysElapsed || 1) / (inv.durationDays || 14)) * 100))
 
@@ -293,11 +294,19 @@ export default function UserDashboardHeader({
                   className="rounded-2xl border border-white/10 bg-[#151945] p-4 space-y-3 hover:border-[#ff7a00]/50 transition-all relative overflow-hidden group"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Flame size={18} className="text-[#ff7a00] fill-[#ff7a00]" />
+                    <div className="flex items-center gap-2.5">
+                      <div className="relative h-11 w-11 rounded-xl overflow-hidden border border-[#ff7a00]/40 shrink-0 shadow-md">
+                        <img
+                          src={matchingPlan.avatar}
+                          alt={inv.planName}
+                          className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                      </div>
                       <div>
-                        <div className="font-bold text-white text-sm">{inv.planName}</div>
-                        <div className="text-[10px] text-slate-400">ID: {inv.id}</div>
+                        <div className="font-black text-white text-sm flex items-center gap-1.5">
+                          <span>{inv.planName}</span>
+                        </div>
+                        <div className="text-[10px] text-[#ff7a00] font-bold">{matchingPlan.botRole}</div>
                       </div>
                     </div>
                     <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 text-[9px] font-black text-emerald-400 uppercase tracking-wider">
