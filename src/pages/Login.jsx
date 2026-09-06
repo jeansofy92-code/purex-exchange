@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Link, useNavigate, useLocation, Navigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Mail,
@@ -28,7 +28,7 @@ import ForgotPasswordFlow from '../components/auth/ForgotPasswordFlow'
 export default function Login() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { login, isLoading } = useAuth()
+  const { login, isAuthenticated, isLoading } = useAuth()
 
   // Views: 'login' | 'forgot_password' | 'web3' | 'qrcode' | 'passkey'
   const [activeTab, setActiveTab] = useState('login')
@@ -56,8 +56,12 @@ export default function Login() {
     { symbol: 'PUREX/USDT', name: 'Purex Token', price: 4.85, change: '+15.20%', up: true }
   ])
 
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />
+  }
+
   // Redirect destination after login
-  const redirectPath = location.state?.from || '/trade'
+  const redirectPath = location.state?.from || '/dashboard'
 
   // QR Timer Countdown
   useEffect(() => {

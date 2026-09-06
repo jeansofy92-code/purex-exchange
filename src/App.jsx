@@ -27,6 +27,7 @@ function App() {
           <Navbar theme={theme} setTheme={setTheme} />
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/dashboard" element={<Trade />} />
             <Route path="/trade" element={<Trade />} />
             <Route path="/markets" element={<Markets />} />
             <Route path="/about" element={<About />} />

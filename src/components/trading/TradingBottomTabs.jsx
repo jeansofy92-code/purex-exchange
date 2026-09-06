@@ -1,8 +1,7 @@
-import { useState } from 'react'
-import { Wallet } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Wallet, Flame, Users, Plus, ArrowUpRight, ArrowDownLeft, Gift, ShieldCheck } from 'lucide-react'
 import CoinLogo from '../CoinLogo'
-
-
+import { useAuth } from '../../context/AuthContext'
 
 function TradingBottomTabs({
   positions,
@@ -11,67 +10,148 @@ function TradingBottomTabs({
   balances,
   onCancelOrder,
   onClosePosition,
+  onOpenStaking,
+  onOpenReferral,
+  onOpenDeposit,
+  onOpenWithdraw,
+  onOpenConvert,
 }) {
-  const [activeTab, setActiveTab] = useState('positions') // 'positions' | 'orders' | 'history' | 'assets'
+  const { user } = useAuth()
+  const [activeTab, setActiveTab] = useState('positions') // 'positions' | 'orders' | 'history' | 'assets' | 'staking' | 'referral'
+  const [userInvestments, setUserInvestments] = useState([])
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('purex_admin_user_investments')
+      if (stored) {
+        setUserInvestments(JSON.parse(stored))
+      }
+    } catch (_e) {}
+  }, [activeTab])
+
+  const userCode = user?.referralCode || (user?.id ? `PUREX-${user.id.slice(-4).toUpperCase()}` : 'PUREX-VIP88')
+  const referralLink = `${window.location.origin}/signup?ref=${userCode}`
 
   return (
     <div className="border-t border-white/10 bg-[#0d1029]/95 backdrop-blur-xl text-xs select-none">
       {/* Tabs Bar */}
-      <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/10 overflow-x-auto scrollbar-none bg-[#111536]">
-        <button
-          type="button"
-          onClick={() => setActiveTab('positions')}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
-            activeTab === 'positions'
-              ? 'bg-[#ff7a00] text-white shadow-[0_0_12px_rgba(255,122,0,0.35)]'
-              : 'text-slate-400 hover:text-white'
-          }`}
-        >
-          <span>Positions</span>
-          <span className={`px-1.5 py-0.2 rounded-full text-[0.65rem] ${activeTab === 'positions' ? 'bg-black/40 text-white' : 'bg-white/10 text-slate-300'}`}>
-            {positions.length}
-          </span>
-        </button>
+      <div className="flex items-center justify-between px-4 py-2 border-b border-white/10 bg-[#111536] overflow-x-auto">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <button
+            type="button"
+            onClick={() => setActiveTab('positions')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+              activeTab === 'positions'
+                ? 'bg-[#ff7a00] text-white shadow-[0_0_12px_rgba(255,122,0,0.35)]'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <span>Positions</span>
+            <span className={`px-1.5 py-0.2 rounded-full text-[0.65rem] ${activeTab === 'positions' ? 'bg-black/40 text-white' : 'bg-white/10 text-slate-300'}`}>
+              {positions.length}
+            </span>
+          </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveTab('orders')}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
-            activeTab === 'orders'
-              ? 'bg-[#ff7a00] text-white shadow-[0_0_12px_rgba(255,122,0,0.35)]'
-              : 'text-slate-400 hover:text-white'
-          }`}
-        >
-          <span>Open Orders</span>
-          <span className={`px-1.5 py-0.2 rounded-full text-[0.65rem] ${activeTab === 'orders' ? 'bg-black/40 text-white' : 'bg-white/10 text-slate-300'}`}>
-            {openOrders.length}
-          </span>
-        </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('orders')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+              activeTab === 'orders'
+                ? 'bg-[#ff7a00] text-white shadow-[0_0_12px_rgba(255,122,0,0.35)]'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <span>Open Orders</span>
+            <span className={`px-1.5 py-0.2 rounded-full text-[0.65rem] ${activeTab === 'orders' ? 'bg-black/40 text-white' : 'bg-white/10 text-slate-300'}`}>
+              {openOrders.length}
+            </span>
+          </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveTab('history')}
-          className={`px-3.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
-            activeTab === 'history'
-              ? 'bg-[#ff7a00] text-white shadow-[0_0_12px_rgba(255,122,0,0.35)]'
-              : 'text-slate-400 hover:text-white'
-          }`}
-        >
-          Trade History
-        </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('history')}
+            className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+              activeTab === 'history'
+                ? 'bg-[#ff7a00] text-white shadow-[0_0_12px_rgba(255,122,0,0.35)]'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            Trade History
+          </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveTab('assets')}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
-            activeTab === 'assets'
-              ? 'bg-[#ff7a00] text-white shadow-[0_0_12px_rgba(255,122,0,0.35)]'
-              : 'text-slate-400 hover:text-white'
-          }`}
-        >
-          <Wallet size={13} />
-          <span>Wallet Assets</span>
-        </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('assets')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+              activeTab === 'assets'
+                ? 'bg-[#ff7a00] text-white shadow-[0_0_12px_rgba(255,122,0,0.35)]'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Wallet size={13} />
+            <span>Wallet Assets</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('staking')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+              activeTab === 'staking'
+                ? 'bg-gradient-to-r from-[#ff7a00] to-amber-500 text-white shadow-[0_0_12px_rgba(255,122,0,0.35)]'
+                : 'text-[#ffaa33] hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Flame size={13} className="fill-current" />
+            <span>Staked Plans ({userInvestments.length})</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('referral')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+              activeTab === 'referral'
+                ? 'bg-purple-600 text-white shadow-[0_0_12px_rgba(168,85,247,0.35)]'
+                : 'text-purple-300 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Gift size={13} />
+            <span>Referral Program</span>
+          </button>
+        </div>
+
+        {/* Quick Modal Triggers */}
+        <div className="hidden lg:flex items-center gap-2">
+          {onOpenDeposit && (
+            <button
+              type="button"
+              onClick={onOpenDeposit}
+              className="flex items-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold text-emerald-400 hover:bg-emerald-500 hover:text-white transition-colors"
+            >
+              <ArrowDownLeft size={12} />
+              <span>Deposit</span>
+            </button>
+          )}
+          {onOpenWithdraw && (
+            <button
+              type="button"
+              onClick={onOpenWithdraw}
+              className="flex items-center gap-1 rounded-lg border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-300 hover:border-white/30 hover:text-white transition-colors"
+            >
+              <ArrowUpRight size={12} />
+              <span>Withdraw</span>
+            </button>
+          )}
+          {onOpenStaking && (
+            <button
+              type="button"
+              onClick={onOpenStaking}
+              className="flex items-center gap-1 rounded-lg bg-gradient-to-r from-[#ff7a00] to-amber-500 px-3 py-1 text-[11px] font-bold text-white shadow-[0_0_10px_rgba(255,122,0,0.4)] hover:brightness-110 transition-all"
+            >
+              <Flame size={12} className="fill-white" />
+              <span>+ Stake New Plan</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Content Body */}
@@ -98,37 +178,37 @@ function TradingBottomTabs({
                     <tr key={pos.id} className="hover:bg-white/[0.02]">
                       <td className="py-2.5">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-white">{pos.pair}</span>
                           <span
                             className={`px-1.5 py-0.5 rounded text-[0.65rem] font-bold ${
                               pos.side === 'Long'
-                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                                : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                                ? 'bg-emerald-500/20 text-emerald-400'
+                                : 'bg-rose-500/20 text-rose-400'
                             }`}
                           >
                             {pos.side} {pos.leverage}x
                           </span>
+                          <span className="font-bold text-white">{pos.symbol}/USDT</span>
                         </div>
                       </td>
-                      <td className="py-2.5 text-white">{pos.size}</td>
-                      <td className="py-2.5 text-slate-300">${pos.entryPrice}</td>
-                      <td className="py-2.5 text-white font-bold">${pos.markPrice}</td>
-                      <td className="py-2.5 text-rose-400">${pos.liqPrice}</td>
-                      <td className="py-2.5 text-slate-300">{pos.margin}</td>
+                      <td className="py-2.5 text-white">{pos.size} {pos.symbol}</td>
+                      <td className="py-2.5 text-slate-300">${pos.entryPrice.toLocaleString()}</td>
+                      <td className="py-2.5 text-white font-bold">${pos.markPrice.toLocaleString()}</td>
+                      <td className="py-2.5 text-amber-400">${pos.liqPrice.toLocaleString()}</td>
+                      <td className="py-2.5 text-slate-300">${pos.margin.toFixed(2)}</td>
                       <td className="py-2.5">
                         <span
                           className={`font-bold ${
-                            pos.positive ? 'text-emerald-400' : 'text-rose-400'
+                            pos.pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'
                           }`}
                         >
-                          {pos.pnl} ({pos.pnlPercent})
+                          {pos.pnl >= 0 ? '+' : ''}${pos.pnl.toFixed(2)} ({pos.pnlPercent >= 0 ? '+' : ''}{pos.pnlPercent.toFixed(2)}%)
                         </span>
                       </td>
                       <td className="py-2.5 text-right">
                         <button
                           type="button"
                           onClick={() => onClosePosition(pos.id)}
-                          className="px-2.5 py-1 rounded-md border border-white/20 bg-white/5 hover:bg-white/15 text-white font-bold text-[0.7rem] transition-colors cursor-pointer"
+                          className="px-2.5 py-1 rounded-md bg-rose-500/15 border border-rose-500/30 text-rose-400 hover:bg-rose-500/30 text-[0.68rem] font-bold transition-all cursor-pointer"
                         >
                           Market Close
                         </button>
@@ -139,7 +219,8 @@ function TradingBottomTabs({
               </table>
             ) : (
               <div className="py-8 text-center text-slate-400">
-                No active positions. Open a Spot or Perpetual order above.
+                <div>No open perpetual positions.</div>
+                <div className="text-[11px] text-slate-500 mt-1">Execute spot trades or futures orders to view active positions here.</div>
               </div>
             )}
           </div>
@@ -156,10 +237,9 @@ function TradingBottomTabs({
                     <th className="pb-2">Pair</th>
                     <th className="pb-2">Type</th>
                     <th className="pb-2">Side</th>
-                    <th className="pb-2">Price</th>
+                    <th className="pb-2">Order Price</th>
                     <th className="pb-2">Amount</th>
-                    <th className="pb-2">Total</th>
-                    <th className="pb-2">Status</th>
+                    <th className="pb-2">Filled</th>
                     <th className="pb-2 text-right">Action</th>
                   </tr>
                 </thead>
@@ -178,19 +258,14 @@ function TradingBottomTabs({
                           {ord.side}
                         </span>
                       </td>
-                      <td className="py-2.5 text-white">${ord.price}</td>
+                      <td className="py-2.5 text-white font-bold">${ord.price}</td>
                       <td className="py-2.5 text-slate-300">{ord.amount}</td>
-                      <td className="py-2.5 text-white font-bold">{ord.total}</td>
-                      <td className="py-2.5">
-                        <span className="px-1.5 py-0.5 rounded bg-amber-400/10 text-amber-400 border border-amber-400/20 text-[0.65rem] font-bold">
-                          {ord.status}
-                        </span>
-                      </td>
+                      <td className="py-2.5 text-slate-400">{ord.filled || '0%'}</td>
                       <td className="py-2.5 text-right">
                         <button
                           type="button"
                           onClick={() => onCancelOrder(ord.id)}
-                          className="px-2.5 py-1 rounded-md border border-rose-500/30 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 font-bold text-[0.7rem] transition-colors cursor-pointer"
+                          className="px-2 py-0.5 rounded border border-white/10 bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 text-[0.65rem] font-bold"
                         >
                           Cancel
                         </button>
@@ -253,22 +328,148 @@ function TradingBottomTabs({
 
         {/* 4. WALLET ASSETS TAB */}
         {activeTab === 'assets' && (
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-            {Object.entries(balances).map(([coinSymbol, amount]) => (
-              <div
-                key={coinSymbol}
-                className="rounded-xl border border-white/10 bg-[#121639] p-3 hover:border-[#ff7a00]/40 transition-colors"
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+              {Object.entries(balances).map(([coinSymbol, amount]) => (
+                <div
+                  key={coinSymbol}
+                  className="rounded-xl border border-white/10 bg-[#121639] p-3 hover:border-[#ff7a00]/40 transition-colors"
+                >
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <CoinLogo symbol={coinSymbol} size={20} />
+                    <span className="font-bold text-white">{coinSymbol}</span>
+                  </div>
+                  <div className="font-mono text-sm font-bold text-white">
+                    {amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  </div>
+                  <div className="text-[0.65rem] text-slate-400 mt-0.5">Available Balance</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Quick Actions Ribbon inside assets */}
+            <div className="flex items-center gap-2 pt-2 border-t border-white/10">
+              <button
+                type="button"
+                onClick={onOpenDeposit}
+                className="flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/15 px-4 py-2 text-xs font-bold text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all cursor-pointer"
               >
-                <div className="flex items-center gap-2 mb-1.5">
-                  <CoinLogo symbol={coinSymbol} size={20} />
-                  <span className="font-bold text-white">{coinSymbol}</span>
+                <ArrowDownLeft size={14} />
+                <span>Deposit Funds</span>
+              </button>
+              <button
+                type="button"
+                onClick={onOpenWithdraw}
+                className="flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-xs font-bold text-slate-200 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+              >
+                <ArrowUpRight size={14} />
+                <span>Withdraw Funds</span>
+              </button>
+              <button
+                type="button"
+                onClick={onOpenConvert}
+                className="flex items-center gap-1.5 rounded-xl border border-[#ff7a00]/40 bg-[#ff7a00]/10 px-4 py-2 text-xs font-bold text-[#ff7a00] hover:bg-[#ff7a00] hover:text-white transition-all cursor-pointer"
+              >
+                <span>Instant Swap</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* 5. STAKING / INVESTMENTS TAB */}
+        {activeTab === 'staking' && (
+          <div className="space-y-3">
+            {userInvestments.length > 0 ? (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400 text-xs">Active High-Yield Staking Portfolios</span>
+                  <button
+                    type="button"
+                    onClick={onOpenStaking}
+                    className="flex items-center gap-1 text-xs font-bold text-[#ff7a00] hover:underline"
+                  >
+                    <Plus size={13} />
+                    <span>Stake Another Plan</span>
+                  </button>
                 </div>
-                <div className="font-mono text-sm font-bold text-white">
-                  {amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {userInvestments.map((inv) => (
+                    <div
+                      key={inv.id}
+                      className="rounded-2xl border border-white/15 bg-[#121639] p-4 space-y-2.5 relative overflow-hidden"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Flame size={16} className="text-[#ff7a00] fill-[#ff7a00]" />
+                          <span className="font-bold text-white">{inv.planName}</span>
+                        </div>
+                        <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[9px] font-bold text-emerald-400 uppercase">
+                          {inv.status}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 text-xs bg-black/30 p-2.5 rounded-xl border border-white/5">
+                        <div>
+                          <div className="text-[10px] text-slate-400">Principal Staked</div>
+                          <div className="font-bold font-mono text-white">${inv.depositAmount?.toLocaleString()}</div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] text-slate-400">Daily Return</div>
+                          <div className="font-bold font-mono text-emerald-400">+{inv.dailyRoi}</div>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between text-[11px] text-slate-400 border-t border-white/5 pt-2">
+                        <span>Duration: {inv.durationDays} Days</span>
+                        <span className="text-slate-300">Ends: {inv.endDate}</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="text-[0.65rem] text-slate-400 mt-0.5">Available Balance</div>
               </div>
-            ))}
+            ) : (
+              <div className="py-8 text-center space-y-3">
+                <div className="text-slate-400">No active investment plans currently running.</div>
+                <button
+                  type="button"
+                  onClick={onOpenStaking}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#ff7a00] to-amber-500 px-5 py-2 text-xs font-black text-white shadow-[0_0_15px_rgba(255,122,0,0.4)] hover:scale-105 transition-all cursor-pointer uppercase tracking-wider"
+                >
+                  <Flame size={14} className="fill-white" />
+                  <span>Explore Staking Plans (Up to 4.2%/day)</span>
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 6. REFERRAL PROGRAM TAB */}
+        {activeTab === 'referral' && (
+          <div className="rounded-2xl border border-white/10 bg-[#121639] p-4 flex flex-col lg:flex-row items-center justify-between gap-4">
+            <div className="space-y-1.5 text-left">
+              <div className="flex items-center gap-2">
+                <Gift size={18} className="text-[#ff7a00]" />
+                <span className="font-bold text-white text-sm">Affiliate Partner Program</span>
+                <span className="bg-[#ff7a00]/15 text-[#ff7a00] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#ff7a00]/30">
+                  10% Tier 1 Rewards
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 max-w-xl">
+                Earn daily recurring commissions by inviting colleagues and active traders to PUREX Exchange.
+              </p>
+              <div className="flex items-center gap-2 pt-1 font-mono text-xs text-slate-300">
+                <span>Your Invite Code: <strong className="text-[#ff7a00]">{userCode}</strong></span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={onOpenReferral}
+              className="rounded-full bg-gradient-to-r from-[#ff7a00] to-amber-500 px-6 py-2.5 text-xs font-black text-white shadow-[0_0_15px_rgba(255,122,0,0.4)] hover:scale-105 transition-all cursor-pointer uppercase tracking-wider shrink-0"
+            >
+              Open Referral Partner Dashboard
+            </button>
           </div>
         )}
       </div>

@@ -7,8 +7,8 @@ import {
   X,
   LogOut,
   ChevronDown,
-  Shield,
-  TrendingUp
+  LayoutDashboard,
+  Wallet
 } from 'lucide-react'
 import CoinLogo from './CoinLogo'
 import { navItems } from '../data/marketData'
@@ -40,13 +40,29 @@ function Navbar({ theme, setTheme }) {
     logout()
     setIsUserMenuOpen(false)
     setIsOpen(false)
-    navigate('/')
+    navigate('/login')
   }
+
+  // If authenticated, adapt navigation list so users aren't directed to unauthenticated landing page
+  const displayNavItems = isAuthenticated
+    ? [
+        { label: 'Dashboard', path: '/dashboard' },
+        { label: 'Markets', path: '/markets' },
+        { label: 'About Us', path: '/about' },
+        { label: 'Security', path: '/security' },
+        { label: 'Support', path: '/support' },
+      ]
+    : navItems
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#141838]/90 backdrop-blur-xl">
-      <nav className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-3.5 sm:px-6 lg:px-10">
-        <NavLink to="/" className="flex items-center gap-2.5" aria-label="PUREX Exchange home">
+      <nav className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-3 sm:px-6 lg:px-10">
+        {/* Brand Logo - Navigates to /dashboard if logged in, / if guest */}
+        <NavLink
+          to={isAuthenticated ? '/dashboard' : '/'}
+          className="flex items-center gap-2.5"
+          aria-label="PUREX Exchange home"
+        >
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-[0_0_15px_rgba(255,122,0,0.5)]">
             <span className="font-black text-white text-base">P</span>
           </div>
@@ -55,12 +71,14 @@ function Navbar({ theme, setTheme }) {
               <span>PUREX</span>
               <span className="h-1.5 w-1.5 rounded-full bg-[#ff7a00]"></span>
             </div>
-            <div className="text-[0.55rem] font-bold tracking-[0.25em] text-slate-400">CRYPTO TERMINAL</div>
+            <div className="text-[0.55rem] font-bold tracking-[0.25em] text-slate-400">
+              {isAuthenticated ? 'USER DASHBOARD' : 'CRYPTO TERMINAL'}
+            </div>
           </div>
         </NavLink>
 
-        <div className="hidden items-center gap-8 lg:flex">
-          {navItems.map((item) => (
+        <div className="hidden items-center gap-7 lg:flex">
+          {displayNavItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
@@ -83,18 +101,18 @@ function Navbar({ theme, setTheme }) {
         {/* Desktop Actions */}
         <div className="hidden items-center gap-4 lg:flex">
           {isAuthenticated && user ? (
-            /* Authenticated User Menu */
+            /* Authenticated User Menu (Clean - No Moderator Panel) */
             <div className="relative" ref={userMenuRef}>
               <button
                 type="button"
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                 className="flex items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.06] py-1.5 px-3.5 hover:border-[#ff7a00]/50 transition-all cursor-pointer"
               >
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#ff7a00] text-white font-bold text-xs">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-[#ff7a00] to-amber-500 text-white font-bold text-xs">
                   {user.fullName ? user.fullName[0].toUpperCase() : 'U'}
                 </div>
                 <div className="text-left text-xs leading-tight">
-                  <div className="font-bold text-white max-w-[110px] truncate">
+                  <div className="font-bold text-white max-w-[120px] truncate">
                     {user.fullName || user.email.split('@')[0]}
                   </div>
                 </div>
@@ -105,26 +123,22 @@ function Navbar({ theme, setTheme }) {
               {isUserMenuOpen && (
                 <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-white/15 bg-[#171b3c] p-3 shadow-[0_20px_50px_rgba(0,0,0,0.9)] backdrop-blur-2xl z-50">
                   <div className="border-b border-white/10 pb-3 mb-2 px-1">
-                    <div className="text-xs font-bold text-white">{user.fullName || 'Trader Account'}</div>
+                    <div className="text-xs font-bold text-white">{user.fullName || 'Active Trader'}</div>
                     <div className="text-[11px] text-slate-400 font-mono truncate">{user.email}</div>
+                    <div className="mt-1.5 flex items-center justify-between text-[10px] bg-black/40 px-2 py-1 rounded-lg border border-white/5">
+                      <span className="text-slate-400">Total Portfolio:</span>
+                      <span className="font-bold text-emerald-400 font-mono">${(user.totalBalance ?? 10000).toLocaleString()} USDT</span>
+                    </div>
                   </div>
 
                   <div className="space-y-1">
                     <Link
-                      to="/trade"
+                      to="/dashboard"
                       onClick={() => setIsUserMenuOpen(false)}
                       className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-white hover:bg-white/10 transition-colors"
                     >
-                      <TrendingUp size={14} className="text-[#ff7a00]" />
-                      <span>Trading Terminal</span>
-                    </Link>
-                    <Link
-                      to="/admin"
-                      onClick={() => setIsUserMenuOpen(false)}
-                      className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-white hover:bg-white/10 transition-colors"
-                    >
-                      <Shield size={14} className="text-[#ff7a00]" />
-                      <span>Moderator & Admin</span>
+                      <LayoutDashboard size={14} className="text-[#ff7a00]" />
+                      <span>User Dashboard</span>
                     </Link>
                   </div>
 
@@ -142,7 +156,7 @@ function Navbar({ theme, setTheme }) {
               )}
             </div>
           ) : (
-            /* AGE Style: Login link + Orange Pill Button */
+            /* Guest Actions */
             <div className="flex items-center gap-4">
               <Link
                 to="/login"
@@ -154,7 +168,7 @@ function Navbar({ theme, setTheme }) {
                 to="/signup"
                 className="rounded-full bg-gradient-to-r from-[#ff7a00] to-[#ff9500] px-6 py-2.5 text-xs font-bold text-white shadow-[0_0_20px_rgba(255,122,0,0.5)] hover:shadow-[0_0_30px_rgba(255,122,0,0.75)] hover:scale-[1.03] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
               >
-                Become a Pro
+                Register
               </Link>
             </div>
           )}
@@ -195,7 +209,7 @@ function Navbar({ theme, setTheme }) {
       {isOpen && (
         <div className="border-t border-white/10 bg-[#11142c] lg:hidden shadow-2xl">
           <div className="mx-auto flex max-w-[1440px] flex-col gap-2 px-4 py-4 sm:px-6">
-            {navItems.map((item) => (
+            {displayNavItems.map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
@@ -215,16 +229,16 @@ function Navbar({ theme, setTheme }) {
                 <div className="flex items-center justify-between px-2">
                   <div className="text-xs font-bold text-white">{user.fullName || user.email}</div>
                   <div className="text-xs font-mono font-bold text-emerald-400">
-                    ${(user.totalBalance || 0).toLocaleString()}
+                    ${(user.totalBalance ?? 10000).toLocaleString()}
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <Link
-                    to="/trade"
+                    to="/dashboard"
                     onClick={() => setIsOpen(false)}
                     className="flex-1 rounded-xl bg-gradient-to-r from-[#ff7a00] to-[#ff9500] text-center text-xs font-bold py-2.5 text-white shadow-[0_0_15px_rgba(255,122,0,0.4)]"
                   >
-                    Trade
+                    User Dashboard
                   </Link>
                   <button
                     type="button"
@@ -249,7 +263,7 @@ function Navbar({ theme, setTheme }) {
                   onClick={() => setIsOpen(false)}
                   className="flex-1 rounded-xl bg-gradient-to-r from-[#ff7a00] to-[#ff9500] py-3 text-center text-xs font-black text-white shadow-[0_0_15px_rgba(255,122,0,0.4)] uppercase tracking-wider"
                 >
-                  Become a Pro
+                  Register
                 </Link>
               </div>
             )}

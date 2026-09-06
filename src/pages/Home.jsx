@@ -1,3 +1,5 @@
+import { Navigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import LiveNetworkBackground from '../components/home/LiveNetworkBackground'
 import HeroCommandCenter from '../components/home/HeroCommandCenter'
 import LiveActivityFeed from '../components/home/LiveActivityFeed'
@@ -10,6 +12,12 @@ import HomeFaqSection from '../components/home/HomeFaqSection'
 import TerminalCTA from '../components/home/TerminalCTA'
 
 function Home() {
+  const { isAuthenticated } = useAuth()
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />
+  }
+
   return (
     <main className="relative min-h-screen bg-[#11142c] text-slate-100 overflow-x-hidden">
       {/* 1. Interactive Ambient Cosmic Canvas & Starry Diamond Background */}

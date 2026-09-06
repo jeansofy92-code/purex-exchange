@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, Navigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   User,
@@ -26,7 +26,7 @@ import { useAuth } from '../context/AuthContext'
 
 export default function Signup() {
   const navigate = useNavigate()
-  const { signup, isLoading } = useAuth()
+  const { signup, isAuthenticated, isLoading } = useAuth()
 
   // Form State
   const [fullName, setFullName] = useState('')
@@ -42,6 +42,10 @@ export default function Signup() {
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />
+  }
 
   // Password strength calculation
   const getPasswordStrength = (pwd) => {
@@ -108,10 +112,10 @@ export default function Signup() {
     try {
       const res = await signup(fullName, email, password, phone, referralCode)
       if (res.success) {
-        setSuccessMessage('Account successfully created! Redirecting to trading terminal...')
+        setSuccessMessage('Account successfully created! Redirecting to user dashboard...')
         setTimeout(() => {
-          navigate('/trade')
-        }, 900)
+          navigate('/dashboard')
+        }, 800)
       } else {
         setErrorMessage(res.error || 'Failed to register account. Please try again.')
       }

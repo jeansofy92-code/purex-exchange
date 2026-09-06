@@ -1,12 +1,14 @@
 import {
   ChevronDown,
   Wallet,
-  PlusCircle,
   ArrowUpRight,
   ArrowDownRight,
+  ArrowDownLeft,
+  Flame,
+  Repeat,
+  Gift
 } from 'lucide-react'
 import CoinLogo from '../CoinLogo'
-
 
 function TradingHeader({
   activeCoin,
@@ -15,9 +17,13 @@ function TradingHeader({
   priceFlash,
   tradeMode,
   setTradeMode,
-  balances,
-  onAddDemoFunds,
+  balances = { USDT: 10000 },
   onOpenPairSelector,
+  onOpenStaking,
+  onOpenDeposit,
+  onOpenWithdraw,
+  onOpenConvert,
+  onOpenReferral,
 }) {
   const isPositive = activeCoin.rawChange24h >= 0
   const formattedPrice = currentPrice.toLocaleString('en-US', {
@@ -27,14 +33,14 @@ function TradingHeader({
 
   return (
     <header className="border-b border-white/10 bg-[#0f132e]/95 backdrop-blur-xl px-4 py-2.5 sm:px-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         {/* Left: Pair Picker & Mode Switcher */}
-        <div className="flex items-center gap-3 sm:gap-5 flex-wrap">
+        <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
           {/* Pair Picker Button */}
           <button
             type="button"
             onClick={onOpenPairSelector}
-            className="flex items-center gap-2.5 rounded-xl border border-white/15 bg-white/[0.04] px-3.5 py-1.5 hover:border-[#ff7a00]/50 hover:bg-white/[0.08] transition-all group"
+            className="flex items-center gap-2.5 rounded-xl border border-white/15 bg-white/[0.04] px-3.5 py-1.5 hover:border-[#ff7a00]/50 hover:bg-white/[0.08] transition-all group cursor-pointer"
           >
             <CoinLogo symbol={activeSymbol} size={24} />
             <div className="text-left">
@@ -53,7 +59,7 @@ function TradingHeader({
             <button
               type="button"
               onClick={() => setTradeMode('spot')}
-              className={`px-3 py-1 rounded-md transition-all ${
+              className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
                 tradeMode === 'spot'
                   ? 'bg-[#ff7a00] text-white shadow-[0_0_12px_rgba(255,122,0,0.35)]'
                   : 'text-slate-400 hover:text-white'
@@ -64,7 +70,7 @@ function TradingHeader({
             <button
               type="button"
               onClick={() => setTradeMode('futures')}
-              className={`px-3 py-1 rounded-md transition-all ${
+              className={`px-3 py-1 rounded-md transition-all cursor-pointer ${
                 tradeMode === 'futures'
                   ? 'bg-[#ff7a00] text-white shadow-[0_0_12px_rgba(255,122,0,0.35)]'
                   : 'text-slate-400 hover:text-white'
@@ -100,46 +106,89 @@ function TradingHeader({
           </div>
         </div>
 
-        {/* Center/Right: 24h Stats Feed */}
-        <div className="hidden xl:flex items-center gap-6 text-xs text-slate-400">
+        {/* Center: 24h Stats Feed */}
+        <div className="hidden 2xl:flex items-center gap-5 text-xs text-slate-400">
           <div>
             <div className="text-[0.65rem] uppercase font-bold text-slate-400/80">24h High</div>
             <div className="text-white font-semibold">${activeCoin.high24h || 'N/A'}</div>
           </div>
-          <div className="h-6 w-[1px] bg-white/10" />
+          <div className="h-5 w-[1px] bg-white/10" />
           <div>
             <div className="text-[0.65rem] uppercase font-bold text-slate-400/80">24h Low</div>
             <div className="text-white font-semibold">${activeCoin.low24h || 'N/A'}</div>
           </div>
-          <div className="h-6 w-[1px] bg-white/10" />
+          <div className="h-5 w-[1px] bg-white/10" />
           <div>
-            <div className="text-[0.65rem] uppercase font-bold text-slate-400/80">24h Volume ({activeSymbol})</div>
+            <div className="text-[0.65rem] uppercase font-bold text-slate-400/80">24h Vol</div>
             <div className="text-white font-semibold">{activeCoin.volume24h}</div>
-          </div>
-          <div className="h-6 w-[1px] bg-white/10" />
-          <div>
-            <div className="text-[0.65rem] uppercase font-bold text-slate-400/80">Funding / Countdown</div>
-            <div className="text-emerald-400 font-semibold">0.0100% <span className="text-slate-400 font-normal">/ 03:42:15</span></div>
           </div>
         </div>
 
-        {/* Right: Wallet Balance & Demo Capital Button */}
-        <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 rounded-xl bg-white/[0.03] border border-white/10 px-3 py-1.5 text-xs">
-            <Wallet size={14} className="text-[#ff7a00]" />
-            <span className="text-slate-400">Avail:</span>
-            <span className="font-bold text-white">${balances.USDT.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT</span>
-          </div>
-
+        {/* Right Action Bar: Stake Now + Deposit + Withdraw + Convert + Referrals + Balance */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Stake Now Button (Glowing Orange) */}
           <button
             type="button"
-            onClick={onAddDemoFunds}
-            className="flex items-center gap-1.5 rounded-full border border-[#ff7a00] bg-gradient-to-r from-[#ff7a00] to-[#ff9500] px-3.5 py-1.5 text-xs font-bold text-white shadow-[0_0_15px_rgba(255,122,0,0.35)] hover:from-[#ff9500] hover:to-[#ffaa33] hover:shadow-[0_0_20px_rgba(255,122,0,0.5)] transition-all cursor-pointer"
-            title="Add $10,000 demo funds for instant practice trading"
+            onClick={onOpenStaking}
+            className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#ff7a00] to-amber-500 px-3.5 py-1.5 text-xs font-black text-white shadow-[0_0_18px_rgba(255,122,0,0.5)] hover:scale-[1.03] active:scale-[0.98] transition-all cursor-pointer uppercase tracking-wider"
+            title="View high-yield investment plans & stake daily returns"
           >
-            <PlusCircle size={14} />
-            <span>+ $10K Demo Funds</span>
+            <Flame size={14} className="fill-white" />
+            <span>Stake Now</span>
           </button>
+
+          {/* Deposit Button */}
+          <button
+            type="button"
+            onClick={onOpenDeposit}
+            className="flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/15 px-3 py-1.5 text-xs font-bold text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all cursor-pointer"
+            title="Deposit funds into your wallet"
+          >
+            <ArrowDownLeft size={13} />
+            <span>Deposit</span>
+          </button>
+
+          {/* Withdraw Button */}
+          <button
+            type="button"
+            onClick={onOpenWithdraw}
+            className="flex items-center gap-1 rounded-full border border-white/15 bg-white/[0.05] px-3 py-1.5 text-xs font-bold text-slate-200 hover:border-white/30 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
+            title="Withdraw crypto to external wallet"
+          >
+            <ArrowUpRight size={13} />
+            <span>Withdraw</span>
+          </button>
+
+          {/* Convert Button */}
+          <button
+            type="button"
+            onClick={onOpenConvert}
+            className="flex items-center gap-1 rounded-full border border-white/15 bg-white/[0.05] px-3 py-1.5 text-xs font-bold text-slate-200 hover:border-[#ff7a00]/40 hover:text-[#ff7a00] transition-all cursor-pointer"
+            title="Instant 0% fee crypto swap"
+          >
+            <Repeat size={13} />
+            <span>Convert</span>
+          </button>
+
+          {/* Referral Button */}
+          <button
+            type="button"
+            onClick={onOpenReferral}
+            className="flex items-center gap-1 rounded-full border border-purple-500/40 bg-purple-500/15 px-3 py-1.5 text-xs font-bold text-purple-300 hover:bg-purple-500 hover:text-white transition-all cursor-pointer"
+            title="Referral link & partner commissions"
+          >
+            <Gift size={13} />
+            <span className="hidden sm:inline">Referral</span>
+          </button>
+
+          {/* Balance Pill */}
+          <div className="flex items-center gap-1.5 rounded-xl bg-white/[0.04] border border-white/10 px-3 py-1.5 text-xs">
+            <Wallet size={13} className="text-[#ff7a00]" />
+            <span className="text-slate-400 hidden sm:inline">Avail:</span>
+            <span className="font-bold text-white font-mono">
+              ${(balances.USDT ?? 10000).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
+            </span>
+          </div>
         </div>
       </div>
     </header>

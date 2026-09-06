@@ -11,13 +11,28 @@ import OrderForm from '../components/trading/OrderForm'
 import TradingBottomTabs from '../components/trading/TradingBottomTabs'
 import PairSelectorModal from '../components/trading/PairSelectorModal'
 
+// Dashboard action modals
+import StakingModal from '../components/dashboard/StakingModal'
+import DepositModal from '../components/dashboard/DepositModal'
+import WithdrawModal from '../components/dashboard/WithdrawModal'
+import ConvertModal from '../components/dashboard/ConvertModal'
+import ReferralModal from '../components/dashboard/ReferralModal'
+
 function Trade() {
   const [searchParams, setSearchParams] = useSearchParams()
   const pairParam = searchParams.get('pair') || 'BTC_USDT'
   const initialSymbol = pairParam.split('_')[0] || 'BTC'
 
+  // Modals state
   const [isPairModalOpen, setIsPairModalOpen] = useState(false)
+  const [isStakingModalOpen, setIsStakingModalOpen] = useState(false)
+  const [isDepositModalOpen, setIsDepositModalOpen] = useState(false)
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false)
+  const [isConvertModalOpen, setIsConvertModalOpen] = useState(false)
+  const [isReferralModalOpen, setIsReferralModalOpen] = useState(false)
+
   const [selectedBookPrice, setSelectedBookPrice] = useState(null)
+  const [dashboardToast, setDashboardToast] = useState(null)
 
   const {
     activeSymbol,
@@ -43,7 +58,6 @@ function Trade() {
     placeOrder,
     cancelOrder,
     closePosition,
-    addDemoFunds,
     toastMessage,
     coinsList,
   } = useTradingEngine(initialSymbol)
@@ -63,9 +77,14 @@ function Trade() {
     setSearchParams({ pair: `${sym}_USDT` })
   }
 
+  const triggerToast = (msg, type = 'success') => {
+    setDashboardToast({ msg, type })
+    setTimeout(() => setDashboardToast(null), 4000)
+  }
+
   return (
     <main className="flex flex-col min-h-screen bg-[#0c0e22] text-white">
-      {/* Top Trading Header Bar */}
+      {/* Top Trading & Dashboard Header Bar */}
       <TradingHeader
         activeCoin={activeCoin}
         activeSymbol={activeSymbol}
@@ -74,8 +93,12 @@ function Trade() {
         tradeMode={tradeMode}
         setTradeMode={setTradeMode}
         balances={balances}
-        onAddDemoFunds={addDemoFunds}
         onOpenPairSelector={() => setIsPairModalOpen(true)}
+        onOpenStaking={() => setIsStakingModalOpen(true)}
+        onOpenDeposit={() => setIsDepositModalOpen(true)}
+        onOpenWithdraw={() => setIsWithdrawModalOpen(true)}
+        onOpenConvert={() => setIsConvertModalOpen(true)}
+        onOpenReferral={() => setIsReferralModalOpen(true)}
       />
 
       {/* Main Terminal Grid */}
@@ -120,7 +143,7 @@ function Trade() {
         </div>
       </div>
 
-      {/* Bottom Panel: Positions, Open Orders, Trade History & Wallet Balances */}
+      {/* Bottom Panel: Positions, Open Orders, Trade History, Assets, Staking & Referrals */}
       <TradingBottomTabs
         positions={positions}
         openOrders={openOrders}
@@ -128,6 +151,11 @@ function Trade() {
         balances={balances}
         onCancelOrder={cancelOrder}
         onClosePosition={closePosition}
+        onOpenStaking={() => setIsStakingModalOpen(true)}
+        onOpenDeposit={() => setIsDepositModalOpen(true)}
+        onOpenWithdraw={() => setIsWithdrawModalOpen(true)}
+        onOpenConvert={() => setIsConvertModalOpen(true)}
+        onOpenReferral={() => setIsReferralModalOpen(true)}
       />
 
       {/* Pair Switcher Modal */}
@@ -139,28 +167,73 @@ function Trade() {
         onSelectPair={handleSelectPair}
       />
 
-      {/* Real-time Order Action Toast */}
+      {/* 1. Staking & Investment Plans Modal */}
+      <StakingModal
+        isOpen={isStakingModalOpen}
+        onClose={() => setIsStakingModalOpen(false)}
+        availableBalance={balances.USDT ?? 10000}
+        onStakeSuccess={(inv) => {
+          triggerToast(`Staking plan '${inv.planName}' activated! Daily yield will accrue automatically.`, 'success')
+        }}
+      />
+
+      {/* 2. Deposit Modal */}
+      <DepositModal
+        isOpen={isDepositModalOpen}
+        onClose={() => setIsDepositModalOpen(false)}
+        onDepositSubmitted={(dep) => {
+          triggerToast(`Deposit of $${dep.amount.toLocaleString()} submitted for automated clearance!`, 'success')
+        }}
+      />
+
+      {/* 3. Withdraw Modal */}
+      <WithdrawModal
+        isOpen={isWithdrawModalOpen}
+        onClose={() => setIsWithdrawModalOpen(false)}
+        availableBalance={balances.USDT ?? 10000}
+        onWithdrawSubmitted={(wth) => {
+          triggerToast(`Withdrawal of ${wth.amount} ${wth.asset} submitted! Instant broadcast pending.`, 'success')
+        }}
+      />
+
+      {/* 4. Convert Modal */}
+      <ConvertModal
+        isOpen={isConvertModalOpen}
+        onClose={() => setIsConvertModalOpen(false)}
+        balances={balances}
+        onConvertSuccess={(swap) => {
+          triggerToast(`Converted ${swap.fromAmount} ${swap.fromCoin} to ${swap.toCoin}!`, 'success')
+        }}
+      />
+
+      {/* 5. Referral Partner Modal */}
+      <ReferralModal
+        isOpen={isReferralModalOpen}
+        onClose={() => setIsReferralModalOpen(false)}
+      />
+
+      {/* Action Toast Notifications */}
       <AnimatePresence>
-        {toastMessage && (
+        {(dashboardToast || toastMessage) && (
           <motion.div
             initial={{ opacity: 0, y: 30, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-2xl border px-5 py-3.5 shadow-[0_16px_36px_rgba(0,0,0,0.8)] backdrop-blur-xl ${
-              toastMessage.type === 'error'
+              (dashboardToast?.type === 'error' || toastMessage?.type === 'error')
                 ? 'border-rose-500/40 bg-[#2b1016]/95 text-rose-400'
-                : toastMessage.type === 'warning'
+                : (dashboardToast?.type === 'warning' || toastMessage?.type === 'warning')
                 ? 'border-amber-500/40 bg-[#2b2010]/95 text-amber-400'
                 : 'border-[#ff7a00]/40 bg-[#221738]/95 text-[#ff7a00]'
             }`}
           >
-            {toastMessage.type === 'error' ? (
+            {(dashboardToast?.type === 'error' || toastMessage?.type === 'error') ? (
               <AlertCircle size={18} />
             ) : (
               <CheckCircle2 size={18} />
             )}
             <div className="text-xs font-bold tracking-wide text-white">
-              {toastMessage.msg}
+              {dashboardToast?.msg || toastMessage?.msg}
             </div>
           </motion.div>
         )}
