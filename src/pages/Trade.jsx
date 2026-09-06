@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle2, AlertCircle } from 'lucide-react'
 
 import { useTradingEngine } from '../hooks/useTradingEngine'
+import UserDashboardHeader from '../components/dashboard/UserDashboardHeader'
 import TradingHeader from '../components/trading/TradingHeader'
 import TradingChart from '../components/trading/TradingChart'
 import OrderBook from '../components/trading/OrderBook'
@@ -17,6 +18,7 @@ import DepositModal from '../components/dashboard/DepositModal'
 import WithdrawModal from '../components/dashboard/WithdrawModal'
 import ConvertModal from '../components/dashboard/ConvertModal'
 import ReferralModal from '../components/dashboard/ReferralModal'
+import TransactionHistoryModal from '../components/dashboard/TransactionHistoryModal'
 
 function Trade() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -30,6 +32,8 @@ function Trade() {
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false)
   const [isConvertModalOpen, setIsConvertModalOpen] = useState(false)
   const [isReferralModalOpen, setIsReferralModalOpen] = useState(false)
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   const [selectedBookPrice, setSelectedBookPrice] = useState(null)
   const [dashboardToast, setDashboardToast] = useState(null)
@@ -84,7 +88,32 @@ function Trade() {
 
   return (
     <main className="flex flex-col min-h-screen bg-[#0c0e22] text-white">
-      {/* Top Trading & Dashboard Header Bar */}
+      {/* 1. TOP SECTION: User Portfolio Overview, Balance, History, Action Buttons & Active Staking Plans */}
+      <UserDashboardHeader
+        key={refreshKey}
+        balances={balances}
+        onOpenDeposit={() => setIsDepositModalOpen(true)}
+        onOpenWithdraw={() => setIsWithdrawModalOpen(true)}
+        onOpenConvert={() => setIsConvertModalOpen(true)}
+        onOpenStaking={() => setIsStakingModalOpen(true)}
+        onOpenReferral={() => setIsReferralModalOpen(true)}
+        onOpenHistory={() => setIsHistoryModalOpen(true)}
+      />
+
+      {/* 2. SECTION DIVIDER / LIVE TRADING TERMINAL HEADER */}
+      <div className="bg-[#0b0e26] px-4 py-2 sm:px-6 border-b border-white/10 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+            Live Market Terminal & Candlestick Analysis
+          </h2>
+        </div>
+        <div className="text-[11px] text-slate-400 font-semibold hidden sm:block">
+          Sub-millisecond institutional pricing & execution
+        </div>
+      </div>
+
+      {/* Top Trading Pair Bar */}
       <TradingHeader
         activeCoin={activeCoin}
         activeSymbol={activeSymbol}
@@ -101,7 +130,7 @@ function Trade() {
         onOpenReferral={() => setIsReferralModalOpen(true)}
       />
 
-      {/* Main Terminal Grid */}
+      {/* Main Terminal Grid (Chart & Order Book moved below user balance & active plans) */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-[1fr_300px_320px] xl:grid-cols-[1fr_320px_340px]">
         {/* Column 1: Main Candlestick Chart Area */}
         <div className="flex flex-col min-h-[460px] lg:min-h-[580px]">
@@ -173,6 +202,7 @@ function Trade() {
         onClose={() => setIsStakingModalOpen(false)}
         availableBalance={balances.USDT ?? 10000}
         onStakeSuccess={(inv) => {
+          setRefreshKey((k) => k + 1)
           triggerToast(`Staking plan '${inv.planName}' activated! Daily yield will accrue automatically.`, 'success')
         }}
       />
@@ -210,6 +240,13 @@ function Trade() {
       <ReferralModal
         isOpen={isReferralModalOpen}
         onClose={() => setIsReferralModalOpen(false)}
+      />
+
+      {/* 6. Transaction & Settlement History Modal */}
+      <TransactionHistoryModal
+        isOpen={isHistoryModalOpen}
+        onClose={() => setIsHistoryModalOpen(false)}
+        tradeHistory={tradeHistory}
       />
 
       {/* Action Toast Notifications */}
