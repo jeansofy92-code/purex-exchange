@@ -45,9 +45,9 @@ export default function InteractiveSteps() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.2}>
-          <div className="finantech-card" style={{
-            padding: '2.5rem',
-            backgroundColor: '#111111'
+          <div className="finantech-card-white" style={{
+            padding: '2.75rem',
+            border: '1px solid #e7e7e7'
           }}>
             <div style={{
               display: 'grid',
@@ -55,16 +55,17 @@ export default function InteractiveSteps() {
               gap: '3rem',
               alignItems: 'center'
             }}>
-              {/* Left Side: Interactive Step Visual */}
+              {/* Left Side: Interactive Step Visual (Dark Contrast Box) */}
               <div style={{
-                backgroundColor: '#0c0c0c',
+                backgroundColor: '#060606',
                 border: '1px solid #232323',
-                borderRadius: '18px',
-                padding: '2rem',
-                minHeight: '340px',
+                borderRadius: '20px',
+                padding: '2.25rem',
+                minHeight: '360px',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.12)'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{
@@ -78,7 +79,7 @@ export default function InteractiveSteps() {
                   }}>
                     STEP {steps[activeTab].step} PREVIEW
                   </span>
-                  <span style={{ fontSize: '0.8rem', color: '#717172' }}>
+                  <span style={{ fontSize: '0.8rem', color: '#939393' }}>
                     {steps[activeTab].tag}
                   </span>
                 </div>
@@ -88,7 +89,7 @@ export default function InteractiveSteps() {
                     <div style={{ fontSize: '0.8rem', color: '#717172', textTransform: 'uppercase' }}>SELECTED PLAN</div>
                     <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff', marginTop: '0.25rem' }}>Pro Quant Bot Tier</div>
                     <div style={{ fontSize: '1rem', color: '#B0F127', fontWeight: 700, marginTop: '0.25rem' }}>2.4% Daily Yield | $1,000 – $4,999</div>
-                    <div style={{ marginTop: '1rem', padding: '0.75rem', backgroundColor: '#141414', borderRadius: '10px', fontSize: '0.8rem', color: '#939393' }}>
+                    <div style={{ marginTop: '1.25rem', padding: '0.85rem', backgroundColor: '#141414', borderRadius: '10px', fontSize: '0.85rem', color: '#e7e7e7', border: '1px solid #232323' }}>
                       ✓ Multi-exchange arbitrage cluster activated
                     </div>
                   </div>
@@ -99,7 +100,7 @@ export default function InteractiveSteps() {
                     <div style={{ fontSize: '0.8rem', color: '#717172', textTransform: 'uppercase' }}>LIVE BOT ARBITRAGE STREAM</div>
                     <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#B0F127', marginTop: '0.25rem' }}>14 Trades Executed / Sec</div>
                     <div style={{ fontSize: '0.9rem', color: '#fff', marginTop: '0.25rem' }}>Binance ↔ Coinbase spread: +0.64% profit</div>
-                    <div style={{ marginTop: '1rem', padding: '0.75rem', backgroundColor: '#141414', borderRadius: '10px', fontSize: '0.8rem', color: '#939393' }}>
+                    <div style={{ marginTop: '1.25rem', padding: '0.85rem', backgroundColor: '#141414', borderRadius: '10px', fontSize: '0.85rem', color: '#e7e7e7', border: '1px solid #232323' }}>
                       ✓ 100% Capital Risk-Shield Enabled
                     </div>
                   </div>
@@ -110,18 +111,18 @@ export default function InteractiveSteps() {
                     <div style={{ fontSize: '0.8rem', color: '#717172', textTransform: 'uppercase' }}>DAILY ACCRUED BALANCE</div>
                     <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#B0F127', marginTop: '0.25rem' }}>+$240.00 Credited</div>
                     <div style={{ fontSize: '0.9rem', color: '#fff', marginTop: '0.25rem' }}>Next payout in: 06h 42m 18s</div>
-                    <div style={{ marginTop: '1rem', padding: '0.75rem', backgroundColor: '#141414', borderRadius: '10px', fontSize: '0.8rem', color: '#939393' }}>
+                    <div style={{ marginTop: '1.25rem', padding: '0.85rem', backgroundColor: '#141414', borderRadius: '10px', fontSize: '0.85rem', color: '#e7e7e7', border: '1px solid #232323' }}>
                       ✓ Instant withdraw to USDT/BTC/ETH anytime
                     </div>
                   </div>
                 )}
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: '#B0F127' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: '#B0F127' }}>
                   <ShieldCheck size={16} /> 100% Capital Guaranteed & Insured
                 </div>
               </div>
 
-              {/* Right Side: Step Tabs List */}
+              {/* Right Side: Step Tabs List with High Contrast */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {steps.map((item, idx) => {
                   const isActive = activeTab === idx
@@ -132,13 +133,14 @@ export default function InteractiveSteps() {
                       key={idx}
                       onClick={() => setActiveTab(idx)}
                       style={{
-                        padding: '1.25rem 1.5rem',
+                        padding: '1.35rem 1.6rem',
                         borderRadius: '16px',
-                        backgroundColor: isActive ? '#181818' : '#111111',
+                        backgroundColor: isActive ? '#060606' : '#f8f8f8',
                         border: '1px solid',
-                        borderColor: isActive ? '#B0F127' : '#232323',
+                        borderColor: isActive ? '#060606' : '#e8e8e8',
                         cursor: 'pointer',
-                        transition: 'all 0.25s ease'
+                        transition: 'all 0.25s ease',
+                        boxShadow: isActive ? '0 8px 20px rgba(0,0,0,0.12)' : 'none'
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
@@ -146,17 +148,22 @@ export default function InteractiveSteps() {
                           <span style={{
                             fontSize: '0.95rem',
                             fontWeight: 800,
-                            color: isActive ? '#B0F127' : '#717172'
+                            color: isActive ? '#B0F127' : '#939393'
                           }}>
                             {item.step}
                           </span>
-                          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff' }}>
+                          <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: isActive ? '#ffffff' : '#060606' }}>
                             {item.title}
                           </h3>
                         </div>
-                        <Icon size={20} color={isActive ? '#B0F127' : '#717172'} />
+                        <Icon size={20} color={isActive ? '#B0F127' : '#555555'} />
                       </div>
-                      <p style={{ fontSize: '0.875rem', color: '#939393', lineHeight: 1.6, paddingLeft: '1.75rem' }}>
+                      <p style={{
+                        fontSize: '0.875rem',
+                        color: isActive ? '#c5c5c5' : '#555555',
+                        lineHeight: 1.6,
+                        paddingLeft: '1.75rem'
+                      }}>
                         {item.desc}
                       </p>
                     </div>

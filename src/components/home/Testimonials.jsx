@@ -52,77 +52,86 @@ export default function Testimonials() {
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
           gap: '2rem'
         }}>
-          {reviews.map((rev, idx) => (
-            <ScrollReveal key={idx} delay={0.1 * idx}>
-              <div 
-                className="finantech-card"
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  padding: '2.25rem',
-                  backgroundColor: '#111111',
-                  height: '100%'
-                }}
-              >
-                <div>
-                  <div style={{ display: 'flex', gap: '0.25rem', marginBottom: '1.25rem' }}>
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={16} fill="#B0F127" color="#B0F127" />
-                    ))}
-                  </div>
+          {reviews.map((rev, idx) => {
+            const isWhite = idx === 1
 
-                  <p style={{
-                    color: '#e7e7e7',
-                    fontSize: '0.95rem',
-                    lineHeight: 1.65,
-                    marginBottom: '1.75rem'
-                  }}>
-                    "{rev.quote}"
-                  </p>
-                </div>
-
-                <div>
-                  <div style={{
-                    backgroundColor: '#181818',
-                    border: '1px solid #282828',
-                    borderRadius: '10px',
-                    padding: '0.6rem 0.85rem',
+            return (
+              <ScrollReveal key={idx} delay={0.1 * idx}>
+                <div 
+                  className={isWhite ? "finantech-card-white" : "finantech-card"}
+                  style={{
                     display: 'flex',
+                    flexDirection: 'column',
                     justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '1.25rem',
-                    fontSize: '0.8rem'
-                  }}>
-                    <span style={{ color: '#939393' }}>{rev.deposit}</span>
-                    <strong style={{ color: '#B0F127', fontFamily: 'var(--font-mono)' }}>{rev.earned}</strong>
+                    padding: '2.25rem',
+                    height: '100%',
+                    backgroundColor: isWhite ? '#ffffff' : '#111111',
+                    border: isWhite ? '1px solid #e7e7e7' : '1px solid #232323',
+                    boxShadow: isWhite ? '0 12px 30px rgba(0,0,0,0.1)' : 'none'
+                  }}
+                >
+                  <div>
+                    <div style={{ display: 'flex', gap: '0.25rem', marginBottom: '1.25rem' }}>
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={16} fill={isWhite ? "#060606" : "#B0F127"} color={isWhite ? "#060606" : "#B0F127"} />
+                      ))}
+                    </div>
+
+                    <p style={{
+                      color: isWhite ? '#060606' : '#e7e7e7',
+                      fontSize: '0.95rem',
+                      lineHeight: 1.65,
+                      marginBottom: '1.75rem',
+                      fontWeight: isWhite ? 500 : 400
+                    }}>
+                      "{rev.quote}"
+                    </p>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <div>
                     <div style={{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '50%',
-                      backgroundColor: '#181818',
-                      border: '1px solid #282828',
-                      color: '#B0F127',
+                      backgroundColor: isWhite ? '#f5f5f5' : '#181818',
+                      border: '1px solid',
+                      borderColor: isWhite ? '#e5e5e5' : '#282828',
+                      borderRadius: '10px',
+                      padding: '0.6rem 0.85rem',
                       display: 'flex',
+                      justifyContent: 'space-between',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      fontWeight: 800,
-                      fontSize: '0.85rem'
+                      marginBottom: '1.25rem',
+                      fontSize: '0.8rem'
                     }}>
-                      {rev.avatar}
+                      <span style={{ color: isWhite ? '#555555' : '#939393' }}>{rev.deposit}</span>
+                      <strong style={{ color: isWhite ? '#060606' : '#B0F127', fontFamily: 'var(--font-mono)' }}>{rev.earned}</strong>
                     </div>
-                    <div>
-                      <div style={{ fontWeight: 700, color: '#fff', fontSize: '0.95rem' }}>{rev.name}</div>
-                      <div style={{ fontSize: '0.75rem', color: '#717172' }}>{rev.role}</div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <div style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '50%',
+                        backgroundColor: isWhite ? '#060606' : '#181818',
+                        border: '1px solid',
+                        borderColor: isWhite ? '#060606' : '#282828',
+                        color: isWhite ? '#ffffff' : '#B0F127',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 800,
+                        fontSize: '0.85rem'
+                      }}>
+                        {rev.avatar}
+                      </div>
+                      <div>
+                        <div style={{ fontWeight: 700, color: isWhite ? '#060606' : '#fff', fontSize: '0.95rem' }}>{rev.name}</div>
+                        <div style={{ fontSize: '0.75rem', color: isWhite ? '#717172' : '#717172' }}>{rev.role}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </ScrollReveal>
-          ))}
+              </ScrollReveal>
+            )
+          })}
         </div>
       </div>
     </section>

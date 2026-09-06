@@ -45,50 +45,54 @@ export default function RoiCalculator() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.2}>
-          <div className="finantech-card" style={{
-            backgroundColor: '#111111',
+          <div className="finantech-card-white" style={{
             padding: '3rem 2.5rem',
             maxWidth: '1080px',
             margin: '0 auto',
-            border: '1px solid #232323'
+            border: '1px solid #e7e7e7'
           }}>
-            {/* Plan Selector Tabs */}
+            {/* Plan Selector Tabs with High Contrast */}
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
               gap: '0.75rem',
               marginBottom: '2.5rem'
             }}>
-              {PACKAGES.map((pkg) => (
-                <button
-                  key={pkg.id}
-                  onClick={() => handlePlanChange(pkg.id)}
-                  style={{
-                    backgroundColor: selectedPlanId === pkg.id ? '#B0F127' : '#181818',
-                    color: selectedPlanId === pkg.id ? '#060606' : '#e7e7e7',
-                    border: '1px solid',
-                    borderColor: selectedPlanId === pkg.id ? '#B0F127' : '#282828',
-                    borderRadius: '12px',
-                    padding: '0.85rem 1rem',
-                    fontSize: '0.9rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '0.2rem'
-                  }}
-                >
-                  <span>{pkg.name}</span>
-                  <span style={{
-                    fontSize: '0.75rem',
-                    opacity: selectedPlanId === pkg.id ? 0.9 : 0.6
-                  }}>
-                    {pkg.dailyRoi}
-                  </span>
-                </button>
-              ))}
+              {PACKAGES.map((pkg) => {
+                const isSelected = selectedPlanId === pkg.id
+                return (
+                  <button
+                    key={pkg.id}
+                    onClick={() => handlePlanChange(pkg.id)}
+                    style={{
+                      backgroundColor: isSelected ? '#060606' : '#f5f5f5',
+                      color: isSelected ? '#ffffff' : '#060606',
+                      border: '1px solid',
+                      borderColor: isSelected ? '#060606' : '#e2e2e2',
+                      borderRadius: '12px',
+                      padding: '0.85rem 1rem',
+                      fontSize: '0.9rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: '0.2rem',
+                      boxShadow: isSelected ? '0 6px 16px rgba(0,0,0,0.15)' : 'none'
+                    }}
+                  >
+                    <span>{pkg.name}</span>
+                    <span style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      color: isSelected ? '#B0F127' : '#717172'
+                    }}>
+                      {pkg.dailyRoi}
+                    </span>
+                  </button>
+                )
+              })}
             </div>
 
             <div style={{
@@ -106,13 +110,13 @@ export default function RoiCalculator() {
                     alignItems: 'center',
                     marginBottom: '0.75rem'
                   }}>
-                    <label htmlFor={sliderId} style={{ fontSize: '0.9rem', color: '#939393', fontWeight: 600 }}>
+                    <label htmlFor={sliderId} style={{ fontSize: '0.9rem', color: '#555555', fontWeight: 700 }}>
                       Select Investment Capital:
                     </label>
                     <span style={{
                       fontSize: '1.75rem',
                       fontWeight: 800,
-                      color: '#B0F127',
+                      color: '#060606',
                       fontFamily: 'var(--font-mono)'
                     }}>
                       ${depositAmount.toLocaleString()}
@@ -131,8 +135,8 @@ export default function RoiCalculator() {
                       width: '100%',
                       height: '8px',
                       borderRadius: '4px',
-                      background: '#282828',
-                      accentColor: '#B0F127',
+                      background: '#e0e0e0',
+                      accentColor: '#060606',
                       cursor: 'pointer'
                     }}
                   />
@@ -151,31 +155,31 @@ export default function RoiCalculator() {
                 </div>
 
                 <div style={{
-                  backgroundColor: '#181818',
+                  backgroundColor: '#f8f8f8',
                   borderRadius: '16px',
                   padding: '1.5rem',
-                  border: '1px solid #232323',
+                  border: '1px solid #e8e8e8',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '0.85rem'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                    <span style={{ color: '#939393' }}>Selected Tier:</span>
-                    <strong style={{ color: '#fff' }}>{currentPlan.name}</strong>
+                    <span style={{ color: '#666666' }}>Selected Tier:</span>
+                    <strong style={{ color: '#060606' }}>{currentPlan.name}</strong>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                    <span style={{ color: '#939393' }}>Assigned Trading Engine:</span>
-                    <strong style={{ color: '#B0F127' }}>{currentPlan.tradingTeam}</strong>
+                    <span style={{ color: '#666666' }}>Assigned Trading Engine:</span>
+                    <strong style={{ color: '#060606', backgroundColor: '#e2f7b8', padding: '0.15rem 0.5rem', borderRadius: '6px' }}>{currentPlan.tradingTeam}</strong>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                    <span style={{ color: '#939393' }}>Capital Protection:</span>
-                    <strong style={{ color: '#fff', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                      <ShieldCheck size={14} color="#B0F127" /> 100% Insured SAFU
+                    <span style={{ color: '#666666' }}>Capital Protection:</span>
+                    <strong style={{ color: '#060606', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <ShieldCheck size={16} color="#05C168" /> 100% Insured SAFU
                     </strong>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                    <span style={{ color: '#939393' }}>Contract Duration:</span>
-                    <strong style={{ color: '#fff' }}>{currentPlan.duration}</strong>
+                    <span style={{ color: '#666666' }}>Contract Duration:</span>
+                    <strong style={{ color: '#060606' }}>{currentPlan.duration}</strong>
                   </div>
                 </div>
               </div>

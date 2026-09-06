@@ -85,6 +85,37 @@ export default function PhoneAppSection() {
                 </div>
               </div>
 
+              {/* Crisp White Stats Callout Card */}
+              <div className="finantech-card-white" style={{
+                padding: '1.25rem 1.5rem',
+                borderRadius: '16px',
+                marginBottom: '2rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '1rem',
+                border: '1px solid #e7e7e7',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.1)'
+              }}>
+                <div>
+                  <div style={{ fontSize: '0.75rem', color: '#717172', textTransform: 'uppercase', fontWeight: 700 }}>LIVE 24H BOT ARBITRAGE STATS</div>
+                  <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#060606', marginTop: '0.15rem' }}>
+                    184,290+ Trades Executed Today
+                  </div>
+                </div>
+                <div style={{
+                  backgroundColor: '#060606',
+                  color: '#B0F127',
+                  padding: '0.4rem 0.75rem',
+                  borderRadius: '8px',
+                  fontWeight: 800,
+                  fontSize: '0.85rem',
+                  fontFamily: 'var(--font-mono)'
+                }}>
+                  99.98% Win
+                </div>
+              </div>
+
               <a href="#packages" className="btn-primary">
                 Get Started with Purex
                 <ArrowRight size={18} strokeWidth={2.5} />

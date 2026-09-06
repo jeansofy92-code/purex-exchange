@@ -33,16 +33,15 @@ export default function FeatureGrid() {
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
           gap: '1.75rem'
         }}>
-          {/* Card 1: Large Featured */}
+          {/* Card 1: Large Featured - Signature White Card */}
           <ScrollReveal delay={0.1}>
-            <div className="finantech-card" style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div className="finantech-card-white" style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
                 <div style={{
                   width: '48px',
                   height: '48px',
                   borderRadius: '12px',
-                  backgroundColor: '#1c1c1c',
-                  border: '1px solid #282828',
+                  backgroundColor: '#060606',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -50,14 +49,14 @@ export default function FeatureGrid() {
                 }}>
                   <Zap size={24} color="#B0F127" strokeWidth={2.5} />
                 </div>
-                <h3 className="display-4" style={{ marginBottom: '0.75rem' }}>
+                <h3 className="display-4" style={{ marginBottom: '0.75rem', color: '#060606' }}>
                   Sub-20ms Arbitrage Execution
                 </h3>
-                <p style={{ color: '#939393', fontSize: '0.925rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+                <p style={{ color: '#555555', fontSize: '0.925rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
                   Our in-memory quant engine connects directly into major cryptocurrency exchange order books via co-located WebSocket and FIX gateways to capture momentary price discrepancies instantly.
                 </p>
               </div>
-              <a href="#how-it-works" style={{ color: '#B0F127', textDecoration: 'none', fontWeight: 700, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <a href="#how-it-works" style={{ color: '#060606', textDecoration: 'none', fontWeight: 800, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 Learn more <ArrowRight size={16} />
               </a>
             </div>
@@ -123,16 +122,15 @@ export default function FeatureGrid() {
             </div>
           </ScrollReveal>
 
-          {/* Card 4 */}
+          {/* Card 4 - Signature White Card */}
           <ScrollReveal delay={0.4}>
-            <div className="finantech-card" style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div className="finantech-card-white" style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
                 <div style={{
                   width: '48px',
                   height: '48px',
                   borderRadius: '12px',
-                  backgroundColor: '#1c1c1c',
-                  border: '1px solid #282828',
+                  backgroundColor: '#060606',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -140,14 +138,14 @@ export default function FeatureGrid() {
                 }}>
                   <BarChart3 size={24} color="#B0F127" strokeWidth={2.5} />
                 </div>
-                <h3 className="display-4" style={{ marginBottom: '0.75rem' }}>
+                <h3 className="display-4" style={{ marginBottom: '0.75rem', color: '#060606' }}>
                   Tiered Pro Quant Desks
                 </h3>
-                <p style={{ color: '#939393', fontSize: '0.925rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+                <p style={{ color: '#555555', fontSize: '0.925rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
                   Higher packages allocate institutional quantitative traders and dedicated flash-liquidity bots to trade wider multi-token triangular arbitrage pairs.
                 </p>
               </div>
-              <a href="#packages" style={{ color: '#B0F127', textDecoration: 'none', fontWeight: 700, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <a href="#packages" style={{ color: '#060606', textDecoration: 'none', fontWeight: 800, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 Learn more <ArrowRight size={16} />
               </a>
             </div>
