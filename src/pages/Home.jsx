@@ -6,7 +6,6 @@ import StakingYieldMatrix from '../components/home/StakingYieldMatrix'
 import CopyTradingLeaderboard from '../components/home/CopyTradingLeaderboard'
 import ProofOfReservesSecurity from '../components/home/ProofOfReservesSecurity'
 import HomeTestimonials from '../components/home/HomeTestimonials'
-import ProEcosystemSuite from '../components/home/ProEcosystemSuite'
 import HomeFaqSection from '../components/home/HomeFaqSection'
 import TerminalCTA from '../components/home/TerminalCTA'
 
@@ -36,16 +35,13 @@ function Home() {
         {/* 7. 100% Cryptographic Merkle Proof of Reserves & $125M SAFU Fortress */}
         <ProofOfReservesSecurity />
 
-        {/* 8. Omnichannel Pro Ecosystem (Desktop Terminal, Mobile App & REST/WS APIs) */}
-        <ProEcosystemSuite />
-
-        {/* 9. Verified Trader Testimonials & Quantitative Social Proof */}
+        {/* 8. Verified Trader Testimonials & Quantitative Social Proof */}
         <HomeTestimonials />
 
-        {/* 10. Frequently Asked Questions & 24/7 Human Help Desk */}
+        {/* 9. Frequently Asked Questions & 24/7 Human Help Desk */}
         <HomeFaqSection />
 
-        {/* 11. High-Conversion Terminal Call To Action */}
+        {/* 10. High-Conversion Terminal Call To Action */}
         <TerminalCTA />
       </div>
     </main>
