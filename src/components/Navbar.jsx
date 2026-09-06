@@ -1,125 +1,130 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Shield, Zap, TrendingUp, Menu, X, ArrowUpRight } from 'lucide-react'
+import { Menu, X, ArrowUpRight, ShieldCheck, Zap } from 'lucide-react'
+import PurexLogo from './PurexLogo'
 
 export default function Navbar() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
     <header style={{
       position: 'sticky',
       top: 0,
-      zIndex: 50,
+      zIndex: 100,
+      backgroundColor: 'rgba(6, 6, 6, 0.85)',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
-      background: 'rgba(8, 11, 17, 0.8)',
-      borderBottom: '1px solid rgba(255, 255, 255, 0.08)'
+      borderBottom: '1px solid #1a1a1a'
     }}>
-      <div style={{
-        maxWidth: '1280px',
-        margin: '0 auto',
-        padding: '1rem 1.5rem',
+      <div className="container-max" style={{
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        paddingTop: '1.1rem',
+        paddingBottom: '1.1rem'
       }}>
-        {/* Logo */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
-          <div style={{
-            width: '38px',
-            height: '38px',
-            borderRadius: '10px',
-            background: 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 0 16px rgba(0, 242, 254, 0.4)'
-          }}>
-            <Zap size={22} color="#050811" strokeWidth={2.5} />
-          </div>
-          <span style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.02em', color: '#fff' }}>
-            PUREX<span style={{ color: '#00f2fe' }}>.</span>
-          </span>
-          <span style={{
-            fontSize: '0.65rem',
-            background: 'rgba(0, 242, 254, 0.1)',
-            color: '#00f2fe',
-            border: '1px solid rgba(0, 242, 254, 0.3)',
-            padding: '0.15rem 0.45rem',
-            borderRadius: '999px',
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em'
-          }}>
-            v2.0 PRO
-          </span>
+        {/* Brand Logo */}
+        <Link to="/" style={{ textDecoration: 'none' }}>
+          <PurexLogo />
         </Link>
 
-        {/* Navigation Links */}
+        {/* Desktop Navigation Links */}
         <nav style={{
           display: 'none',
           alignItems: 'center',
-          gap: '2rem'
+          gap: '2.25rem'
         }} className="desktop-nav">
-          <Link to="/" style={{ color: '#f8fafc', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>
-            Home
-          </Link>
-          <a href="#markets" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500, transition: 'color 0.2s' }}>
-            Markets
+          <a href="#about" style={{ color: '#c5c5c5', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#c5c5c5'}>
+            About Purex
           </a>
-          <a href="#features" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500, transition: 'color 0.2s' }}>
-            Features
+          <a href="#how-it-works" style={{ color: '#c5c5c5', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#c5c5c5'}>
+            How It Works
           </a>
-          <a href="#security" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500, transition: 'color 0.2s' }}>
-            Security
+          <a href="#packages" style={{ color: '#c5c5c5', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#c5c5c5'}>
+            Investment Packages
+          </a>
+          <a href="#calculator" style={{ color: '#c5c5c5', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#c5c5c5'}>
+            ROI Calculator
+          </a>
+          <a href="#insurance" style={{ color: '#c5c5c5', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#c5c5c5'}>
+            100% Insurance
+          </a>
+          <a href="#faq" style={{ color: '#c5c5c5', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#c5c5c5'}>
+            FAQ
           </a>
         </nav>
 
-        {/* Header Actions */}
+        {/* Right CTA Actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <div style={{
-            display: 'flex',
+            display: 'none',
             alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.35rem 0.75rem',
+            gap: '0.45rem',
+            padding: '0.35rem 0.85rem',
             borderRadius: '999px',
-            background: 'rgba(0, 230, 118, 0.1)',
-            border: '1px solid rgba(0, 230, 118, 0.25)',
-            fontSize: '0.75rem',
-            color: '#00e676',
-            fontWeight: 600
-          }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#00e676', display: 'inline-block' }} />
-            99.99% Uptime
+            backgroundColor: '#141414',
+            border: '1px solid #282828',
+            fontSize: '0.8rem',
+            fontWeight: 600,
+            color: '#B0F127'
+          }} className="guarantee-pill">
+            <ShieldCheck size={15} color="#B0F127" />
+            100% Principal Guaranteed
           </div>
 
-          <button className="glow-btn" style={{ padding: '0.5rem 1.25rem', fontSize: '0.875rem' }}>
-            Launch App
-            <ArrowUpRight size={16} />
-          </button>
+          <a href="#packages" className="btn-primary" style={{ padding: '0.65rem 1.35rem', fontSize: '0.875rem' }}>
+            Start Earning
+            <ArrowUpRight size={16} strokeWidth={2.5} />
+          </a>
 
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          {/* Mobile Hamburger Toggle */}
+          <button 
+            onClick={() => setMobileOpen(!mobileOpen)}
             style={{
+              display: 'none',
               background: 'transparent',
               border: 'none',
               color: '#fff',
               cursor: 'pointer',
-              display: 'none'
+              padding: '0.25rem'
             }}
-            className="mobile-menu-btn"
+            className="mobile-toggle"
+            aria-label="Toggle menu"
           >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {mobileOpen ? <X size={26} color="#B0F127" /> : <Menu size={26} />}
           </button>
         </div>
       </div>
 
+      {/* Mobile Drawer Menu */}
+      {mobileOpen && (
+        <div style={{
+          backgroundColor: '#0c0c0c',
+          borderBottom: '1px solid #232323',
+          padding: '1.5rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.25rem'
+        }}>
+          <a href="#about" onClick={() => setMobileOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 600 }}>About Purex</a>
+          <a href="#how-it-works" onClick={() => setMobileOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 600 }}>How It Works</a>
+          <a href="#packages" onClick={() => setMobileOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 600 }}>Investment Packages</a>
+          <a href="#calculator" onClick={() => setMobileOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 600 }}>ROI Calculator</a>
+          <a href="#insurance" onClick={() => setMobileOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 600 }}>100% Capital Insurance</a>
+          <a href="#faq" onClick={() => setMobileOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 600 }}>FAQ</a>
+          <a href="#packages" onClick={() => setMobileOpen(false)} className="btn-primary" style={{ width: '100%', marginTop: '0.5rem' }}>
+            Choose an Investment Plan
+          </a>
+        </div>
+      )}
+
       <style>{`
-        @media (min-width: 768px) {
+        @media (min-width: 1024px) {
           .desktop-nav { display: flex !important; }
+          .guarantee-pill { display: flex !important; }
         }
-        @media (max-width: 767px) {
-          .mobile-menu-btn { display: block !important; }
+        @media (max-width: 1023px) {
+          .mobile-toggle { display: block !important; }
         }
       `}</style>
     </header>

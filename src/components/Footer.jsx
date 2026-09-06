@@ -1,84 +1,82 @@
-import { Zap, ShieldCheck, Cpu, ArrowUpRight } from 'lucide-react'
+import PurexLogo from './PurexLogo'
+import { ShieldCheck, Cpu, ArrowUpRight, Lock, CheckCircle2 } from 'lucide-react'
 
 export default function Footer() {
   return (
     <footer style={{
-      borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-      background: 'rgba(5, 8, 14, 0.9)',
-      padding: '4rem 1.5rem 2rem',
-      marginTop: 'auto',
-      position: 'relative'
+      backgroundColor: '#040404',
+      borderTop: '1px solid #1a1a1a',
+      paddingTop: '5rem',
+      paddingBottom: '2.5rem'
     }}>
-      <div style={{
-        maxWidth: '1280px',
-        margin: '0 auto'
-      }}>
+      <div className="container-max">
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '3rem',
-          marginBottom: '3rem'
+          gap: '3.5rem',
+          marginBottom: '4rem'
         }}>
-          {/* Brand Column */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-              <div style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '8px',
-                background: 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <Zap size={18} color="#050811" />
-              </div>
-              <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff' }}>
-                PUREX<span style={{ color: '#00f2fe' }}>.</span>
-              </span>
+          {/* Brand Col */}
+          <div style={{ maxWidth: '320px' }}>
+            <div style={{ marginBottom: '1.25rem' }}>
+              <PurexLogo size="md" />
             </div>
-            <p style={{ color: '#94a3b8', fontSize: '0.875rem', lineHeight: '1.6', marginBottom: '1.5rem' }}>
-              The next-generation ultra-low latency cryptocurrency exchange engineered for high-frequency algorithmic and spot trading.
+            <p style={{ color: '#939393', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+              The premier automated crypto arbitrage investment platform delivering daily returns through multi-exchange algorithmic bots and professional quant desks with 100% capital insurance.
             </p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <span style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontSize: '0.75rem',
-                color: '#94a3b8',
-                background: 'rgba(255, 255, 255, 0.04)',
-                padding: '0.35rem 0.65rem',
-                borderRadius: '6px',
-                border: '1px solid rgba(255, 255, 255, 0.08)'
-              }}>
-                <Cpu size={14} color="#00f2fe" /> Latency &lt; 25μs
-              </span>
-              <span style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontSize: '0.75rem',
-                color: '#94a3b8',
-                background: 'rgba(255, 255, 255, 0.04)',
-                padding: '0.35rem 0.65rem',
-                borderRadius: '6px',
-                border: '1px solid rgba(255, 255, 255, 0.08)'
-              }}>
-                <ShieldCheck size={14} color="#00e676" /> ISO/IEC 27001
-              </span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: '#B0F127' }}>
+                <ShieldCheck size={16} /> 100% Capital SAFU Insured
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: '#939393' }}>
+                <Cpu size={16} color="#B0F127" /> Latency: &lt; 20ms Flash-Router
+              </div>
             </div>
           </div>
 
-          {/* Products */}
+          {/* Investment Packages */}
           <div>
-            <h4 style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1.25rem' }}>
-              Products
+            <h4 style={{ color: '#fff', fontSize: '0.95rem', fontWeight: 700, marginBottom: '1.25rem', letterSpacing: '0.02em' }}>
+              Investment Packages
             </h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {['Spot Trading', 'Derivatives & Futures', 'Institutional Liquidity', 'Purex API v2', 'Staking & Earn'].map((item) => (
+              <li>
+                <a href="#packages" style={{ color: '#939393', textDecoration: 'none', fontSize: '0.875rem', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#939393'}>
+                  Starter Arbitrage (1.5% Daily)
+                </a>
+              </li>
+              <li>
+                <a href="#packages" style={{ color: '#939393', textDecoration: 'none', fontSize: '0.875rem', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#939393'}>
+                  Pro Quant Bot (2.4% Daily)
+                </a>
+              </li>
+              <li>
+                <a href="#packages" style={{ color: '#939393', textDecoration: 'none', fontSize: '0.875rem', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#939393'}>
+                  Elite Desk (3.5% Daily)
+                </a>
+              </li>
+              <li>
+                <a href="#packages" style={{ color: '#939393', textDecoration: 'none', fontSize: '0.875rem', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#939393'}>
+                  VIP Syndicate (4.8% Daily)
+                </a>
+              </li>
+              <li>
+                <a href="#calculator" style={{ color: '#B0F127', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600 }}>
+                  Calculate Profit Calculator →
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Platform & Technology */}
+          <div>
+            <h4 style={{ color: '#fff', fontSize: '0.95rem', fontWeight: 700, marginBottom: '1.25rem', letterSpacing: '0.02em' }}>
+              Platform & Quant Engine
+            </h4>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {['How Arbitrage Works', 'Multi-Exchange Routing', 'Proof of Reserves (PoR)', 'SAFU Insurance Fund', 'Liquidity Partners', 'API Documentation'].map((item) => (
                 <li key={item}>
-                  <a href="#" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '0.875rem', transition: 'color 0.2s' }}>
+                  <a href="#how-it-works" style={{ color: '#939393', textDecoration: 'none', fontSize: '0.875rem', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#939393'}>
                     {item}
                   </a>
                 </li>
@@ -86,31 +84,15 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Developers & Institutional */}
+          {/* Legal & Security */}
           <div>
-            <h4 style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1.25rem' }}>
-              Developers
+            <h4 style={{ color: '#fff', fontSize: '0.95rem', fontWeight: 700, marginBottom: '1.25rem', letterSpacing: '0.02em' }}>
+              Security & Compliance
             </h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {['REST & WebSocket API', 'FIX Protocol 4.4', 'SDK Documentation', 'Bug Bounty ($250k)', 'System Status'].map((item) => (
+              {['100% Capital Policy', 'MPC Cold Storage', 'ISO/IEC 27001 Security', 'Terms of Service', 'Privacy Policy', 'AML / KYC Compliance'].map((item) => (
                 <li key={item}>
-                  <a href="#" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '0.875rem', transition: 'color 0.2s' }}>
-                    {item}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Security & Support */}
-          <div>
-            <h4 style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1.25rem' }}>
-              Security & Legal
-            </h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {['Proof of Reserves (PoR)', 'Cold Storage Custody', 'Terms of Service', 'Privacy Policy', 'Compliance & AML'].map((item) => (
-                <li key={item}>
-                  <a href="#" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '0.875rem', transition: 'color 0.2s' }}>
+                  <a href="#insurance" style={{ color: '#939393', textDecoration: 'none', fontSize: '0.875rem', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#939393'}>
                     {item}
                   </a>
                 </li>
@@ -121,7 +103,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div style={{
-          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+          borderTop: '1px solid #141414',
           paddingTop: '2rem',
           display: 'flex',
           flexWrap: 'wrap',
@@ -129,14 +111,17 @@ export default function Footer() {
           justifyContent: 'space-between',
           gap: '1rem',
           fontSize: '0.8rem',
-          color: '#64748b'
+          color: '#717172'
         }}>
           <div>
-            © {new Date().getFullYear()} Purex Global Exchange Inc. All rights reserved.
+            © {new Date().getFullYear()} Purex Global Arbitrage Investment Ltd. All rights reserved.
           </div>
-          <div style={{ display: 'flex', gap: '1.5rem' }}>
-            <span>Network: <strong style={{ color: '#00e676' }}>Operational</strong></span>
-            <span>Block Time: <strong style={{ color: '#fff' }}>380ms</strong></span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#B0F127', display: 'inline-block' }} />
+              Arbitrage Engine: <strong style={{ color: '#B0F127' }}>Online (100% Uptime)</strong>
+            </span>
+            <span>Security: <strong style={{ color: '#fff' }}>256-bit AES</strong></span>
           </div>
         </div>
       </div>
