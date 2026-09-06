@@ -173,47 +173,56 @@ function TradingBottomTabs({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5 font-medium">
-                  {positions.map((pos) => (
-                    <tr key={pos.id} className="hover:bg-white/[0.02]">
-                      <td className="py-2.5">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`px-1.5 py-0.5 rounded text-[0.65rem] font-bold ${
-                              pos.side === 'Long'
-                                ? 'bg-emerald-500/20 text-emerald-400'
-                                : 'bg-rose-500/20 text-rose-400'
-                            }`}
-                          >
-                            {pos.side} {pos.leverage}x
+                  {positions.map((pos) => {
+                    const isPositive = pos.positive ?? (typeof pos.pnl === 'number' ? pos.pnl >= 0 : !String(pos.pnl || '').startsWith('-'))
+                    const marginDisplay = typeof pos.margin === 'string'
+                      ? (pos.margin.startsWith('$') ? pos.margin : `$${pos.margin}`)
+                      : `$${(pos.margin || 0).toFixed(2)}`
+                    const entryPriceDisplay = typeof pos.entryPrice === 'number' ? pos.entryPrice.toLocaleString() : (pos.entryPrice || '0.00')
+                    const markPriceDisplay = typeof pos.markPrice === 'number' ? pos.markPrice.toLocaleString() : (pos.markPrice || '0.00')
+                    const liqPriceDisplay = typeof pos.liqPrice === 'number' ? pos.liqPrice.toLocaleString() : (pos.liqPrice || '0.00')
+                    const pnlDisplay = typeof pos.pnl === 'string'
+                      ? `${pos.pnl} (${pos.pnlPercent || '0.00%'})`
+                      : `${(pos.pnl || 0) >= 0 ? '+' : ''}$${(pos.pnl || 0).toFixed(2)} (${(pos.pnlPercent || 0) >= 0 ? '+' : ''}${(pos.pnlPercent || 0).toFixed(2)}%)`
+
+                    return (
+                      <tr key={pos.id} className="hover:bg-white/[0.02]">
+                        <td className="py-2.5">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`px-1.5 py-0.5 rounded text-[0.65rem] font-bold ${
+                                pos.side === 'Long'
+                                  ? 'bg-emerald-500/20 text-emerald-400'
+                                  : 'bg-rose-500/20 text-rose-400'
+                              }`}
+                            >
+                              {pos.side} {pos.leverage}x
+                            </span>
+                            <span className="font-bold text-white">{pos.symbol ? `${pos.symbol}/USDT` : pos.pair || 'BTC/USDT'}</span>
+                          </div>
+                        </td>
+                        <td className="py-2.5 text-white">{pos.size}</td>
+                        <td className="py-2.5 text-slate-300">${entryPriceDisplay}</td>
+                        <td className="py-2.5 text-white font-bold">${markPriceDisplay}</td>
+                        <td className="py-2.5 text-amber-400">${liqPriceDisplay}</td>
+                        <td className="py-2.5 text-slate-300">{marginDisplay}</td>
+                        <td className="py-2.5">
+                          <span className={`font-bold ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
+                            {pnlDisplay}
                           </span>
-                          <span className="font-bold text-white">{pos.symbol}/USDT</span>
-                        </div>
-                      </td>
-                      <td className="py-2.5 text-white">{pos.size} {pos.symbol}</td>
-                      <td className="py-2.5 text-slate-300">${(pos.entryPrice || 0).toLocaleString()}</td>
-                      <td className="py-2.5 text-white font-bold">${(pos.markPrice || 0).toLocaleString()}</td>
-                      <td className="py-2.5 text-amber-400">${(pos.liqPrice || 0).toLocaleString()}</td>
-                      <td className="py-2.5 text-slate-300">${(pos.margin || 0).toFixed(2)}</td>
-                      <td className="py-2.5">
-                        <span
-                          className={`font-bold ${
-                            (pos.pnl || 0) >= 0 ? 'text-emerald-400' : 'text-rose-400'
-                          }`}
-                        >
-                          {(pos.pnl || 0) >= 0 ? '+' : ''}${(pos.pnl || 0).toFixed(2)} ({(pos.pnlPercent || 0) >= 0 ? '+' : ''}{(pos.pnlPercent || 0).toFixed(2)}%)
-                        </span>
-                      </td>
-                      <td className="py-2.5 text-right">
-                        <button
-                          type="button"
-                          onClick={() => onClosePosition(pos.id)}
-                          className="px-2.5 py-1 rounded-md bg-rose-500/15 border border-rose-500/30 text-rose-400 hover:bg-rose-500/30 text-[0.68rem] font-bold transition-all cursor-pointer"
-                        >
-                          Market Close
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="py-2.5 text-right">
+                          <button
+                            type="button"
+                            onClick={() => onClosePosition(pos.id)}
+                            className="px-2.5 py-1 rounded-md bg-rose-500/15 border border-rose-500/30 text-rose-400 hover:bg-rose-500/30 text-[0.68rem] font-bold transition-all cursor-pointer"
+                          >
+                            Market Close
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             ) : (
