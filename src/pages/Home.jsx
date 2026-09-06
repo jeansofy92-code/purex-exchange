@@ -11,14 +11,8 @@ import TestimonialsWebflow from '../components/home/TestimonialsWebflow'
 import CtaBannerWebflow from '../components/home/CtaBannerWebflow'
 
 function Home() {
-  const { isAuthenticated } = useAuth()
-
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />
-  }
-
   return (
-    <main className="min-h-screen bg-[#0a0c1a] text-slate-100 overflow-x-hidden selection:bg-[#356df1] selection:text-white">
+    <main className="min-h-screen bg-[#0c0d14] text-slate-100 overflow-x-hidden selection:bg-[#356df1] selection:text-white">
       {/* 1. Hero Section matching cryptotemplate.webflow.io */}
       <HomeHeroWebflow />
 

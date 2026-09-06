@@ -55,44 +55,47 @@ function Navbar({ theme, setTheme }) {
     : navItems
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#141838]/90 backdrop-blur-xl">
-      <nav className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-3 sm:px-6 lg:px-10">
-        {/* Brand Logo - Navigates to /dashboard if logged in, / if guest */}
+    <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#0c0d14]/90 backdrop-blur-xl">
+      <nav className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-3.5 sm:px-6 lg:px-10 font-sans">
+        {/* Brand Logo */}
         <NavLink
           to={isAuthenticated ? '/dashboard' : '/'}
-          className="flex items-center gap-2.5"
+          className="flex items-center gap-3 group"
           aria-label="PUREX Exchange home"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-[0_0_15px_rgba(255,122,0,0.5)]">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#356df1] text-white shadow-[0_0_15px_rgba(53,109,241,0.4)]">
             <span className="font-black text-white text-base">P</span>
           </div>
           <div className="leading-none">
-            <div className="text-[1.15rem] font-black tracking-wider text-white flex items-center gap-1">
-              <span>PUREX</span>
-              <span className="h-1.5 w-1.5 rounded-full bg-[#ff7a00]"></span>
+            <div className="text-[1.15rem] font-bold tracking-tight text-white flex items-center gap-1">
+              <span>PureX</span>
+              <span className="h-1.5 w-1.5 rounded-full bg-[#356df1]"></span>
             </div>
-            <div className="text-[0.55rem] font-bold tracking-[0.25em] text-slate-400">
-              {isAuthenticated ? 'USER DASHBOARD' : 'CRYPTO TERMINAL'}
+            <div className="text-[0.6rem] font-semibold tracking-wider text-[#8f9ca9]">
+              {isAuthenticated ? 'USER DASHBOARD' : 'CRYPTO TRADING'}
             </div>
           </div>
         </NavLink>
 
-        <div className="hidden items-center gap-7 lg:flex">
+        {/* Desktop Nav Links */}
+        <div className="hidden items-center gap-8 lg:flex">
           {displayNavItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
               className={({ isActive }) =>
-                `relative px-1 py-1.5 text-sm font-semibold transition-colors ${
-                  isActive ? 'text-white' : 'text-slate-300 hover:text-white'
+                `text-sm font-medium transition-colors ${
+                  isActive ? 'text-white' : 'text-[#8f9ca9] hover:text-white'
                 }`
               }
             >
               {({ isActive }) => (
-                <>
+                <div className="relative py-1">
                   {item.label}
-                  {isActive && <span className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-[#ff7a00]" aria-hidden="true" />}
-                </>
+                  {isActive && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-[#356df1]" aria-hidden="true" />
+                  )}
+                </div>
               )}
             </NavLink>
           ))}
@@ -101,14 +104,14 @@ function Navbar({ theme, setTheme }) {
         {/* Desktop Actions */}
         <div className="hidden items-center gap-4 lg:flex">
           {isAuthenticated && user ? (
-            /* Authenticated User Menu (Clean - No Moderator Panel) */
+            /* Authenticated User Menu */
             <div className="relative" ref={userMenuRef}>
               <button
                 type="button"
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.06] py-1.5 px-3.5 hover:border-[#ff7a00]/50 transition-all cursor-pointer"
+                className="flex items-center gap-2.5 rounded-full border border-white/10 bg-[#151726] py-1.5 px-3.5 hover:border-[#356df1]/50 transition-all cursor-pointer"
               >
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-[#ff7a00] to-amber-500 text-white font-bold text-xs">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#356df1] text-white font-bold text-xs">
                   {user.fullName ? user.fullName[0].toUpperCase() : 'U'}
                 </div>
                 <div className="text-left text-xs leading-tight">
@@ -116,17 +119,17 @@ function Navbar({ theme, setTheme }) {
                     {user.fullName || user.email.split('@')[0]}
                   </div>
                 </div>
-                <ChevronDown size={14} className={`text-slate-400 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown size={14} className={`text-[#8f9ca9] transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {/* User Dropdown Menu */}
               {isUserMenuOpen && (
-                <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-white/15 bg-[#171b3c] p-3 shadow-[0_20px_50px_rgba(0,0,0,0.9)] backdrop-blur-2xl z-50">
+                <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-white/10 bg-[#151726] p-3 shadow-[0_20px_50px_rgba(0,0,0,0.9)] backdrop-blur-2xl z-50">
                   <div className="border-b border-white/10 pb-3 mb-2 px-1">
                     <div className="text-xs font-bold text-white">{user.fullName || 'Active Trader'}</div>
-                    <div className="text-[11px] text-slate-400 font-mono truncate">{user.email}</div>
+                    <div className="text-[11px] text-[#8f9ca9] font-mono truncate">{user.email}</div>
                     <div className="mt-1.5 flex items-center justify-between text-[10px] bg-black/40 px-2 py-1 rounded-lg border border-white/5">
-                      <span className="text-slate-400">Total Portfolio:</span>
+                      <span className="text-[#8f9ca9]">Total Portfolio:</span>
                       <span className="font-bold text-emerald-400 font-mono">${(user.totalBalance ?? 10000).toLocaleString()} USDT</span>
                     </div>
                   </div>
@@ -135,9 +138,9 @@ function Navbar({ theme, setTheme }) {
                     <Link
                       to="/dashboard"
                       onClick={() => setIsUserMenuOpen(false)}
-                      className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-white hover:bg-white/10 transition-colors"
+                      className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-white hover:bg-white/5 transition-colors"
                     >
-                      <LayoutDashboard size={14} className="text-[#ff7a00]" />
+                      <LayoutDashboard size={14} className="text-[#356df1]" />
                       <span>User Dashboard</span>
                     </Link>
                   </div>
@@ -160,26 +163,26 @@ function Navbar({ theme, setTheme }) {
             <div className="flex items-center gap-4">
               <Link
                 to="/login"
-                className="text-sm font-semibold text-white hover:text-amber-300 transition-colors"
+                className="text-sm font-medium text-[#8f9ca9] hover:text-white transition-colors"
               >
-                Login
+                Sign In
               </Link>
               <Link
                 to="/signup"
-                className="rounded-full bg-gradient-to-r from-[#ff7a00] to-[#ff9500] px-6 py-2.5 text-xs font-bold text-white shadow-[0_0_20px_rgba(255,122,0,0.5)] hover:shadow-[0_0_30px_rgba(255,122,0,0.75)] hover:scale-[1.03] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+                className="rounded-full bg-[#356df1] px-6 py-2.5 text-xs font-bold text-white shadow-[0_0_20px_rgba(53,109,241,0.3)] hover:bg-[#2d5cd0] hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
               >
-                Register
+                Get Started
               </Link>
             </div>
           )}
 
           <button
             type="button"
-            className="theme-toggle-btn"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-[#151726] text-[#8f9ca9] hover:text-white hover:border-white/20 transition-all"
             onClick={toggleTheme}
             aria-label="Toggle theme"
           >
-            {theme === 'dark' ? <SunMedium size={16} /> : <MoonStar size={16} />}
+            {theme === 'dark' ? <SunMedium size={15} /> : <MoonStar size={15} />}
           </button>
         </div>
 
@@ -187,36 +190,36 @@ function Navbar({ theme, setTheme }) {
         <div className="flex items-center gap-3 lg:hidden">
           <button
             type="button"
-            className="theme-toggle-btn"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-[#151726] text-[#8f9ca9] hover:text-white transition-all"
             onClick={toggleTheme}
             aria-label="Toggle theme"
           >
-            {theme === 'dark' ? <SunMedium size={16} /> : <MoonStar size={16} />}
+            {theme === 'dark' ? <SunMedium size={15} /> : <MoonStar size={15} />}
           </button>
           <button
             type="button"
-            className="mobile-menu-btn"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-[#151726] text-white"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Open menu"
             aria-expanded={isOpen}
           >
-            {isOpen ? <X size={20} /> : <Menu size={20} />}
+            {isOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </nav>
 
       {/* Mobile Drawer */}
       {isOpen && (
-        <div className="border-t border-white/10 bg-[#11142c] lg:hidden shadow-2xl">
-          <div className="mx-auto flex max-w-[1440px] flex-col gap-2 px-4 py-4 sm:px-6">
+        <div className="border-t border-white/10 bg-[#0c0d14] lg:hidden shadow-2xl">
+          <div className="mx-auto flex max-w-[1440px] flex-col gap-2 px-4 py-4 sm:px-6 font-sans">
             {displayNavItems.map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
                 onClick={() => setIsOpen(false)}
                 className={({ isActive }) =>
-                  `rounded-xl px-3 py-2 text-sm font-semibold transition-colors ${
-                    isActive ? 'bg-[#1c2146] text-[#ff7a00]' : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                  `rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+                    isActive ? 'bg-[#151726] text-[#356df1]' : 'text-[#8f9ca9] hover:bg-white/5 hover:text-white'
                   }`
                 }
               >
@@ -236,7 +239,7 @@ function Navbar({ theme, setTheme }) {
                   <Link
                     to="/dashboard"
                     onClick={() => setIsOpen(false)}
-                    className="flex-1 rounded-xl bg-gradient-to-r from-[#ff7a00] to-[#ff9500] text-center text-xs font-bold py-2.5 text-white shadow-[0_0_15px_rgba(255,122,0,0.4)]"
+                    className="flex-1 rounded-xl bg-[#356df1] text-center text-xs font-bold py-2.5 text-white shadow-[0_0_15px_rgba(53,109,241,0.3)]"
                   >
                     User Dashboard
                   </Link>
@@ -254,16 +257,16 @@ function Navbar({ theme, setTheme }) {
                 <Link
                   to="/login"
                   onClick={() => setIsOpen(false)}
-                  className="flex-1 rounded-xl border border-white/15 bg-[#171b3c] py-3 text-center text-xs font-bold text-white shadow hover:border-[#ff7a00]/50"
+                  className="flex-1 rounded-full border border-white/10 bg-[#151726] py-2.5 text-center text-xs font-medium text-white shadow hover:border-white/20"
                 >
-                  Log In
+                  Sign In
                 </Link>
                 <Link
                   to="/signup"
                   onClick={() => setIsOpen(false)}
-                  className="flex-1 rounded-xl bg-gradient-to-r from-[#ff7a00] to-[#ff9500] py-3 text-center text-xs font-black text-white shadow-[0_0_15px_rgba(255,122,0,0.4)] uppercase tracking-wider"
+                  className="flex-1 rounded-full bg-[#356df1] py-2.5 text-center text-xs font-bold text-white shadow-[0_0_15px_rgba(53,109,241,0.3)]"
                 >
-                  Register
+                  Get Started
                 </Link>
               </div>
             )}
