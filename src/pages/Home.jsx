@@ -1,15 +1,14 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import LiveNetworkBackground from '../components/home/LiveNetworkBackground'
-import HeroCommandCenter from '../components/home/HeroCommandCenter'
-import LiveActivityFeed from '../components/home/LiveActivityFeed'
-import MarketDiscoveryHub from '../components/home/MarketDiscoveryHub'
+import HomeHeroWebflow from '../components/home/HomeHeroWebflow'
+import CompaniesTicker from '../components/home/CompaniesTicker'
+import SectionAbout from '../components/home/SectionAbout'
+import SpecsOne from '../components/home/SpecsOne'
+import SpecsTwo from '../components/home/SpecsTwo'
 import StakingYieldMatrix from '../components/home/StakingYieldMatrix'
-import CopyTradingLeaderboard from '../components/home/CopyTradingLeaderboard'
-import ProofOfReservesSecurity from '../components/home/ProofOfReservesSecurity'
-import HomeTestimonials from '../components/home/HomeTestimonials'
-import HomeFaqSection from '../components/home/HomeFaqSection'
-import TerminalCTA from '../components/home/TerminalCTA'
+import GetStartedPreview from '../components/home/GetStartedPreview'
+import TestimonialsWebflow from '../components/home/TestimonialsWebflow'
+import CtaBannerWebflow from '../components/home/CtaBannerWebflow'
 
 function Home() {
   const { isAuthenticated } = useAuth()
@@ -19,39 +18,33 @@ function Home() {
   }
 
   return (
-    <main className="relative min-h-screen bg-[#11142c] text-slate-100 overflow-x-hidden">
-      {/* 1. Interactive Ambient Cosmic Canvas & Starry Diamond Background */}
-      <LiveNetworkBackground />
+    <main className="min-h-screen bg-[#0a0c1a] text-slate-100 overflow-x-hidden selection:bg-[#356df1] selection:text-white">
+      {/* 1. Hero Section matching cryptotemplate.webflow.io */}
+      <HomeHeroWebflow />
 
-      {/* Foreground Content Shell - Tight, dense spacing */}
-      <div className="relative z-10 space-y-3 sm:space-y-4 pb-8">
-        {/* 2. Institutional Hero Command Center with Live Interactive Terminal */}
-        <HeroCommandCenter />
+      {/* 2. Companies Featured On */}
+      <CompaniesTicker />
 
-        {/* 3. Live Payouts & Settlement Stream */}
-        <LiveActivityFeed />
+      {/* 3. More Than a Typical Crypto Exchange (5-Card Bento Grid) */}
+      <SectionAbout />
 
-        {/* 4. Complete Market Discovery Hub, Fear/Greed Sentiment & Network Gas Pulse */}
-        <MarketDiscoveryHub />
+      {/* 4. Specs 1: A Crypto Platform from the Future */}
+      <SpecsOne />
 
-        {/* 5. Interactive High-Yield Staking & Algorithmic Wealth Matrix */}
-        <StakingYieldMatrix />
+      {/* 5. Specs 2: Built on a Robust and Powerful Platform */}
+      <SpecsTwo />
 
-        {/* 6. Algorithmic Copy Trading & Hedge Fund Masters Leaderboard */}
-        <CopyTradingLeaderboard />
+      {/* 6. Autonomous Cyber Cat Trading Bots & Staking Yield Matrix */}
+      <StakingYieldMatrix />
 
-        {/* 7. 100% Cryptographic Merkle Proof of Reserves & $125M SAFU Fortress */}
-        <ProofOfReservesSecurity />
+      {/* 7. Get Started Today (3-Step Roadmap & Preview) */}
+      <GetStartedPreview />
 
-        {/* 8. Verified Trader Testimonials & Quantitative Social Proof */}
-        <HomeTestimonials />
+      {/* 8. User Testimonials & Social Proof */}
+      <TestimonialsWebflow />
 
-        {/* 9. Frequently Asked Questions & 24/7 Human Help Desk */}
-        <HomeFaqSection />
-
-        {/* 10. High-Conversion Terminal Call To Action */}
-        <TerminalCTA />
-      </div>
+      {/* 9. High-Impact CTA Banner */}
+      <CtaBannerWebflow />
     </main>
   )
 }
