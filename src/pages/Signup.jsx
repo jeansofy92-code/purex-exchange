@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   User,
   Mail,
+  Phone,
   Lock,
   Eye,
   EyeOff,
@@ -17,53 +18,30 @@ import {
   Zap,
   Globe,
   TrendingUp,
-  Clock,
-  Copy,
-  RefreshCw,
-  ArrowLeft,
-  ShieldCheck
+  Tag,
+  RefreshCw
 } from 'lucide-react'
 import CoinLogo from '../components/CoinLogo'
 import { useAuth } from '../context/AuthContext'
 
 export default function Signup() {
   const navigate = useNavigate()
-  const { sendSignupCode, verifySignupCode, isLoading } = useAuth()
-
-  // Steps: 'form' | 'otp'
-  const [step, setStep] = useState('form')
+  const { signup, isLoading } = useAuth()
 
   // Form State
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [referralCode, setReferralCode] = useState('')
   const [agreeTerms, setAgreeTerms] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-  // OTP Verification State
-  const [otp, setOtp] = useState(['', '', '', '', '', ''])
-  const [devCode, setDevCode] = useState(null)
-  const [copiedDevCode, setCopiedDevCode] = useState(false)
-  const [cooldown, setCooldown] = useState(0)
-
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
-  const [isVerifying, setIsVerifying] = useState(false)
-
-  const otpInputsRef = useRef([])
-
-  // Resend Cooldown Timer
-  useEffect(() => {
-    let timer
-    if (cooldown > 0) {
-      timer = setInterval(() => {
-        setCooldown((prev) => prev - 1)
-      }, 1000)
-    }
-    return () => clearInterval(timer)
-  }, [cooldown])
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Password strength calculation
   const getPasswordStrength = (pwd) => {
@@ -90,19 +68,24 @@ export default function Signup() {
 
   const pwdStrength = getPasswordStrength(password)
 
-  // STEP 1: Submit form & Request 6-digit Email Verification Code
-  const handleRequestCode = async (e) => {
+  // Submit registration form
+  const handleRegister = async (e) => {
     if (e) e.preventDefault()
     setErrorMessage('')
     setSuccessMessage('')
 
     if (!fullName.trim()) {
-      setErrorMessage('Please enter your full name or entity name.')
+      setErrorMessage('Please enter your full name.')
       return
     }
 
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setErrorMessage('Please enter a valid email address.')
+      return
+    }
+
+    if (!phone.trim()) {
+      setErrorMessage('Please enter your phone number.')
       return
     }
 
@@ -121,84 +104,21 @@ export default function Signup() {
       return
     }
 
-    const res = await sendSignupCode(fullName, email, password)
-    if (res.success) {
-      setDevCode(res.devCode)
-      setSuccessMessage(res.message || `Verification code sent to ${email}`)
-      setCooldown(45)
-      setStep('otp')
-    } else {
-      setErrorMessage(res.error || 'Failed to dispatch verification code. Please try again.')
-    }
-  }
-
-  // STEP 2: Handle OTP input changes
-  const handleOtpChange = (index, value) => {
-    const cleanVal = value.replace(/\D/g, '')
-    const newOtp = [...otp]
-
-    if (cleanVal.length > 1) {
-      // Pasted full 6-digit code
-      const pastedDigits = cleanVal.slice(0, 6).split('')
-      pastedDigits.forEach((digit, i) => {
-        if (i < 6) newOtp[i] = digit
-      })
-      setOtp(newOtp)
-      const nextIndex = Math.min(pastedDigits.length, 5)
-      otpInputsRef.current[nextIndex]?.focus()
-      return
-    }
-
-    newOtp[index] = cleanVal
-    setOtp(newOtp)
-
-    if (cleanVal && index < 5) {
-      otpInputsRef.current[index + 1]?.focus()
-    }
-  }
-
-  const handleOtpKeyDown = (index, e) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      otpInputsRef.current[index - 1]?.focus()
-    }
-  }
-
-  // Quick fill helper for sandbox / testing
-  const handleQuickFillOtp = () => {
-    if (!devCode) return
-    const digits = devCode.split('')
-    setOtp(digits)
-    setCopiedDevCode(true)
-    setTimeout(() => setCopiedDevCode(false), 2000)
-    otpInputsRef.current[5]?.focus()
-  }
-
-  // STEP 2: Verify OTP and finalize registration
-  const handleVerifySignup = async (e) => {
-    if (e) e.preventDefault()
-    setErrorMessage('')
-    const codeString = otp.join('')
-
-    if (codeString.length < 6) {
-      setErrorMessage('Please enter the complete 6-digit verification code.')
-      return
-    }
-
-    setIsVerifying(true)
+    setIsSubmitting(true)
     try {
-      const res = await verifySignupCode(email, codeString)
+      const res = await signup(fullName, email, password, phone, referralCode)
       if (res.success) {
-        setSuccessMessage('Email verified! Account successfully created. Redirecting...')
+        setSuccessMessage('Account successfully created! Redirecting to trading terminal...')
         setTimeout(() => {
           navigate('/trade')
         }, 900)
       } else {
-        setErrorMessage(res.error || 'Invalid or expired verification code.')
+        setErrorMessage(res.error || 'Failed to register account. Please try again.')
       }
     } catch {
-      setErrorMessage('Verification failed. Please try again.')
+      setErrorMessage('Registration error. Please check your connection and try again.')
     } finally {
-      setIsVerifying(false)
+      setIsSubmitting(false)
     }
   }
 
@@ -207,8 +127,10 @@ export default function Signup() {
     const randomSuffix = Math.floor(1000 + Math.random() * 9000)
     setFullName(`Trader ${randomSuffix}`)
     setEmail(`trader${randomSuffix}@purex.exchange`)
+    setPhone(`+1 (555) ${Math.floor(100 + Math.random() * 900)}-${randomSuffix}`)
     setPassword('Password123!')
     setConfirmPassword('Password123!')
+    setReferralCode('PUREX99')
     setErrorMessage('')
   }
 
@@ -217,7 +139,7 @@ export default function Signup() {
       {/* Background ambient lighting effects */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[380px] bg-gradient-to-tr from-[#ff7a00]/12 via-[#ff9500]/10 to-transparent rounded-full blur-3xl pointer-events-none" />
 
-      {/* Main Centered Wrapper Raised Up Above the Fold */}
+      {/* Main Centered Wrapper */}
       <div className="w-full max-w-5xl z-10 mx-auto flex flex-col justify-center">
         
         {/* Compact Centered Brand Header */}
@@ -232,14 +154,14 @@ export default function Signup() {
             </div>
           </Link>
           <p className="mt-1 text-[11px] text-slate-400 font-medium tracking-wide">
-            Open an Institutional Crypto Account with Email Verification
+            Open an Institutional Crypto Account with Immediate Access
           </p>
         </div>
 
         {/* 2-Column Symmetrical Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch justify-center">
           
-          {/* ================= LEFT CARD: CREATE ACCOUNT / OTP FORM ================= */}
+          {/* ================= LEFT CARD: REGISTRATION FORM ================= */}
           <div className="lg:col-span-7 flex flex-col">
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -251,37 +173,24 @@ export default function Signup() {
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#ff7a00] to-transparent opacity-90" />
 
               <div>
-                {/* Header & Step navigation */}
+                {/* Header & Quick Prefill */}
                 <div className="mb-2.5 flex items-center justify-between">
                   <div>
                     <h1 className="text-lg font-bold text-white tracking-tight">
-                      {step === 'form' ? 'Create Account' : 'Verify Email Address'}
+                      Register Account
                     </h1>
                     <p className="text-[11px] text-slate-400">
-                      {step === 'form'
-                        ? 'Institutional deep liquidity access'
-                        : `Enter the 6-digit code sent to ${email}`}
+                      Enter your details below to activate your trading portfolio
                     </p>
                   </div>
-                  {step === 'form' ? (
-                    <button
-                      type="button"
-                      onClick={handleQuickPrefill}
-                      className="rounded-lg border border-[#ff7a00]/30 bg-[#ff7a00]/15 px-2.5 py-1 text-[11px] font-bold text-[#ff7a00] hover:bg-[#ff7a00] hover:text-white transition-all flex items-center gap-1 cursor-pointer"
-                    >
-                      <Sparkles size={11} />
-                      <span>Quick Prefill</span>
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setStep('form')}
-                      className="rounded-lg border border-white/15 bg-[#0c0e22] px-2.5 py-1 text-[11px] font-semibold text-slate-400 hover:text-white transition-all flex items-center gap-1 cursor-pointer"
-                    >
-                      <ArrowLeft size={11} />
-                      <span>Edit Email</span>
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={handleQuickPrefill}
+                    className="rounded-lg border border-[#ff7a00]/30 bg-[#ff7a00]/15 px-2.5 py-1 text-[11px] font-bold text-[#ff7a00] hover:bg-[#ff7a00] hover:text-white transition-all flex items-center gap-1 cursor-pointer"
+                  >
+                    <Sparkles size={11} />
+                    <span>Quick Prefill</span>
+                  </button>
                 </div>
 
                 {/* Feedback diagnostic messages */}
@@ -311,30 +220,33 @@ export default function Signup() {
                   )}
                 </AnimatePresence>
 
-                {/* ================= STEP 1: INITIAL DETAILS FORM ================= */}
-                {step === 'form' && (
-                  <form onSubmit={handleRequestCode} className="space-y-2">
-                    <div>
-                      <label htmlFor="signup-name" className="block text-[11px] font-semibold text-slate-200 mb-0.5">
-                        Full Name / Entity
-                      </label>
-                      <div className="relative">
-                        <input
-                          id="signup-name"
-                          type="text"
-                          value={fullName}
-                          onChange={(e) => setFullName(e.target.value)}
-                          placeholder="Alex Vance"
-                          required
-                          className="w-full rounded-xl border border-white/15 bg-[#0c0e22] px-3.5 py-1.5 pl-9 text-xs sm:text-sm text-white placeholder-slate-400 transition-all focus:border-[#ff7a00] focus:bg-[#0c0e22] focus:outline-none focus:ring-1 focus:ring-[#ff7a00]"
-                        />
-                        <User size={14} className="absolute left-3 top-2.5 text-slate-400" />
-                      </div>
+                {/* ================= REGISTRATION FORM ================= */}
+                <form onSubmit={handleRegister} className="space-y-2.5">
+                  {/* Full Name */}
+                  <div>
+                    <label htmlFor="signup-name" className="block text-[11px] font-semibold text-slate-200 mb-0.5">
+                      Full Name <span className="text-[#ff7a00]">*</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        id="signup-name"
+                        type="text"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        placeholder="e.g. Alex Vance"
+                        required
+                        className="w-full rounded-xl border border-white/15 bg-[#0c0e22] px-3.5 py-1.5 pl-9 text-xs sm:text-sm text-white placeholder-slate-400 transition-all focus:border-[#ff7a00] focus:bg-[#0c0e22] focus:outline-none focus:ring-1 focus:ring-[#ff7a00]"
+                      />
+                      <User size={14} className="absolute left-3 top-2.5 text-slate-400" />
                     </div>
+                  </div>
 
+                  {/* Email and Phone Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {/* Email Address */}
                     <div>
                       <label htmlFor="signup-email" className="block text-[11px] font-semibold text-slate-200 mb-0.5">
-                        Email Address
+                        Email Address <span className="text-[#ff7a00]">*</span>
                       </label>
                       <div className="relative">
                         <input
@@ -350,9 +262,32 @@ export default function Signup() {
                       </div>
                     </div>
 
+                    {/* Phone Number */}
+                    <div>
+                      <label htmlFor="signup-phone" className="block text-[11px] font-semibold text-slate-200 mb-0.5">
+                        Phone Number <span className="text-[#ff7a00]">*</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          id="signup-phone"
+                          type="tel"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          placeholder="+1 (555) 019-2834"
+                          required
+                          className="w-full rounded-xl border border-white/15 bg-[#0c0e22] px-3.5 py-1.5 pl-9 text-xs sm:text-sm text-white placeholder-slate-400 transition-all focus:border-[#ff7a00] focus:bg-[#0c0e22] focus:outline-none focus:ring-1 focus:ring-[#ff7a00]"
+                        />
+                        <Phone size={14} className="absolute left-3 top-2.5 text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Password & Confirm Password Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {/* Password */}
                     <div>
                       <label htmlFor="signup-password" className="block text-[11px] font-semibold text-slate-200 mb-0.5">
-                        Password
+                        Password <span className="text-[#ff7a00]">*</span>
                       </label>
                       <div className="relative">
                         <input
@@ -390,9 +325,10 @@ export default function Signup() {
                       )}
                     </div>
 
+                    {/* Confirm Password */}
                     <div>
                       <label htmlFor="signup-confirm-password" className="block text-[11px] font-semibold text-slate-200 mb-0.5">
-                        Confirm Password
+                        Confirm Password <span className="text-[#ff7a00]">*</span>
                       </label>
                       <div className="relative">
                         <input
@@ -418,131 +354,62 @@ export default function Signup() {
                         <p className="mt-0.5 text-[10px] text-[#ff5555]">Passwords do not match.</p>
                       )}
                     </div>
-
-                    <div className="pt-0.5">
-                      <label className="flex items-start gap-1.5 cursor-pointer select-none text-[11px] text-slate-400 hover:text-slate-200">
-                        <input
-                          type="checkbox"
-                          checked={agreeTerms}
-                          onChange={(e) => setAgreeTerms(e.target.checked)}
-                          className="mt-0.5 h-3.5 w-3.5 rounded border-white/20 bg-black/50 text-[#ff7a00] focus:ring-0 focus:ring-offset-0 accent-[#ff7a00]"
-                        />
-                        <span className="leading-snug">
-                          I agree to PUREX Exchange's{' '}
-                          <span className="text-[#ff7a00] hover:underline">Terms</span> &{' '}
-                          <span className="text-[#ff7a00] hover:underline">Privacy Policy</span>.
-                        </span>
-                      </label>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isLoading || !agreeTerms}
-                      className="w-full rounded-xl bg-gradient-to-r from-[#ff7a00] to-[#ff9500] py-2.5 text-xs font-bold text-white uppercase tracking-wider shadow-[0_4px_15px_rgba(255,122,0,0.3)] transition-all hover:brightness-110 hover:shadow-[0_4px_25px_rgba(255,122,0,0.45)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 cursor-pointer mt-1"
-                    >
-                      {isLoading ? (
-                        <>
-                          <RefreshCw size={13} className="animate-spin" />
-                          <span>Dispatching Verification Code...</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>Send 6-Digit Verification Code</span>
-                          <ArrowRight size={14} />
-                        </>
-                      )}
-                    </button>
-                  </form>
-                )}
-
-                {/* ================= STEP 2: 6-DIGIT OTP VERIFICATION SCREEN ================= */}
-                {step === 'otp' && (
-                  <div className="space-y-3 pt-1">
-                    {/* Live Sandbox Preview Badge */}
-                    {devCode && (
-                      <motion.div
-                        initial={{ scale: 0.95, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        className="rounded-xl border border-[#ff7a00]/40 bg-[#ff7a00]/15 p-2.5 backdrop-blur-md"
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-1.5">
-                            <span className="flex h-1.5 w-1.5 rounded-full bg-[#10b981] animate-ping" />
-                            <span className="text-[10px] font-bold text-slate-200">Inbox Code:</span>
-                            <span className="font-mono text-sm font-black tracking-widest text-[#ff7a00] bg-black/70 px-2 py-0.5 rounded border border-[#ff7a00]/30">
-                              {devCode}
-                            </span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={handleQuickFillOtp}
-                            className="rounded bg-[#ff7a00]/20 px-2 py-0.5 text-[10px] font-bold text-[#ff7a00] hover:bg-[#ff7a00] hover:text-white transition-all flex items-center gap-1 cursor-pointer"
-                          >
-                            {copiedDevCode ? <Check size={10} /> : <Copy size={10} />}
-                            <span>{copiedDevCode ? 'Filled!' : 'Quick Fill'}</span>
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
-
-                    <form onSubmit={handleVerifySignup} className="space-y-3">
-                      <div>
-                        <label className="block text-[11px] font-semibold text-slate-200 mb-1.5 text-center">
-                          Enter 6-Digit Email Verification Code
-                        </label>
-                        <div className="flex justify-between gap-1.5 sm:gap-2">
-                          {otp.map((digit, index) => (
-                            <input
-                              key={index}
-                              ref={(el) => (otpInputsRef.current[index] = el)}
-                              type="text"
-                              inputMode="numeric"
-                              maxLength={1}
-                              value={digit}
-                              onChange={(e) => handleOtpChange(index, e.target.value)}
-                              onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                              className="h-10 w-full max-w-[42px] rounded-lg border border-white/15 bg-[#0c0e22] text-center font-mono text-base font-bold text-white transition-all focus:border-[#ff7a00] focus:bg-[#0c0e22] focus:shadow-[0_0_12px_rgba(255,122,0,0.3)] focus:outline-none"
-                            />
-                          ))}
-                        </div>
-                      </div>
-
-                      <button
-                        type="submit"
-                        disabled={isVerifying || otp.join('').length < 6}
-                        className="w-full rounded-xl bg-gradient-to-r from-[#ff7a00] to-[#ff9500] py-2.5 text-xs font-bold text-white uppercase tracking-wider shadow-[0_4px_15px_rgba(255,122,0,0.3)] transition-all hover:brightness-110 hover:shadow-[0_4px_25px_rgba(255,122,0,0.45)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 cursor-pointer mt-1"
-                      >
-                        {isVerifying ? (
-                          <>
-                            <RefreshCw size={13} className="animate-spin" />
-                            <span>Verifying & Creating Account...</span>
-                          </>
-                        ) : (
-                          <span>Verify & Create Account</span>
-                        )}
-                      </button>
-
-                      {/* Resend timer */}
-                      <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
-                        <span>Didn't receive email?</span>
-                        {cooldown > 0 ? (
-                          <div className="flex items-center gap-1 text-slate-200">
-                            <Clock size={11} className="text-[#ff7a00]" />
-                            <span>Resend in {cooldown}s</span>
-                          </div>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => handleRequestCode()}
-                            className="font-semibold text-[#ff7a00] hover:underline cursor-pointer"
-                          >
-                            Resend Code Now
-                          </button>
-                        )}
-                      </div>
-                    </form>
                   </div>
-                )}
+
+                  {/* Referral Code (Optional) */}
+                  <div>
+                    <label htmlFor="signup-referral" className="block text-[11px] font-semibold text-slate-200 mb-0.5">
+                      Referral Code <span className="text-slate-400 font-normal">(Optional)</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        id="signup-referral"
+                        type="text"
+                        value={referralCode}
+                        onChange={(e) => setReferralCode(e.target.value)}
+                        placeholder="e.g. PUREX-PRO-2026"
+                        className="w-full rounded-xl border border-white/15 bg-[#0c0e22] px-3.5 py-1.5 pl-9 text-xs sm:text-sm text-white placeholder-slate-400 transition-all focus:border-[#ff7a00] focus:bg-[#0c0e22] focus:outline-none focus:ring-1 focus:ring-[#ff7a00]"
+                      />
+                      <Tag size={14} className="absolute left-3 top-2.5 text-slate-400" />
+                    </div>
+                  </div>
+
+                  {/* Agree to terms */}
+                  <div className="pt-0.5">
+                    <label className="flex items-start gap-1.5 cursor-pointer select-none text-[11px] text-slate-400 hover:text-slate-200">
+                      <input
+                        type="checkbox"
+                        checked={agreeTerms}
+                        onChange={(e) => setAgreeTerms(e.target.checked)}
+                        className="mt-0.5 h-3.5 w-3.5 rounded border-white/20 bg-black/50 text-[#ff7a00] focus:ring-0 focus:ring-offset-0 accent-[#ff7a00]"
+                      />
+                      <span className="leading-snug">
+                        I agree to PUREX Exchange's{' '}
+                        <span className="text-[#ff7a00] hover:underline">Terms</span> &{' '}
+                        <span className="text-[#ff7a00] hover:underline">Privacy Policy</span>.
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || isLoading || !agreeTerms}
+                    className="w-full rounded-xl bg-gradient-to-r from-[#ff7a00] to-[#ff9500] py-2.5 text-xs font-bold text-white uppercase tracking-wider shadow-[0_4px_15px_rgba(255,122,0,0.3)] transition-all hover:brightness-110 hover:shadow-[0_4px_25px_rgba(255,122,0,0.45)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 cursor-pointer mt-1"
+                  >
+                    {isSubmitting || isLoading ? (
+                      <>
+                        <RefreshCw size={13} className="animate-spin" />
+                        <span>Creating Account...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Register Account</span>
+                        <ArrowRight size={14} />
+                      </>
+                    )}
+                  </button>
+                </form>
               </div>
 
               {/* Bottom Login Link */}

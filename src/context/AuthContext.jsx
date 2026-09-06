@@ -341,16 +341,16 @@ export function AuthProvider({ children }) {
     }
   }
 
-  // Direct Signup handler (Legacy / Fallback)
-  const signup = async (fullName, email, password) => {
+  // Direct Signup handler
+  const signup = async (fullName, email, password, phone, referralCode) => {
     setIsLoading(true)
-    const cleanEmail = email.trim().toLowerCase()
+    const cleanEmail = email ? email.trim().toLowerCase() : ''
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fullName, email: cleanEmail, password })
+        body: JSON.stringify({ fullName, email: cleanEmail, password, phone, referralCode })
       })
 
       if (res.ok) {
@@ -358,9 +358,15 @@ export function AuthProvider({ children }) {
         persistSession(data.user, data.token)
         setIsLoading(false)
         return { success: true, user: data.user }
+      } else {
+        const errData = await res.json().catch(() => ({}))
+        if (errData.error) {
+          setIsLoading(false)
+          return { success: false, error: errData.error }
+        }
       }
     } catch {
-      // Fallback
+      // Fallback to local storage
     }
 
     // Local signup registration
@@ -378,11 +384,13 @@ export function AuthProvider({ children }) {
         email: cleanEmail,
         password,
         fullName: fullName.trim() || cleanEmail.split('@')[0],
+        phone: phone ? phone.trim() : '',
+        referralCode: referralCode ? referralCode.trim() : '',
         totalBalance: 0,
         availableBalance: 0,
         investedBalance: 0,
         tier: 'Standard Trader',
-        kycStatus: 'Pending Verification',
+        kycStatus: 'Verified Level 1',
         createdAt: new Date().toISOString()
       }
 
@@ -393,6 +401,8 @@ export function AuthProvider({ children }) {
         id: newUser.id,
         email: newUser.email,
         fullName: newUser.fullName,
+        phone: newUser.phone,
+        referralCode: newUser.referralCode,
         totalBalance: 0,
         availableBalance: 0,
         investedBalance: 0,
