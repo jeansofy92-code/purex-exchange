@@ -14,6 +14,13 @@ export class ErrorBoundary extends React.Component {
     console.error('App runtime error caught by boundary:', error, errorInfo)
   }
 
+  handleReset = () => {
+    this.setState({ hasError: false, error: null })
+    try {
+      window.location.href = '/'
+    } catch (_e) {}
+  }
+
   render() {
     if (this.state.hasError) {
       return (
@@ -22,19 +29,16 @@ export class ErrorBoundary extends React.Component {
             <div className="h-12 w-12 rounded-2xl bg-[#ff7a00]/20 border border-[#ff7a00]/30 flex items-center justify-center text-[#ff7a00] mx-auto text-xl font-bold">
               !
             </div>
-            <h1 className="text-xl font-black text-white">Something went wrong</h1>
+            <h1 className="text-xl font-black text-white">Temporary Interface Refresh</h1>
             <p className="text-xs text-slate-400">
-              An unexpected display issue occurred. Click below to return to the trading dashboard.
+              {this.state.error?.message || 'An unexpected display update occurred. Click below to continue.'}
             </p>
             <button
               type="button"
-              onClick={() => {
-                this.setState({ hasError: false })
-                window.location.href = '/dashboard'
-              }}
+              onClick={this.handleReset}
               className="w-full rounded-full bg-gradient-to-r from-[#ff7a00] to-[#ff9500] py-2.5 text-xs font-bold text-white shadow hover:brightness-110 cursor-pointer"
             >
-              Reload Dashboard
+              Continue to PUREX Exchange
             </button>
           </div>
         </div>
