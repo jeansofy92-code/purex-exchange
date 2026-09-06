@@ -11,6 +11,7 @@ import Support from './pages/Support'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Admin from './pages/Admin'
+import ErrorBoundary from './components/ErrorBoundary'
 import { AuthProvider } from './context/AuthContext'
 
 function App() {
@@ -21,9 +22,10 @@ function App() {
   }, [theme])
 
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <div className="app-shell">
+    <ErrorBoundary>
+      <AuthProvider>
+        <BrowserRouter>
+          <div className="app-shell">
           <Navbar theme={theme} setTheme={setTheme} />
           <Routes>
             <Route path="/" element={<Home />} />
@@ -42,6 +44,7 @@ function App() {
         </div>
       </BrowserRouter>
     </AuthProvider>
+    </ErrorBoundary>
   )
 }
 

@@ -11,24 +11,25 @@ import {
 import CoinLogo from '../CoinLogo'
 
 function TradingHeader({
-  activeCoin,
-  activeSymbol,
-  currentPrice,
+  activeCoin = {},
+  activeSymbol = 'BTC',
+  currentPrice = 96000,
   priceFlash,
-  tradeMode,
-  setTradeMode,
+  tradeMode = 'spot',
+  setTradeMode = () => {},
   balances = { USDT: 10000 },
-  onOpenPairSelector,
-  onOpenStaking,
-  onOpenDeposit,
-  onOpenWithdraw,
-  onOpenConvert,
-  onOpenReferral,
+  onOpenPairSelector = () => {},
+  onOpenStaking = () => {},
+  onOpenDeposit = () => {},
+  onOpenWithdraw = () => {},
+  onOpenConvert = () => {},
+  onOpenReferral = () => {},
 }) {
-  const isPositive = activeCoin.rawChange24h >= 0
-  const formattedPrice = currentPrice.toLocaleString('en-US', {
-    minimumFractionDigits: currentPrice < 1 ? 4 : 2,
-    maximumFractionDigits: currentPrice < 1 ? 4 : 2,
+  const isPositive = (activeCoin?.rawChange24h ?? 0) >= 0
+  const numPrice = typeof currentPrice === 'number' ? currentPrice : parseFloat(currentPrice) || 0
+  const formattedPrice = numPrice.toLocaleString('en-US', {
+    minimumFractionDigits: numPrice < 1 ? 4 : 2,
+    maximumFractionDigits: numPrice < 1 ? 4 : 2,
   })
 
   return (
@@ -42,14 +43,14 @@ function TradingHeader({
             onClick={onOpenPairSelector}
             className="flex items-center gap-2.5 rounded-xl border border-white/15 bg-white/[0.04] px-3.5 py-1.5 hover:border-[#ff7a00]/50 hover:bg-white/[0.08] transition-all group cursor-pointer"
           >
-            <CoinLogo symbol={activeSymbol} size={24} />
+            <CoinLogo symbol={activeSymbol || 'BTC'} size={24} />
             <div className="text-left">
               <div className="flex items-center gap-1.5 font-bold text-white text-sm">
-                <span>{activeSymbol}/USDT</span>
+                <span>{activeSymbol || 'BTC'}/USDT</span>
                 <ChevronDown size={14} className="text-slate-400 group-hover:text-white transition-colors" />
               </div>
               <div className="text-[0.65rem] text-slate-400 font-semibold uppercase tracking-wider">
-                {activeCoin.name}
+                {activeCoin?.name || activeSymbol || 'Bitcoin'}
               </div>
             </div>
           </button>
@@ -101,7 +102,7 @@ function TradingHeader({
               }`}
             >
               {isPositive ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
-              {activeCoin.change24h}
+              {activeCoin?.change24h || '+0.00%'}
             </div>
           </div>
         </div>
@@ -110,17 +111,17 @@ function TradingHeader({
         <div className="hidden 2xl:flex items-center gap-5 text-xs text-slate-400">
           <div>
             <div className="text-[0.65rem] uppercase font-bold text-slate-400/80">24h High</div>
-            <div className="text-white font-semibold">${activeCoin.high24h || 'N/A'}</div>
+            <div className="text-white font-semibold">${activeCoin?.high24h || 'N/A'}</div>
           </div>
           <div className="h-5 w-[1px] bg-white/10" />
           <div>
             <div className="text-[0.65rem] uppercase font-bold text-slate-400/80">24h Low</div>
-            <div className="text-white font-semibold">${activeCoin.low24h || 'N/A'}</div>
+            <div className="text-white font-semibold">${activeCoin?.low24h || 'N/A'}</div>
           </div>
           <div className="h-5 w-[1px] bg-white/10" />
           <div>
             <div className="text-[0.65rem] uppercase font-bold text-slate-400/80">24h Vol</div>
-            <div className="text-white font-semibold">{activeCoin.volume24h}</div>
+            <div className="text-white font-semibold">{activeCoin?.volume24h || 'N/A'}</div>
           </div>
         </div>
 
@@ -186,7 +187,7 @@ function TradingHeader({
             <Wallet size={13} className="text-[#ff7a00]" />
             <span className="text-slate-400 hidden sm:inline">Avail:</span>
             <span className="font-bold text-white font-mono">
-              ${(balances.USDT ?? 10000).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
+              ${(balances?.USDT ?? 10000).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
             </span>
           </div>
         </div>

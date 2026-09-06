@@ -1,20 +1,20 @@
 import { useState, useEffect } from 'react'
-import { Wallet, Flame, Users, Plus, ArrowUpRight, ArrowDownLeft, Gift, ShieldCheck } from 'lucide-react'
+import { Wallet, Flame, Plus, ArrowUpRight, ArrowDownLeft, Gift } from 'lucide-react'
 import CoinLogo from '../CoinLogo'
 import { useAuth } from '../../context/AuthContext'
 
 function TradingBottomTabs({
-  positions,
-  openOrders,
-  tradeHistory,
-  balances,
-  onCancelOrder,
-  onClosePosition,
-  onOpenStaking,
-  onOpenReferral,
-  onOpenDeposit,
-  onOpenWithdraw,
-  onOpenConvert,
+  positions = [],
+  openOrders = [],
+  tradeHistory = [],
+  balances = {},
+  onCancelOrder = () => {},
+  onClosePosition = () => {},
+  onOpenStaking = () => {},
+  onOpenReferral = () => {},
+  onOpenDeposit = () => {},
+  onOpenWithdraw = () => {},
+  onOpenConvert = () => {},
 }) {
   const { user } = useAuth()
   const [activeTab, setActiveTab] = useState('positions') // 'positions' | 'orders' | 'history' | 'assets' | 'staking' | 'referral'
@@ -30,7 +30,6 @@ function TradingBottomTabs({
   }, [activeTab])
 
   const userCode = user?.referralCode || (user?.id ? `PUREX-${user.id.slice(-4).toUpperCase()}` : 'PUREX-VIP88')
-  const referralLink = `${window.location.origin}/signup?ref=${userCode}`
 
   return (
     <div className="border-t border-white/10 bg-[#0d1029]/95 backdrop-blur-xl text-xs select-none">
@@ -48,7 +47,7 @@ function TradingBottomTabs({
           >
             <span>Positions</span>
             <span className={`px-1.5 py-0.2 rounded-full text-[0.65rem] ${activeTab === 'positions' ? 'bg-black/40 text-white' : 'bg-white/10 text-slate-300'}`}>
-              {positions.length}
+              {(positions || []).length}
             </span>
           </button>
 
@@ -63,7 +62,7 @@ function TradingBottomTabs({
           >
             <span>Open Orders</span>
             <span className={`px-1.5 py-0.2 rounded-full text-[0.65rem] ${activeTab === 'orders' ? 'bg-black/40 text-white' : 'bg-white/10 text-slate-300'}`}>
-              {openOrders.length}
+              {(openOrders || []).length}
             </span>
           </button>
 
@@ -125,7 +124,7 @@ function TradingBottomTabs({
             <button
               type="button"
               onClick={onOpenDeposit}
-              className="flex items-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold text-emerald-400 hover:bg-emerald-500 hover:text-white transition-colors"
+              className="flex items-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold text-emerald-400 hover:bg-emerald-500 hover:text-white transition-colors cursor-pointer"
             >
               <ArrowDownLeft size={12} />
               <span>Deposit</span>
@@ -135,7 +134,7 @@ function TradingBottomTabs({
             <button
               type="button"
               onClick={onOpenWithdraw}
-              className="flex items-center gap-1 rounded-lg border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-300 hover:border-white/30 hover:text-white transition-colors"
+              className="flex items-center gap-1 rounded-lg border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-300 hover:border-white/30 hover:text-white transition-colors cursor-pointer"
             >
               <ArrowUpRight size={12} />
               <span>Withdraw</span>
@@ -145,7 +144,7 @@ function TradingBottomTabs({
             <button
               type="button"
               onClick={onOpenStaking}
-              className="flex items-center gap-1 rounded-lg bg-gradient-to-r from-[#ff7a00] to-amber-500 px-3 py-1 text-[11px] font-bold text-white shadow-[0_0_10px_rgba(255,122,0,0.4)] hover:brightness-110 transition-all"
+              className="flex items-center gap-1 rounded-lg bg-gradient-to-r from-[#ff7a00] to-amber-500 px-3 py-1 text-[11px] font-bold text-white shadow-[0_0_10px_rgba(255,122,0,0.4)] hover:brightness-110 transition-all cursor-pointer"
             >
               <Flame size={12} className="fill-white" />
               <span>+ Stake New Plan</span>
@@ -159,7 +158,7 @@ function TradingBottomTabs({
         {/* 1. POSITIONS TAB */}
         {activeTab === 'positions' && (
           <div>
-            {positions.length > 0 ? (
+            {(positions || []).length > 0 ? (
               <table className="w-full text-left font-mono">
                 <thead>
                   <tr className="text-[0.68rem] uppercase font-bold text-slate-400 border-b border-white/5 pb-2">
@@ -191,17 +190,17 @@ function TradingBottomTabs({
                         </div>
                       </td>
                       <td className="py-2.5 text-white">{pos.size} {pos.symbol}</td>
-                      <td className="py-2.5 text-slate-300">${pos.entryPrice.toLocaleString()}</td>
-                      <td className="py-2.5 text-white font-bold">${pos.markPrice.toLocaleString()}</td>
-                      <td className="py-2.5 text-amber-400">${pos.liqPrice.toLocaleString()}</td>
-                      <td className="py-2.5 text-slate-300">${pos.margin.toFixed(2)}</td>
+                      <td className="py-2.5 text-slate-300">${(pos.entryPrice || 0).toLocaleString()}</td>
+                      <td className="py-2.5 text-white font-bold">${(pos.markPrice || 0).toLocaleString()}</td>
+                      <td className="py-2.5 text-amber-400">${(pos.liqPrice || 0).toLocaleString()}</td>
+                      <td className="py-2.5 text-slate-300">${(pos.margin || 0).toFixed(2)}</td>
                       <td className="py-2.5">
                         <span
                           className={`font-bold ${
-                            pos.pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                            (pos.pnl || 0) >= 0 ? 'text-emerald-400' : 'text-rose-400'
                           }`}
                         >
-                          {pos.pnl >= 0 ? '+' : ''}${pos.pnl.toFixed(2)} ({pos.pnlPercent >= 0 ? '+' : ''}{pos.pnlPercent.toFixed(2)}%)
+                          {(pos.pnl || 0) >= 0 ? '+' : ''}${(pos.pnl || 0).toFixed(2)} ({(pos.pnlPercent || 0) >= 0 ? '+' : ''}{(pos.pnlPercent || 0).toFixed(2)}%)
                         </span>
                       </td>
                       <td className="py-2.5 text-right">
@@ -229,7 +228,7 @@ function TradingBottomTabs({
         {/* 2. OPEN ORDERS TAB */}
         {activeTab === 'orders' && (
           <div>
-            {openOrders.length > 0 ? (
+            {(openOrders || []).length > 0 ? (
               <table className="w-full text-left font-mono">
                 <thead>
                   <tr className="text-[0.68rem] uppercase font-bold text-slate-400 border-b border-white/5 pb-2">
@@ -283,7 +282,7 @@ function TradingBottomTabs({
         {/* 3. TRADE HISTORY TAB */}
         {activeTab === 'history' && (
           <div>
-            {tradeHistory.length > 0 ? (
+            {(tradeHistory || []).length > 0 ? (
               <table className="w-full text-left font-mono">
                 <thead>
                   <tr className="text-[0.68rem] uppercase font-bold text-slate-400 border-b border-white/5 pb-2">
@@ -330,7 +329,7 @@ function TradingBottomTabs({
         {activeTab === 'assets' && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-              {Object.entries(balances).map(([coinSymbol, amount]) => (
+              {Object.entries(balances || {}).map(([coinSymbol, amount]) => (
                 <div
                   key={coinSymbol}
                   className="rounded-xl border border-white/10 bg-[#121639] p-3 hover:border-[#ff7a00]/40 transition-colors"
@@ -340,7 +339,7 @@ function TradingBottomTabs({
                     <span className="font-bold text-white">{coinSymbol}</span>
                   </div>
                   <div className="font-mono text-sm font-bold text-white">
-                    {amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    {(amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </div>
                   <div className="text-[0.65rem] text-slate-400 mt-0.5">Available Balance</div>
                 </div>
@@ -379,14 +378,14 @@ function TradingBottomTabs({
         {/* 5. STAKING / INVESTMENTS TAB */}
         {activeTab === 'staking' && (
           <div className="space-y-3">
-            {userInvestments.length > 0 ? (
+            {(userInvestments || []).length > 0 ? (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-slate-400 text-xs">Active High-Yield Staking Portfolios</span>
                   <button
                     type="button"
                     onClick={onOpenStaking}
-                    className="flex items-center gap-1 text-xs font-bold text-[#ff7a00] hover:underline"
+                    className="flex items-center gap-1 text-xs font-bold text-[#ff7a00] hover:underline cursor-pointer"
                   >
                     <Plus size={13} />
                     <span>Stake Another Plan</span>
@@ -412,7 +411,7 @@ function TradingBottomTabs({
                       <div className="grid grid-cols-2 gap-2 text-xs bg-black/30 p-2.5 rounded-xl border border-white/5">
                         <div>
                           <div className="text-[10px] text-slate-400">Principal Staked</div>
-                          <div className="font-bold font-mono text-white">${inv.depositAmount?.toLocaleString()}</div>
+                          <div className="font-bold font-mono text-white">${(inv.depositAmount || 0).toLocaleString()}</div>
                         </div>
                         <div>
                           <div className="text-[10px] text-slate-400">Daily Return</div>
