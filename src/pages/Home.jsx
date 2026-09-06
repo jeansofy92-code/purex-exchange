@@ -1,5 +1,6 @@
 import HomeHero from '../components/home/HomeHero'
 import PartnersStrip from '../components/home/PartnersStrip'
+import PhoneAppSection from '../components/home/PhoneAppSection'
 import InteractiveSteps from '../components/home/InteractiveSteps'
 import FeatureGrid from '../components/home/FeatureGrid'
 import SecurityInsurance from '../components/home/SecurityInsurance'
@@ -15,6 +16,7 @@ export default function Home() {
     <main className="main-content">
       <HomeHero />
       <PartnersStrip />
+      <PhoneAppSection />
       <InteractiveSteps />
       <FeatureGrid />
       <SecurityInsurance />

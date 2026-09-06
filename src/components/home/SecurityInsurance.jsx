@@ -58,53 +58,52 @@ export default function SecurityInsurance() {
             </div>
           </ScrollReveal>
 
-          {/* Right Column: 4 Stat Cards matching Finantech grid */}
+          {/* Right Column: Contrast White Stat Card Grid */}
           <ScrollReveal delay={0.25}>
-            <div className="finantech-card" style={{
-              backgroundColor: '#111111',
+            <div className="finantech-card-white" style={{
               padding: '2.5rem',
-              border: '1px solid #232323'
+              boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
             }}>
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(2, 1fr)',
                 gap: '2rem'
               }}>
-                <div style={{ borderBottom: '1px solid #1f1f1f', paddingBottom: '1.5rem' }}>
-                  <div className="display-2" style={{ color: '#fff' }}>
-                    0<span className="color-accent-1">.</span>
+                <div style={{ borderBottom: '1px solid #eeeeee', paddingBottom: '1.5rem' }}>
+                  <div className="display-2" style={{ color: '#060606' }}>
+                    0<span style={{ color: '#060606' }}>.</span>
                   </div>
-                  <p style={{ color: '#e7e7e7', fontWeight: 700, fontSize: '0.95rem', marginTop: '0.25rem' }}>
+                  <p style={{ color: '#060606', fontWeight: 800, fontSize: '0.95rem', marginTop: '0.25rem' }}>
                     Security Incidents
                   </p>
                   <span style={{ fontSize: '0.75rem', color: '#717172' }}>Clean track record since launch</span>
                 </div>
 
-                <div style={{ borderBottom: '1px solid #1f1f1f', paddingBottom: '1.5rem' }}>
-                  <div className="display-2" style={{ color: '#fff' }}>
-                    100<span className="color-accent-1">%</span>
+                <div style={{ borderBottom: '1px solid #eeeeee', paddingBottom: '1.5rem' }}>
+                  <div className="display-2" style={{ color: '#060606' }}>
+                    100<span style={{ color: '#547907' }}>%</span>
                   </div>
-                  <p style={{ color: '#e7e7e7', fontWeight: 700, fontSize: '0.95rem', marginTop: '0.25rem' }}>
+                  <p style={{ color: '#060606', fontWeight: 800, fontSize: '0.95rem', marginTop: '0.25rem' }}>
                     Capital Insurance
                   </p>
                   <span style={{ fontSize: '0.75rem', color: '#717172' }}>SAFU Reserve Backed</span>
                 </div>
 
                 <div style={{ paddingTop: '0.5rem' }}>
-                  <div className="display-2" style={{ color: '#fff' }}>
-                    256<span className="color-accent-1">bits</span>
+                  <div className="display-2" style={{ color: '#060606' }}>
+                    256<span style={{ color: '#547907', fontSize: '0.8em' }}>bits</span>
                   </div>
-                  <p style={{ color: '#e7e7e7', fontWeight: 700, fontSize: '0.95rem', marginTop: '0.25rem' }}>
+                  <p style={{ color: '#060606', fontWeight: 800, fontSize: '0.95rem', marginTop: '0.25rem' }}>
                     Military Encryption
                   </p>
                   <span style={{ fontSize: '0.75rem', color: '#717172' }}>Hardware Security Modules</span>
                 </div>
 
                 <div style={{ paddingTop: '0.5rem' }}>
-                  <div className="display-2" style={{ color: '#fff' }}>
-                    CISA<span className="color-accent-1">+</span>
+                  <div className="display-2" style={{ color: '#060606' }}>
+                    CISA<span style={{ color: '#547907' }}>+</span>
                   </div>
-                  <p style={{ color: '#e7e7e7', fontWeight: 700, fontSize: '0.95rem', marginTop: '0.25rem' }}>
+                  <p style={{ color: '#060606', fontWeight: 800, fontSize: '0.95rem', marginTop: '0.25rem' }}>
                     Audited & Certified
                   </p>
                   <span style={{ fontSize: '0.75rem', color: '#717172' }}>ISO/IEC 27001 Standard</span>

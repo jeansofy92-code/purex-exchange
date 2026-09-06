@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { ArrowRight, ShieldCheck, Zap, Cpu, CheckCircle2, RefreshCw, Coins, ArrowUpRight } from 'lucide-react'
 import ScrollReveal from '../common/ScrollReveal'
+import CoinBadge from '../common/CoinBadge'
 
 export default function HomeHero() {
   const [activeSpread, setActiveSpread] = useState(0)
@@ -35,7 +36,7 @@ export default function HomeHero() {
           alignItems: 'center',
           gap: '4rem'
         }}>
-          {/* Left Column: Hero Text with ScrollReveal */}
+          {/* Left Column: Hero Text */}
           <ScrollReveal delay={0.1}>
             <div style={{ maxWidth: '580px' }}>
               <div className="pill-badge" style={{ marginBottom: '1.75rem' }}>
@@ -98,9 +99,19 @@ export default function HomeHero() {
             </div>
           </ScrollReveal>
 
-          {/* Right Column: Hero Visual Mockup */}
+          {/* Right Column: Hero Visual with Floating Crypto Badges */}
           <ScrollReveal delay={0.25}>
             <div style={{ position: 'relative' }}>
+              {/* Floating Bitcoin Coin Badge */}
+              <div style={{ position: 'absolute', top: '-20px', right: '-15px', zIndex: 10 }}>
+                <CoinBadge coin="BTC" price="$89,450" change="+4.82%" floating={true} />
+              </div>
+
+              {/* Floating Ethereum Coin Badge */}
+              <div style={{ position: 'absolute', top: '-25px', left: '-10px', zIndex: 10 }}>
+                <CoinBadge coin="ETH" price="$3,480" change="+6.15%" floating={true} />
+              </div>
+
               <div className="finantech-card" style={{ padding: '2rem', backgroundColor: '#141414' }}>
                 <div style={{
                   display: 'flex',
@@ -222,7 +233,7 @@ export default function HomeHero() {
                 </div>
               </div>
 
-              {/* Floating Badge */}
+              {/* Floating Bottom Left Badge */}
               <div className="animate-float-card" style={{
                 position: 'absolute',
                 bottom: '-20px',
