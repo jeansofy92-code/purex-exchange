@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Activity, ArrowRight, RefreshCw, Zap, TrendingUp, CheckCircle, Shield } from 'lucide-react'
+import { ArrowRight, RefreshCw, CheckCircle } from 'lucide-react'
+import ScrollReveal from '../common/ScrollReveal'
 
 const LIVE_ARBITRAGE_EVENTS = [
   { id: 1, time: 'Just now', pair: 'BTC / USDT', buyEx: 'Binance', sellEx: 'Coinbase', spread: '+0.54%', profitUsd: '+$482.10', latency: '12ms', status: 'SETTLED' },
@@ -13,7 +14,6 @@ const LIVE_ARBITRAGE_EVENTS = [
 export default function LiveArbitrageFeed() {
   const [trades, setTrades] = useState(LIVE_ARBITRAGE_EVENTS)
 
-  // Subtle live feed update animation
   useEffect(() => {
     const timer = setInterval(() => {
       setTrades((prev) => {
@@ -51,117 +51,119 @@ export default function LiveArbitrageFeed() {
   }, [])
 
   return (
-    <section className="section-spacing" style={{ backgroundColor: '#080808' }}>
+    <section className="section-spacing" style={{ backgroundColor: '#060606' }}>
       <div className="container-max">
-        {/* Section Heading */}
-        <div style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'flex-end',
-          justifyContent: 'space-between',
-          gap: '1.5rem',
-          marginBottom: '3rem'
-        }}>
-          <div>
-            <div className="pill-badge" style={{ marginBottom: '1rem' }}>
-              <span className="pill-dot" />
-              Real-Time Execution Stream
-            </div>
-            <h2 className="display-2">
-              Live arbitrage <span className="color-accent-1">profit executions.</span>
-            </h2>
-          </div>
-
+        <ScrollReveal>
           <div style={{
             display: 'flex',
-            alignItems: 'center',
-            gap: '0.6rem',
-            backgroundColor: '#141414',
-            border: '1px solid #282828',
-            padding: '0.5rem 1rem',
-            borderRadius: '999px',
-            fontSize: '0.85rem',
-            color: '#B0F127',
-            fontWeight: 700
+            flexWrap: 'wrap',
+            alignItems: 'flex-end',
+            justifyContent: 'space-between',
+            gap: '1.5rem',
+            marginBottom: '3rem'
           }}>
-            <RefreshCw size={14} className="animate-spin" />
-            2,480 Arbitrage Trades / Minute
-          </div>
-        </div>
+            <div>
+              <div className="pill-badge" style={{ marginBottom: '1rem' }}>
+                <span className="pill-dot" />
+                Real-Time Execution Stream
+              </div>
+              <h2 className="display-2">
+                Live arbitrage <span className="color-accent-1">profit executions.</span>
+              </h2>
+            </div>
 
-        {/* Live Trades Table Card */}
-        <div className="finantech-card" style={{ padding: '1.5rem', overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '700px' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid #232323', color: '#717172', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                <th style={{ padding: '0.75rem 1rem' }}>Asset / Market</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Arbitrage Route</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Discrepancy Spread</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Net Profit Realized</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Speed</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {trades.map((trade) => (
-                <tr 
-                  key={trade.id}
-                  style={{
-                    borderBottom: '1px solid #181818',
-                    transition: 'background-color 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(176, 241, 39, 0.03)'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                >
-                  <td style={{ padding: '1rem', fontWeight: 700, color: '#fff' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span style={{
-                        width: '8px',
-                        height: '8px',
-                        borderRadius: '50%',
-                        backgroundColor: '#B0F127'
-                      }} />
-                      {trade.pair}
-                    </div>
-                  </td>
-                  <td style={{ padding: '1rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
-                      <span style={{ color: '#e7e7e7', backgroundColor: '#181818', padding: '0.2rem 0.5rem', borderRadius: '6px' }}>{trade.buyEx}</span>
-                      <ArrowRight size={14} color="#B0F127" />
-                      <span style={{ color: '#B0F127', backgroundColor: '#181818', padding: '0.2rem 0.5rem', borderRadius: '6px' }}>{trade.sellEx}</span>
-                    </div>
-                  </td>
-                  <td style={{ padding: '1rem', color: '#B0F127', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
-                    {trade.spread}
-                  </td>
-                  <td style={{ padding: '1rem', color: '#fff', fontWeight: 800, fontFamily: 'var(--font-mono)' }}>
-                    {trade.profitUsd}
-                  </td>
-                  <td style={{ padding: '1rem', color: '#939393', fontSize: '0.85rem', fontFamily: 'var(--font-mono)' }}>
-                    {trade.latency}
-                  </td>
-                  <td style={{ padding: '1rem', textAlign: 'right' }}>
-                    <span style={{
-                      backgroundColor: 'rgba(5, 193, 104, 0.12)',
-                      color: '#05C168',
-                      border: '1px solid rgba(5, 193, 104, 0.3)',
-                      padding: '0.25rem 0.65rem',
-                      borderRadius: '999px',
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '0.3rem'
-                    }}>
-                      <CheckCircle size={12} />
-                      {trade.status}
-                    </span>
-                  </td>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.6rem',
+              backgroundColor: '#111111',
+              border: '1px solid #232323',
+              padding: '0.5rem 1rem',
+              borderRadius: '999px',
+              fontSize: '0.85rem',
+              color: '#B0F127',
+              fontWeight: 700
+            }}>
+              <RefreshCw size={14} className="animate-spin" />
+              2,480 Arbitrage Trades / Minute
+            </div>
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal delay={0.2}>
+          <div className="finantech-card" style={{ padding: '1.5rem', overflowX: 'auto', backgroundColor: '#111111' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '700px' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid #232323', color: '#717172', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  <th style={{ padding: '0.75rem 1rem' }}>Asset / Market</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Arbitrage Route</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Discrepancy Spread</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Net Profit Realized</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Speed</th>
+                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {trades.map((trade) => (
+                  <tr 
+                    key={trade.id}
+                    style={{
+                      borderBottom: '1px solid #181818',
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#161616'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  >
+                    <td style={{ padding: '1rem', fontWeight: 700, color: '#fff' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{
+                          width: '8px',
+                          height: '8px',
+                          borderRadius: '50%',
+                          backgroundColor: '#B0F127'
+                        }} />
+                        {trade.pair}
+                      </div>
+                    </td>
+                    <td style={{ padding: '1rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
+                        <span style={{ color: '#e7e7e7', backgroundColor: '#181818', padding: '0.2rem 0.5rem', borderRadius: '6px' }}>{trade.buyEx}</span>
+                        <ArrowRight size={14} color="#B0F127" />
+                        <span style={{ color: '#B0F127', backgroundColor: '#181818', padding: '0.2rem 0.5rem', borderRadius: '6px' }}>{trade.sellEx}</span>
+                      </div>
+                    </td>
+                    <td style={{ padding: '1rem', color: '#B0F127', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+                      {trade.spread}
+                    </td>
+                    <td style={{ padding: '1rem', color: '#fff', fontWeight: 800, fontFamily: 'var(--font-mono)' }}>
+                      {trade.profitUsd}
+                    </td>
+                    <td style={{ padding: '1rem', color: '#939393', fontSize: '0.85rem', fontFamily: 'var(--font-mono)' }}>
+                      {trade.latency}
+                    </td>
+                    <td style={{ padding: '1rem', textAlign: 'right' }}>
+                      <span style={{
+                        backgroundColor: '#16231a',
+                        color: '#05C168',
+                        border: '1px solid #1f3d29',
+                        padding: '0.25rem 0.65rem',
+                        borderRadius: '999px',
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.3rem'
+                      }}>
+                        <CheckCircle size={12} />
+                        {trade.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   )

@@ -1,10 +1,11 @@
 import HomeHero from '../components/home/HomeHero'
 import PartnersStrip from '../components/home/PartnersStrip'
-import HowItWorks from '../components/home/HowItWorks'
+import InteractiveSteps from '../components/home/InteractiveSteps'
+import FeatureGrid from '../components/home/FeatureGrid'
+import SecurityInsurance from '../components/home/SecurityInsurance'
 import InvestmentPackages from '../components/home/InvestmentPackages'
 import RoiCalculator from '../components/home/RoiCalculator'
 import LiveArbitrageFeed from '../components/home/LiveArbitrageFeed'
-import SecurityInsurance from '../components/home/SecurityInsurance'
 import Testimonials from '../components/home/Testimonials'
 import FaqAccordion from '../components/home/FaqAccordion'
 import CtaBanner from '../components/home/CtaBanner'
@@ -14,11 +15,12 @@ export default function Home() {
     <main className="main-content">
       <HomeHero />
       <PartnersStrip />
-      <HowItWorks />
+      <InteractiveSteps />
+      <FeatureGrid />
+      <SecurityInsurance />
       <InvestmentPackages />
       <RoiCalculator />
       <LiveArbitrageFeed />
-      <SecurityInsurance />
       <Testimonials />
       <FaqAccordion />
       <CtaBanner />

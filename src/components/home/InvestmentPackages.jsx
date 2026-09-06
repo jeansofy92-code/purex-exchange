@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Check, Zap, Star, ShieldCheck, ArrowRight, Sparkles, Cpu, Award } from 'lucide-react'
+import { Check, ShieldCheck, ArrowRight } from 'lucide-react'
+import ScrollReveal from '../common/ScrollReveal'
 
 export const PACKAGES = [
   {
@@ -119,21 +120,22 @@ export default function InvestmentPackages() {
   const [selectedPlan, setSelectedPlan] = useState('pro')
 
   return (
-    <section id="packages" className="section-spacing" style={{ backgroundColor: '#080808' }}>
+    <section id="packages" className="section-spacing" style={{ backgroundColor: '#060606' }}>
       <div className="container-max">
-        {/* Section Title */}
-        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-          <div className="pill-badge" style={{ marginBottom: '1.25rem' }}>
-            <span className="pill-dot" />
-            Transparent Investment Tiers
+        <ScrollReveal>
+          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <div className="pill-badge" style={{ marginBottom: '1.25rem' }}>
+              <span className="pill-dot" />
+              Transparent Investment Tiers
+            </div>
+            <h2 className="display-2" style={{ marginBottom: '1rem' }}>
+              Choose your <span className="color-accent-1">investment package.</span>
+            </h2>
+            <p style={{ color: '#939393', maxWidth: '640px', margin: '0 auto', fontSize: '1.05rem' }}>
+              Every package is backed by our 100% Capital Insurance Guarantee. Higher packages unlock more advanced quant trading desks, multi-exchange triangular bots, and higher daily profit limits.
+            </p>
           </div>
-          <h2 className="display-2" style={{ marginBottom: '1rem' }}>
-            Choose your <span className="color-accent-1">investment package.</span>
-          </h2>
-          <p style={{ color: '#c5c5c5', maxWidth: '640px', margin: '0 auto', fontSize: '1.05rem' }}>
-            Every package is backed by our 100% Capital Insurance Guarantee. Higher packages unlock more advanced quant trading desks, multi-exchange triangular bots, and higher daily profit limits.
-          </p>
-        </div>
+        </ScrollReveal>
 
         {/* Packages Grid */}
         <div style={{
@@ -142,152 +144,153 @@ export default function InvestmentPackages() {
           gap: '1.75rem',
           alignItems: 'stretch'
         }}>
-          {PACKAGES.map((pkg) => {
+          {PACKAGES.map((pkg, idx) => {
             const isSelected = selectedPlan === pkg.id
 
             return (
-              <div
-                key={pkg.id}
-                onClick={() => setSelectedPlan(pkg.id)}
-                className={`finantech-card ${pkg.highlight ? 'finantech-card-highlight' : ''}`}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  padding: '2.25rem 1.75rem',
-                  cursor: 'pointer',
-                  borderColor: isSelected ? 'var(--accent-primary)' : pkg.highlight ? 'rgba(176, 241, 39, 0.4)' : '#232323',
-                  transform: isSelected ? 'translateY(-4px)' : 'none'
-                }}
-              >
-                <div>
-                  {/* Top Header Badge */}
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: '1.25rem'
-                  }}>
-                    <span style={{
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
-                      backgroundColor: pkg.highlight ? '#B0F127' : 'rgba(255, 255, 255, 0.08)',
-                      color: pkg.highlight ? '#060606' : '#e7e7e7',
-                      padding: '0.3rem 0.75rem',
-                      borderRadius: '999px'
-                    }}>
-                      {pkg.badge}
-                    </span>
-
-                    <span style={{
-                      fontSize: '0.75rem',
-                      color: '#B0F127',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.3rem',
-                      fontWeight: 600
-                    }}>
-                      <ShieldCheck size={14} color="#B0F127" /> 100% Insured
-                    </span>
-                  </div>
-
-                  {/* Plan Name */}
-                  <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fff', marginBottom: '0.5rem' }}>
-                    {pkg.name}
-                  </h3>
-                  <p style={{ fontSize: '0.85rem', color: '#939393', lineHeight: 1.5, marginBottom: '1.5rem' }}>
-                    {pkg.description}
-                  </p>
-
-                  {/* Big Daily ROI */}
-                  <div style={{
-                    backgroundColor: '#0a0a0a',
-                    border: '1px solid #232323',
-                    borderRadius: '14px',
-                    padding: '1.25rem',
-                    marginBottom: '1.5rem'
-                  }}>
-                    <div style={{ fontSize: '0.75rem', color: '#717172', fontWeight: 600, textTransform: 'uppercase' }}>
-                      DAILY RETURN RATE
-                    </div>
-                    <div style={{
-                      fontSize: '2.1rem',
-                      fontWeight: 800,
-                      color: '#B0F127',
-                      fontFamily: 'var(--font-manrope)',
-                      lineHeight: 1.1,
-                      marginTop: '0.2rem'
-                    }}>
-                      {pkg.dailyRoi}
-                    </div>
-                    <div style={{ fontSize: '0.8rem', color: '#e7e7e7', marginTop: '0.35rem', fontWeight: 600 }}>
-                      Yield: {pkg.monthlyRoi}
-                    </div>
-                  </div>
-
-                  {/* Limits Summary Box */}
-                  <div style={{
-                    backgroundColor: '#161616',
-                    borderRadius: '12px',
-                    padding: '1rem',
-                    marginBottom: '1.5rem',
-                    fontSize: '0.8rem',
+              <ScrollReveal key={pkg.id} delay={0.1 * idx}>
+                <div
+                  onClick={() => setSelectedPlan(pkg.id)}
+                  className={`finantech-card ${pkg.highlight ? 'finantech-card-highlight' : ''}`}
+                  style={{
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '0.5rem'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: '#717172' }}>Deposit Range:</span>
-                      <strong style={{ color: '#fff' }}>${pkg.minDeposit.toLocaleString()} – ${pkg.maxDeposit.toLocaleString()}</strong>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: '#717172' }}>Daily Withdrawal:</span>
-                      <strong style={{ color: '#B0F127' }}>{pkg.maxWithdrawal}</strong>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: '#717172' }}>Trading Desk:</span>
-                      <strong style={{ color: '#e7e7e7', textAlign: 'right' }}>{pkg.tradingTeam}</strong>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: '#717172' }}>Contract Cycle:</span>
-                      <strong style={{ color: '#fff' }}>{pkg.duration}</strong>
-                    </div>
-                  </div>
-
-                  {/* Features List */}
-                  <div style={{ marginBottom: '2rem' }}>
-                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#e7e7e7', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Included Privileges:
-                    </div>
-                    <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-                      {pkg.features.map((feat, idx) => (
-                        <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', fontSize: '0.825rem', color: '#c5c5c5' }}>
-                          <Check size={16} color="#B0F127" style={{ flexShrink: 0, marginTop: '2px' }} strokeWidth={2.5} />
-                          <span>{feat}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-
-                {/* Select Button */}
-                <a
-                  href="#calculator"
-                  className={pkg.highlight ? 'btn-primary' : 'btn-secondary'}
-                  style={{
-                    width: '100%',
-                    padding: '0.85rem',
-                    textAlign: 'center',
-                    fontSize: '0.9rem',
-                    fontWeight: 700
+                    justifyContent: 'space-between',
+                    padding: '2.25rem 1.75rem',
+                    cursor: 'pointer',
+                    height: '100%',
+                    borderColor: isSelected ? '#B0F127' : pkg.highlight ? 'rgba(176, 241, 39, 0.4)' : '#232323'
                   }}
                 >
-                  Select {pkg.name}
-                  <ArrowRight size={16} strokeWidth={2.5} />
-                </a>
-              </div>
+                  <div>
+                    {/* Top Header Badge */}
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: '1.25rem'
+                    }}>
+                      <span style={{
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                        backgroundColor: pkg.highlight ? '#B0F127' : '#1e1e1e',
+                        color: pkg.highlight ? '#060606' : '#e7e7e7',
+                        padding: '0.3rem 0.75rem',
+                        borderRadius: '999px'
+                      }}>
+                        {pkg.badge}
+                      </span>
+
+                      <span style={{
+                        fontSize: '0.75rem',
+                        color: '#B0F127',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.3rem',
+                        fontWeight: 600
+                      }}>
+                        <ShieldCheck size={14} color="#B0F127" /> 100% Insured
+                      </span>
+                    </div>
+
+                    {/* Plan Name */}
+                    <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#fff', marginBottom: '0.5rem' }}>
+                      {pkg.name}
+                    </h3>
+                    <p style={{ fontSize: '0.85rem', color: '#939393', lineHeight: 1.5, marginBottom: '1.5rem' }}>
+                      {pkg.description}
+                    </p>
+
+                    {/* Daily ROI Box */}
+                    <div style={{
+                      backgroundColor: '#0c0c0c',
+                      border: '1px solid #232323',
+                      borderRadius: '14px',
+                      padding: '1.25rem',
+                      marginBottom: '1.5rem'
+                    }}>
+                      <div style={{ fontSize: '0.75rem', color: '#717172', fontWeight: 600, textTransform: 'uppercase' }}>
+                        DAILY RETURN RATE
+                      </div>
+                      <div style={{
+                        fontSize: '2.1rem',
+                        fontWeight: 800,
+                        color: '#B0F127',
+                        lineHeight: 1.1,
+                        marginTop: '0.2rem'
+                      }}>
+                        {pkg.dailyRoi}
+                      </div>
+                      <div style={{ fontSize: '0.8rem', color: '#e7e7e7', marginTop: '0.35rem', fontWeight: 600 }}>
+                        Yield: {pkg.monthlyRoi}
+                      </div>
+                    </div>
+
+                    {/* Limits Summary Box */}
+                    <div style={{
+                      backgroundColor: '#181818',
+                      borderRadius: '12px',
+                      padding: '1rem',
+                      marginBottom: '1.5rem',
+                      fontSize: '0.8rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.5rem',
+                      border: '1px solid #232323'
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: '#717172' }}>Deposit Range:</span>
+                        <strong style={{ color: '#fff' }}>${pkg.minDeposit.toLocaleString()} – ${pkg.maxDeposit.toLocaleString()}</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: '#717172' }}>Daily Withdrawal:</span>
+                        <strong style={{ color: '#B0F127' }}>{pkg.maxWithdrawal}</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: '#717172' }}>Trading Desk:</span>
+                        <strong style={{ color: '#e7e7e7', textAlign: 'right' }}>{pkg.tradingTeam}</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: '#717172' }}>Contract Cycle:</span>
+                        <strong style={{ color: '#fff' }}>{pkg.duration}</strong>
+                      </div>
+                    </div>
+
+                    {/* Features List */}
+                    <div style={{ marginBottom: '2rem' }}>
+                      <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#e7e7e7', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Included Privileges:
+                      </div>
+                      <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                        {pkg.features.map((feat, fIdx) => (
+                          <li key={fIdx} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', fontSize: '0.825rem', color: '#c5c5c5' }}>
+                            <Check size={16} color="#B0F127" style={{ flexShrink: 0, marginTop: '2px' }} strokeWidth={2.5} />
+                            <span>{feat}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* Select Button */}
+                  <a
+                    href="#calculator"
+                    className={pkg.highlight ? 'btn-primary' : 'btn-secondary'}
+                    style={{
+                      width: '100%',
+                      padding: '0.85rem',
+                      textAlign: 'center',
+                      fontSize: '0.9rem',
+                      fontWeight: 700
+                    }}
+                  >
+                    Select {pkg.name}
+                    <ArrowRight size={16} strokeWidth={2.5} />
+                  </a>
+                </div>
+              </ScrollReveal>
             )
           })}
         </div>

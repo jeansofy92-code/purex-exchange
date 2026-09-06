@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { ChevronDown, Plus, Minus, HelpCircle } from 'lucide-react'
+import { Plus, Minus } from 'lucide-react'
+import ScrollReveal from '../common/ScrollReveal'
 
 const FAQS = [
   {
@@ -34,21 +35,21 @@ export default function FaqAccordion() {
   return (
     <section id="faq" className="section-spacing" style={{ backgroundColor: '#060606' }}>
       <div className="container-max">
-        {/* Section Heading */}
-        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-          <div className="pill-badge" style={{ marginBottom: '1.25rem' }}>
-            <span className="pill-dot" />
-            Got Questions?
+        <ScrollReveal>
+          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <div className="pill-badge" style={{ marginBottom: '1.25rem' }}>
+              <span className="pill-dot" />
+              Got Questions?
+            </div>
+            <h2 className="display-2" style={{ marginBottom: '1rem' }}>
+              Frequently asked <span className="color-accent-1">questions.</span>
+            </h2>
+            <p style={{ color: '#939393', maxWidth: '600px', margin: '0 auto', fontSize: '1.05rem' }}>
+              Everything you need to know about our arbitrage trading engine, capital insurance, and package returns.
+            </p>
           </div>
-          <h2 className="display-2" style={{ marginBottom: '1rem' }}>
-            Frequently asked <span className="color-accent-1">questions.</span>
-          </h2>
-          <p style={{ color: '#c5c5c5', maxWidth: '600px', margin: '0 auto', fontSize: '1.05rem' }}>
-            Everything you need to know about our arbitrage trading engine, capital insurance, and package returns.
-          </p>
-        </div>
+        </ScrollReveal>
 
-        {/* FAQ List */}
         <div style={{
           maxWidth: '840px',
           margin: '0 auto',
@@ -60,62 +61,60 @@ export default function FaqAccordion() {
             const isOpen = openIdx === idx
 
             return (
-              <div
-                key={idx}
-                className="finantech-card"
-                style={{
-                  padding: '1.75rem 2rem',
-                  backgroundColor: '#111111',
-                  borderColor: isOpen ? 'rgba(176, 241, 39, 0.4)' : '#232323',
-                  cursor: 'pointer',
-                  transition: 'all 0.25s ease'
-                }}
-                onClick={() => setOpenIdx(isOpen ? -1 : idx)}
-              >
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '1rem'
-                }}>
-                  <h3 style={{
-                    fontSize: '1.1rem',
-                    fontWeight: 700,
-                    color: isOpen ? '#B0F127' : '#fff',
-                    transition: 'color 0.2s'
-                  }}>
-                    {faq.q}
-                  </h3>
-
+              <ScrollReveal key={idx} delay={0.08 * idx}>
+                <div
+                  className="finantech-card"
+                  style={{
+                    padding: '1.75rem 2rem',
+                    backgroundColor: '#111111',
+                    borderColor: isOpen ? '#383838' : '#232323',
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => setOpenIdx(isOpen ? -1 : idx)}
+                >
                   <div style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '8px',
-                    backgroundColor: isOpen ? '#B0F127' : '#181818',
-                    color: isOpen ? '#060606' : '#fff',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                    transition: 'all 0.2s ease'
+                    justifyContent: 'space-between',
+                    gap: '1rem'
                   }}>
-                    {isOpen ? <Minus size={18} strokeWidth={2.5} /> : <Plus size={18} strokeWidth={2.5} />}
-                  </div>
-                </div>
+                    <h3 style={{
+                      fontSize: '1.1rem',
+                      fontWeight: 700,
+                      color: isOpen ? '#B0F127' : '#fff'
+                    }}>
+                      {faq.q}
+                    </h3>
 
-                {isOpen && (
-                  <div style={{
-                    marginTop: '1.25rem',
-                    paddingTop: '1.25rem',
-                    borderTop: '1px solid #232323',
-                    color: '#c5c5c5',
-                    fontSize: '0.95rem',
-                    lineHeight: 1.7
-                  }}>
-                    {faq.a}
+                    <div style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      backgroundColor: isOpen ? '#B0F127' : '#181818',
+                      color: isOpen ? '#060606' : '#fff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}>
+                      {isOpen ? <Minus size={18} strokeWidth={2.5} /> : <Plus size={18} strokeWidth={2.5} />}
+                    </div>
                   </div>
-                )}
-              </div>
+
+                  {isOpen && (
+                    <div style={{
+                      marginTop: '1.25rem',
+                      paddingTop: '1.25rem',
+                      borderTop: '1px solid #232323',
+                      color: '#c5c5c5',
+                      fontSize: '0.95rem',
+                      lineHeight: 1.7
+                    }}>
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              </ScrollReveal>
             )
           })}
         </div>
