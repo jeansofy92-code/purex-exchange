@@ -1,74 +1,145 @@
-import { Globe, MessageCircle, Send, Sparkles } from 'lucide-react'
-import CoinLogo from './CoinLogo'
-import { footerSections } from '../data/marketData'
+import { Zap, ShieldCheck, Cpu, ArrowUpRight } from 'lucide-react'
 
-function Footer() {
+export default function Footer() {
   return (
-    <footer className="border-t border-white/[0.08] bg-[#0c0d14] text-[#8f9ca9] font-sans">
-      <div className="mx-auto max-w-[1440px] px-4 py-16 sm:px-6 lg:px-10">
-        <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr]">
+    <footer style={{
+      borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+      background: 'rgba(5, 8, 14, 0.9)',
+      padding: '4rem 1.5rem 2rem',
+      marginTop: 'auto',
+      position: 'relative'
+    }}>
+      <div style={{
+        maxWidth: '1280px',
+        margin: '0 auto'
+      }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: '3rem',
+          marginBottom: '3rem'
+        }}>
+          {/* Brand Column */}
           <div>
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#356df1] text-white shadow-[0_0_15px_rgba(53,109,241,0.3)]">
-                <span className="font-black text-white text-base">P</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+              <div style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                background: 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <Zap size={18} color="#050811" />
               </div>
-              <div className="leading-none">
-                <div className="text-[1.15rem] font-bold tracking-tight text-white flex items-center gap-1">
-                  <span>PureX</span>
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#356df1]"></span>
-                </div>
-                <div className="text-[0.6rem] font-semibold tracking-wider text-[#8f9ca9]">
-                  CRYPTO TRADING
-                </div>
-              </div>
+              <span style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff' }}>
+                PUREX<span style={{ color: '#00f2fe' }}>.</span>
+              </span>
             </div>
-
-            <p className="mt-4 text-xs text-[#8f9ca9] max-w-[280px] leading-relaxed">
-              Institutional-grade digital asset trading platform and automated trading bot yield infrastructure.
+            <p style={{ color: '#94a3b8', fontSize: '0.875rem', lineHeight: '1.6', marginBottom: '1.5rem' }}>
+              The next-generation ultra-low latency cryptocurrency exchange engineered for high-frequency algorithmic and spot trading.
             </p>
-
-            <div className="mt-6 flex items-center gap-2.5">
-              {[Globe, MessageCircle, Send, Sparkles].map((Icon, index) => (
-                <a
-                  key={index}
-                  href="#"
-                  className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-[#151726] text-[#8f9ca9] transition-all hover:border-[#356df1] hover:bg-[#356df1] hover:text-white"
-                  aria-label="Social link"
-                >
-                  <Icon size={14} />
-                </a>
-              ))}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                fontSize: '0.75rem',
+                color: '#94a3b8',
+                background: 'rgba(255, 255, 255, 0.04)',
+                padding: '0.35rem 0.65rem',
+                borderRadius: '6px',
+                border: '1px solid rgba(255, 255, 255, 0.08)'
+              }}>
+                <Cpu size={14} color="#00f2fe" /> Latency &lt; 25μs
+              </span>
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                fontSize: '0.75rem',
+                color: '#94a3b8',
+                background: 'rgba(255, 255, 255, 0.04)',
+                padding: '0.35rem 0.65rem',
+                borderRadius: '6px',
+                border: '1px solid rgba(255, 255, 255, 0.08)'
+              }}>
+                <ShieldCheck size={14} color="#00e676" /> ISO/IEC 27001
+              </span>
             </div>
           </div>
 
-          {footerSections.map((section) => (
-            <div key={section.title}>
-              <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-white">{section.title}</h3>
-              <ul className="mt-4 space-y-2.5 text-xs text-[#8f9ca9]">
-                {section.links.map((link) => (
-                  <li key={link}>
-                    <a href="#" className="transition-colors hover:text-white">
-                      {link}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {/* Products */}
+          <div>
+            <h4 style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1.25rem' }}>
+              Products
+            </h4>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {['Spot Trading', 'Derivatives & Futures', 'Institutional Liquidity', 'Purex API v2', 'Staking & Earn'].map((item) => (
+                <li key={item}>
+                  <a href="#" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '0.875rem', transition: 'color 0.2s' }}>
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Developers & Institutional */}
+          <div>
+            <h4 style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1.25rem' }}>
+              Developers
+            </h4>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {['REST & WebSocket API', 'FIX Protocol 4.4', 'SDK Documentation', 'Bug Bounty ($250k)', 'System Status'].map((item) => (
+                <li key={item}>
+                  <a href="#" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '0.875rem', transition: 'color 0.2s' }}>
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Security & Support */}
+          <div>
+            <h4 style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1.25rem' }}>
+              Security & Legal
+            </h4>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {['Proof of Reserves (PoR)', 'Cold Storage Custody', 'Terms of Service', 'Privacy Policy', 'Compliance & AML'].map((item) => (
+                <li key={item}>
+                  <a href="#" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '0.875rem', transition: 'color 0.2s' }}>
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
-        <div className="mt-12 border-t border-white/[0.08] pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-[#8f9ca9] gap-4">
-          <div>© 2026 PureX. All rights reserved. Designed with precision.</div>
-          <div className="flex items-center gap-6">
-            <span className="flex items-center gap-1.5 text-emerald-400">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              All Systems Operational (99.99%)
-            </span>
+        {/* Bottom Bar */}
+        <div style={{
+          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '1rem',
+          fontSize: '0.8rem',
+          color: '#64748b'
+        }}>
+          <div>
+            © {new Date().getFullYear()} Purex Global Exchange Inc. All rights reserved.
+          </div>
+          <div style={{ display: 'flex', gap: '1.5rem' }}>
+            <span>Network: <strong style={{ color: '#00e676' }}>Operational</strong></span>
+            <span>Block Time: <strong style={{ color: '#fff' }}>380ms</strong></span>
           </div>
         </div>
       </div>
     </footer>
   )
 }
-
-export default Footer
