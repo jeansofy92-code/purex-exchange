@@ -1,17 +1,20 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Menu, X, ArrowUpRight, ShieldCheck, Zap } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Menu, X, ArrowUpRight, ShieldCheck, LogIn, UserPlus, LogOut, User } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
 import PurexLogo from './PurexLogo'
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { user, isAuthenticated, logout } = useAuth()
+  const navigate = useNavigate()
 
   return (
     <header style={{
       position: 'sticky',
       top: 0,
       zIndex: 100,
-      backgroundColor: 'rgba(6, 6, 6, 0.85)',
+      backgroundColor: 'rgba(6, 6, 6, 0.88)',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
       borderBottom: '1px solid #1a1a1a'
@@ -20,8 +23,8 @@ export default function Navbar() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingTop: '1.1rem',
-        paddingBottom: '1.1rem'
+        paddingTop: '1rem',
+        paddingBottom: '1rem'
       }}>
         {/* Brand Logo */}
         <Link to="/" style={{ textDecoration: 'none' }}>
@@ -32,50 +35,128 @@ export default function Navbar() {
         <nav style={{
           display: 'none',
           alignItems: 'center',
-          gap: '2.25rem'
+          gap: '2rem'
         }} className="desktop-nav">
-          <a href="#about" style={{ color: '#c5c5c5', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#c5c5c5'}>
+          <a href="/#about" style={{ color: '#c5c5c5', textDecoration: 'none', fontSize: '0.925rem', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#c5c5c5'}>
             About Purex
           </a>
-          <a href="#how-it-works" style={{ color: '#c5c5c5', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#c5c5c5'}>
+          <a href="/#how-it-works" style={{ color: '#c5c5c5', textDecoration: 'none', fontSize: '0.925rem', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#c5c5c5'}>
             How It Works
           </a>
-          <a href="#packages" style={{ color: '#c5c5c5', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#c5c5c5'}>
-            Investment Packages
+          <a href="/#packages" style={{ color: '#c5c5c5', textDecoration: 'none', fontSize: '0.925rem', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#c5c5c5'}>
+            Packages
           </a>
-          <a href="#calculator" style={{ color: '#c5c5c5', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#c5c5c5'}>
+          <a href="/#calculator" style={{ color: '#c5c5c5', textDecoration: 'none', fontSize: '0.925rem', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#c5c5c5'}>
             ROI Calculator
           </a>
-          <a href="#insurance" style={{ color: '#c5c5c5', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#c5c5c5'}>
+          <a href="/#insurance" style={{ color: '#c5c5c5', textDecoration: 'none', fontSize: '0.925rem', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#c5c5c5'}>
             100% Insurance
           </a>
-          <a href="#faq" style={{ color: '#c5c5c5', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#c5c5c5'}>
+          <a href="/#faq" style={{ color: '#c5c5c5', textDecoration: 'none', fontSize: '0.925rem', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#c5c5c5'}>
             FAQ
           </a>
         </nav>
 
-        {/* Right CTA Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{
-            display: 'none',
-            alignItems: 'center',
-            gap: '0.45rem',
-            padding: '0.35rem 0.85rem',
-            borderRadius: '999px',
-            backgroundColor: '#141414',
-            border: '1px solid #282828',
-            fontSize: '0.8rem',
-            fontWeight: 600,
-            color: '#B0F127'
-          }} className="guarantee-pill">
-            <ShieldCheck size={15} color="#B0F127" />
-            100% Principal Guaranteed
-          </div>
+        {/* Right CTA & Auth Actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+          {isAuthenticated && user ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                backgroundColor: '#141414',
+                border: '1px solid #282828',
+                borderRadius: '10px',
+                padding: '0.45rem 0.85rem',
+                fontSize: '0.85rem'
+              }}>
+                <div style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  backgroundColor: '#B0F127',
+                  color: '#060606',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 800,
+                  fontSize: '0.75rem'
+                }}>
+                  {user.fullName ? user.fullName[0].toUpperCase() : 'U'}
+                </div>
+                <span style={{ color: '#fff', fontWeight: 700, maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {user.fullName || user.email}
+                </span>
+              </div>
+              <button
+                onClick={() => { logout(); navigate('/') }}
+                style={{
+                  background: 'none',
+                  border: '1px solid #282828',
+                  borderRadius: '10px',
+                  color: '#939393',
+                  padding: '0.5rem 0.75rem',
+                  fontSize: '0.8rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#FF5A65'; e.currentTarget.style.color = '#FF5A65' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#282828'; e.currentTarget.style.color = '#939393' }}
+              >
+                <LogOut size={14} />
+                <span>Sign Out</span>
+              </button>
+            </div>
+          ) : (
+            <>
+              {/* Log In Button */}
+              <Link
+                to="/login"
+                style={{
+                  color: '#ffffff',
+                  textDecoration: 'none',
+                  fontSize: '0.9rem',
+                  fontWeight: 700,
+                  padding: '0.6rem 1.1rem',
+                  borderRadius: '10px',
+                  border: '1px solid #282828',
+                  backgroundColor: '#111111',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#B0F127'; e.currentTarget.style.color = '#B0F127' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#282828'; e.currentTarget.style.color = '#ffffff' }}
+              >
+                <LogIn size={15} />
+                <span>Log In</span>
+              </Link>
 
-          <a href="#packages" className="btn-primary" style={{ padding: '0.65rem 1.35rem', fontSize: '0.875rem' }}>
-            Start Earning
-            <ArrowUpRight size={16} strokeWidth={2.5} />
-          </a>
+              {/* Register Button */}
+              <Link
+                to="/register"
+                className="btn-primary"
+                style={{
+                  padding: '0.6rem 1.25rem',
+                  fontSize: '0.9rem',
+                  fontWeight: 800,
+                  borderRadius: '10px',
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem'
+                }}
+              >
+                <UserPlus size={15} strokeWidth={2.5} />
+                <span>Register</span>
+              </Link>
+            </>
+          )}
 
           {/* Mobile Hamburger Toggle */}
           <button 
@@ -106,22 +187,78 @@ export default function Navbar() {
           flexDirection: 'column',
           gap: '1.25rem'
         }}>
-          <a href="#about" onClick={() => setMobileOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 600 }}>About Purex</a>
-          <a href="#how-it-works" onClick={() => setMobileOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 600 }}>How It Works</a>
-          <a href="#packages" onClick={() => setMobileOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 600 }}>Investment Packages</a>
-          <a href="#calculator" onClick={() => setMobileOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 600 }}>ROI Calculator</a>
-          <a href="#insurance" onClick={() => setMobileOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 600 }}>100% Capital Insurance</a>
-          <a href="#faq" onClick={() => setMobileOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1.1rem', fontWeight: 600 }}>FAQ</a>
-          <a href="#packages" onClick={() => setMobileOpen(false)} className="btn-primary" style={{ width: '100%', marginTop: '0.5rem' }}>
-            Choose an Investment Plan
-          </a>
+          <a href="/#about" onClick={() => setMobileOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1.05rem', fontWeight: 600 }}>About Purex</a>
+          <a href="/#how-it-works" onClick={() => setMobileOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1.05rem', fontWeight: 600 }}>How It Works</a>
+          <a href="/#packages" onClick={() => setMobileOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1.05rem', fontWeight: 600 }}>Investment Packages</a>
+          <a href="/#calculator" onClick={() => setMobileOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1.05rem', fontWeight: 600 }}>ROI Calculator</a>
+          <a href="/#insurance" onClick={() => setMobileOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1.05rem', fontWeight: 600 }}>100% Capital Insurance</a>
+          <a href="/#faq" onClick={() => setMobileOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1.05rem', fontWeight: 600 }}>FAQ</a>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid #232323' }}>
+            {isAuthenticated ? (
+              <button
+                onClick={() => { logout(); setMobileOpen(false); navigate('/') }}
+                style={{
+                  backgroundColor: '#181818',
+                  border: '1px solid #282828',
+                  color: '#FF5A65',
+                  padding: '0.85rem',
+                  borderRadius: '10px',
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
+                Sign Out ({user?.fullName || user?.email})
+              </button>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  onClick={() => setMobileOpen(false)}
+                  style={{
+                    backgroundColor: '#141414',
+                    border: '1px solid #282828',
+                    color: '#ffffff',
+                    padding: '0.85rem',
+                    borderRadius: '10px',
+                    fontWeight: 700,
+                    textAlign: 'center',
+                    textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <LogIn size={16} /> Log In
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={() => setMobileOpen(false)}
+                  className="btn-primary"
+                  style={{
+                    padding: '0.85rem',
+                    borderRadius: '10px',
+                    fontWeight: 800,
+                    textAlign: 'center',
+                    textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <UserPlus size={16} strokeWidth={2.5} /> Create Account
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       )}
 
       <style>{`
         @media (min-width: 1024px) {
           .desktop-nav { display: flex !important; }
-          .guarantee-pill { display: flex !important; }
         }
         @media (max-width: 1023px) {
           .mobile-toggle { display: block !important; }

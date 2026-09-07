@@ -80,17 +80,17 @@ export function AuthProvider({ children }) {
     }
   }
 
-  // Login handler with backend API + local fallback
-  const login = async (email, password) => {
+  // Login handler with backend API + local fallback (supports Email or Phone)
+  const login = async (identifier, password) => {
     setIsLoading(true)
-    const cleanEmail = email.trim().toLowerCase()
+    const cleanId = (identifier || '').trim().toLowerCase()
 
     try {
       // Try backend Express API first
       const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: cleanEmail, password })
+        body: JSON.stringify({ email: cleanId, identifier: cleanId, password })
       })
 
       if (res.ok) {
@@ -100,25 +100,23 @@ export function AuthProvider({ children }) {
         return { success: true, user: data.user }
       } else {
         const errData = await res.json().catch(() => ({}))
-        // If backend returned explicit authentication failure (like invalid credentials), propagate it
         if (res.status === 401 || res.status === 400) {
-          // Check local fallback demo users in case database isn't connected
-          const fallback = checkLocalLogin(cleanEmail, password)
+          const fallback = checkLocalLogin(cleanId, password)
           if (fallback.success) {
             persistSession(fallback.user, 'purex-local-jwt-token')
             setIsLoading(false)
             return { success: true, user: fallback.user, isLocalFallback: true }
           }
           setIsLoading(false)
-          return { success: false, error: errData.error || 'Invalid email or password' }
+          return { success: false, error: errData.error || 'Invalid email, phone number, or password' }
         }
       }
     } catch (_networkError) {
-      // Backend offline / network failed -> use local fallback seamlessly
+      // Backend offline -> run locally
     }
 
     // Local resilient authentication
-    const localResult = checkLocalLogin(cleanEmail, password)
+    const localResult = checkLocalLogin(cleanId, password)
     if (localResult.success) {
       persistSession(localResult.user, 'purex-local-jwt-token')
       setIsLoading(false)
@@ -126,31 +124,39 @@ export function AuthProvider({ children }) {
     }
 
     setIsLoading(false)
-    return { success: false, error: localResult.error || 'Invalid credentials or user not found' }
+    return { success: false, error: localResult.error || 'Invalid credentials. Please check your email/phone and password.' }
   }
 
-  // Local user verification helper
-  const checkLocalLogin = (cleanEmail, password) => {
+  // Local user verification helper (matches email or phone)
+  const checkLocalLogin = (cleanId, password) => {
     try {
       const storedUsersRaw = localStorage.getItem(USERS_STORAGE_KEY)
       const users = storedUsersRaw ? JSON.parse(storedUsersRaw) : DEFAULT_DEMO_USERS
-      const matched = users.find((u) => u.email.toLowerCase() === cleanEmail)
+      const cleanDigits = cleanId.replace(/\D/g, '')
+
+      const matched = users.find((u) => {
+        const uEmail = (u.email || '').toLowerCase()
+        const uPhoneDigits = (u.phone || '').replace(/\D/g, '')
+        return uEmail === cleanId || (cleanDigits && uPhoneDigits && (uPhoneDigits === cleanDigits || uPhoneDigits.endsWith(cleanDigits) || cleanDigits.endsWith(uPhoneDigits)))
+      })
       
       if (!matched) {
-        return { success: false, error: 'No account found with this email. Please sign up or check spelling.' }
+        return { success: false, error: 'No account found with this email or phone number. Please create an account.' }
       }
       if (matched.password !== password && password !== 'Password123!' && password !== 'admin123') {
-        return { success: false, error: 'Incorrect password. Click "Forgot password?" to reset it.' }
+        return { success: false, error: 'Incorrect password. Please try again.' }
       }
 
       const userObj = {
         id: matched.id,
         email: matched.email,
+        phone: matched.phone || '',
         fullName: matched.fullName,
+        selectedPackage: matched.selectedPackage || 'Pro Quant Bot',
         totalBalance: matched.totalBalance ?? 25000,
         availableBalance: matched.availableBalance ?? 10000,
         investedBalance: matched.investedBalance ?? 15000,
-        tier: matched.tier || 'Standard Trader',
+        tier: matched.tier || 'Pro Quant Tier',
         kycStatus: matched.kycStatus || 'Verified Level 1',
       }
       return { success: true, user: userObj }

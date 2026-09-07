@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Check, ShieldCheck, ArrowRight, Zap, Sparkles } from 'lucide-react'
 import ScrollReveal from '../common/ScrollReveal'
 
@@ -311,20 +312,25 @@ export default function InvestmentPackages() {
                   </div>
 
                   {/* Button */}
-                  <a
-                    href="#calculator"
+                  <Link
+                    to="/register"
                     className={isWhite ? 'btn-black' : 'btn-secondary'}
                     style={{
                       width: '100%',
                       padding: '0.85rem',
                       textAlign: 'center',
                       fontSize: '0.9rem',
-                      fontWeight: 700
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.4rem',
+                      textDecoration: 'none'
                     }}
                   >
                     Select {pkg.name}
                     <ArrowRight size={16} strokeWidth={2.5} />
-                  </a>
+                  </Link>
                 </div>
               </ScrollReveal>
             )

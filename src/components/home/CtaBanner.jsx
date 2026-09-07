@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { ArrowRight, ShieldCheck } from 'lucide-react'
 import ScrollReveal from '../common/ScrollReveal'
 
@@ -49,10 +50,10 @@ export default function CtaBanner() {
                 flexWrap: 'wrap',
                 marginBottom: '2rem'
               }}>
-                <a href="#packages" className="btn-black" style={{ padding: '1rem 2.25rem', fontSize: '1rem' }}>
+                <Link to="/register" className="btn-black" style={{ padding: '1rem 2.25rem', fontSize: '1rem', textDecoration: 'none' }}>
                   Select Your Package Now
                   <ArrowRight size={20} strokeWidth={2.5} />
-                </a>
+                </Link>
                 <a href="#calculator" style={{
                   backgroundColor: '#f0f0f0',
                   color: '#060606',

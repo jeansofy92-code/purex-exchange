@@ -1,4 +1,5 @@
 import { useState, useId } from 'react'
+import { Link } from 'react-router-dom'
 import { PACKAGES } from './InvestmentPackages'
 import { ShieldCheck, ArrowRight } from 'lucide-react'
 import ScrollReveal from '../common/ScrollReveal'
@@ -275,14 +276,14 @@ export default function RoiCalculator() {
                   </div>
                 </div>
 
-                <a
-                  href="#packages"
+                <Link
+                  to="/register"
                   className="btn-primary"
-                  style={{ width: '100%', padding: '0.9rem', fontSize: '0.95rem' }}
+                  style={{ width: '100%', padding: '0.9rem', fontSize: '0.95rem', textDecoration: 'none' }}
                 >
                   Invest ${depositAmount.toLocaleString()} in {currentPlan.name}
                   <ArrowRight size={18} strokeWidth={2.5} />
-                </a>
+                </Link>
               </div>
             </div>
           </div>
