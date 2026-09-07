@@ -25,34 +25,35 @@ export default function HomeHero() {
   return (
     <section style={{
       position: 'relative',
-      paddingTop: '5rem',
-      paddingBottom: '5rem',
-      backgroundColor: '#060606'
+      paddingTop: '3.5rem',
+      paddingBottom: '4rem',
+      backgroundColor: '#060606',
+      overflow: 'hidden'
     }}>
       <div className="container-max">
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
           alignItems: 'center',
-          gap: '4rem'
+          gap: '2.5rem'
         }}>
           {/* Left Column: Hero Text */}
           <ScrollReveal delay={0.1}>
             <div style={{ maxWidth: '580px' }}>
-              <div className="pill-badge" style={{ marginBottom: '1.75rem' }}>
+              <div className="pill-badge" style={{ marginBottom: '1.25rem' }}>
                 <span className="pill-dot" />
                 Daily Automated Crypto Arbitrage
               </div>
 
-              <h1 className="display-1" style={{ marginBottom: '1.5rem' }}>
+              <h1 className="display-1" style={{ marginBottom: '1.25rem' }}>
                 Buy and trade cryptos like never <span className="color-accent-1">before.</span>
               </h1>
 
               <p style={{
-                fontSize: '1.1rem',
+                fontSize: '1.05rem',
                 color: '#939393',
                 lineHeight: 1.65,
-                marginBottom: '2.5rem'
+                marginBottom: '2rem'
               }}>
                 Purex is an automated crypto investment platform powered by multi-exchange AI arbitrage bots and expert quant trading desks. Get guaranteed daily profit payouts and 100% principal insurance protection on all investment packages.
               </p>
@@ -60,40 +61,40 @@ export default function HomeHero() {
               <div style={{
                 display: 'flex',
                 flexWrap: 'wrap',
-                gap: '1rem',
-                marginBottom: '3rem'
+                gap: '0.85rem',
+                marginBottom: '2.5rem'
               }}>
-                <a href="#packages" className="btn-primary">
+                <a href="#packages" className="btn-primary" style={{ flex: '1 1 auto', minWidth: '180px', textAlign: 'center' }}>
                   Explore Packages
                   <ArrowRight size={18} strokeWidth={2.5} />
                 </a>
-                <a href="#calculator" className="btn-secondary">
+                <a href="#calculator" className="btn-secondary" style={{ flex: '1 1 auto', minWidth: '180px', textAlign: 'center' }}>
                   Calculate Daily ROI
                 </a>
               </div>
 
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-                gap: '1rem',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                gap: '0.85rem',
                 borderTop: '1px solid #1f1f1f',
-                paddingTop: '1.75rem'
+                paddingTop: '1.5rem'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                  <CheckCircle2 size={18} color="#B0F127" />
-                  <span style={{ fontSize: '0.875rem', color: '#e7e7e7', fontWeight: 600 }}>100% Capital Insurance</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <CheckCircle2 size={16} color="#B0F127" style={{ flexShrink: 0 }} />
+                  <span style={{ fontSize: '0.825rem', color: '#e7e7e7', fontWeight: 600 }}>100% Capital Insurance</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                  <CheckCircle2 size={18} color="#B0F127" />
-                  <span style={{ fontSize: '0.875rem', color: '#e7e7e7', fontWeight: 600 }}>Daily Compounded Payouts</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <CheckCircle2 size={16} color="#B0F127" style={{ flexShrink: 0 }} />
+                  <span style={{ fontSize: '0.825rem', color: '#e7e7e7', fontWeight: 600 }}>Daily Compounded Payouts</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                  <CheckCircle2 size={18} color="#B0F127" />
-                  <span style={{ fontSize: '0.875rem', color: '#e7e7e7', fontWeight: 600 }}>Pro Quant Trading Teams</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <CheckCircle2 size={16} color="#B0F127" style={{ flexShrink: 0 }} />
+                  <span style={{ fontSize: '0.825rem', color: '#e7e7e7', fontWeight: 600 }}>Pro Quant Trading Teams</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                  <CheckCircle2 size={18} color="#B0F127" />
-                  <span style={{ fontSize: '0.875rem', color: '#e7e7e7', fontWeight: 600 }}>Instant Withdrawals</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <CheckCircle2 size={16} color="#B0F127" style={{ flexShrink: 0 }} />
+                  <span style={{ fontSize: '0.825rem', color: '#e7e7e7', fontWeight: 600 }}>Instant Withdrawals</span>
                 </div>
               </div>
             </div>
@@ -101,18 +102,18 @@ export default function HomeHero() {
 
           {/* Right Column: Hero Visual with Floating Crypto Badges */}
           <ScrollReveal delay={0.25}>
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative', marginTop: '1rem' }}>
               {/* Floating Bitcoin Coin Badge */}
-              <div style={{ position: 'absolute', top: '-20px', right: '-15px', zIndex: 10 }}>
+              <div style={{ position: 'absolute', top: '-18px', right: '0px', zIndex: 10 }}>
                 <CoinBadge coin="BTC" price="$89,450" change="+4.82%" floating={true} />
               </div>
 
               {/* Floating Ethereum Coin Badge */}
-              <div style={{ position: 'absolute', top: '-25px', left: '-10px', zIndex: 10 }}>
+              <div style={{ position: 'absolute', top: '-20px', left: '0px', zIndex: 10 }}>
                 <CoinBadge coin="ETH" price="$3,480" change="+6.15%" floating={true} />
               </div>
 
-              <div className="finantech-card" style={{ padding: '2rem', backgroundColor: '#141414' }}>
+              <div className="finantech-card" style={{ padding: '1.5rem', backgroundColor: '#141414' }}>
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',

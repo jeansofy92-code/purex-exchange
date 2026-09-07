@@ -30,8 +30,8 @@ export default function FeatureGrid() {
         {/* 1 Large Card + 4 Grid Cards matching Finantech layout */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '1.75rem'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '1.5rem'
         }}>
           {/* Card 1: Large Featured - Signature White Card */}
           <ScrollReveal delay={0.1}>

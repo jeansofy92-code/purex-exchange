@@ -113,7 +113,7 @@ export default function Register() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '3rem 1.5rem 5rem',
+      padding: '2.5rem 1rem 4rem',
       backgroundColor: '#060606'
     }}>
       <div style={{ width: '100%', maxWidth: '560px' }}>

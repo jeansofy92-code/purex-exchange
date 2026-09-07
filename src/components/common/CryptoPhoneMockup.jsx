@@ -3,14 +3,14 @@ import CoinBadge from './CoinBadge'
 
 export default function CryptoPhoneMockup() {
   return (
-    <div style={{ position: 'relative', width: '100%', maxWidth: '340px', margin: '0 auto' }}>
+    <div style={{ position: 'relative', width: '100%', maxWidth: '320px', margin: '0 auto' }}>
       {/* Floating BTC Coin Badge on top right */}
-      <div style={{ position: 'absolute', top: '-15px', right: '-25px', zIndex: 10 }}>
+      <div style={{ position: 'absolute', top: '-12px', right: '-5px', zIndex: 10 }}>
         <CoinBadge coin="BTC" price="$89,450" change="+4.82%" floating={true} />
       </div>
 
       {/* Floating SOL Coin Badge on bottom left */}
-      <div style={{ position: 'absolute', bottom: '40px', left: '-30px', zIndex: 10 }}>
+      <div style={{ position: 'absolute', bottom: '25px', left: '-5px', zIndex: 10 }}>
         <CoinBadge coin="SOL" price="$194.20" change="+11.4%" floating={true} />
       </div>
 

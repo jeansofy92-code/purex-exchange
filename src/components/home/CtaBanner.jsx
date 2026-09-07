@@ -5,15 +5,14 @@ import ScrollReveal from '../common/ScrollReveal'
 export default function CtaBanner() {
   return (
     <section style={{
-      padding: '4rem 1.5rem 6rem',
+      padding: '3rem 1rem 4.5rem',
       backgroundColor: '#060606'
     }}>
       <div className="container-max">
         <ScrollReveal>
           <div className="finantech-card-white" style={{
             border: '1px solid #e7e7e7',
-            borderRadius: '24px',
-            padding: '4.5rem 2.5rem',
+            borderRadius: '20px',
             textAlign: 'center',
             boxShadow: '0 20px 40px rgba(0,0,0,0.08)'
           }}>

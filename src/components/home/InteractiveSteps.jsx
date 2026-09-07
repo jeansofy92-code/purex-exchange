@@ -46,22 +46,21 @@ export default function InteractiveSteps() {
 
         <ScrollReveal delay={0.2}>
           <div className="finantech-card-white" style={{
-            padding: '2.75rem',
             border: '1px solid #e7e7e7'
           }}>
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '3rem',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: '2rem',
               alignItems: 'center'
             }}>
               {/* Left Side: Interactive Step Visual (Dark Contrast Box) */}
               <div style={{
                 backgroundColor: '#060606',
                 border: '1px solid #232323',
-                borderRadius: '20px',
-                padding: '2.25rem',
-                minHeight: '360px',
+                borderRadius: '16px',
+                padding: '1.5rem 1.25rem',
+                minHeight: '320px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',

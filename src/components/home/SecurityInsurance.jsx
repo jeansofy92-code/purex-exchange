@@ -7,9 +7,9 @@ export default function SecurityInsurance() {
       <div className="container-max">
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           alignItems: 'center',
-          gap: '4rem'
+          gap: '2.5rem'
         }}>
           {/* Left Column */}
           <ScrollReveal delay={0.1}>
@@ -61,13 +61,12 @@ export default function SecurityInsurance() {
           {/* Right Column: Contrast White Stat Card Grid */}
           <ScrollReveal delay={0.25}>
             <div className="finantech-card-white" style={{
-              padding: '2.5rem',
               boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
             }}>
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '2rem'
+                gap: '1.5rem'
               }}>
                 <div style={{ borderBottom: '1px solid #eeeeee', paddingBottom: '1.5rem' }}>
                   <div className="display-2" style={{ color: '#060606' }}>

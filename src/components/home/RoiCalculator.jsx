@@ -47,7 +47,6 @@ export default function RoiCalculator() {
 
         <ScrollReveal delay={0.2}>
           <div className="finantech-card-white" style={{
-            padding: '3rem 2.5rem',
             maxWidth: '1080px',
             margin: '0 auto',
             border: '1px solid #e7e7e7'
@@ -55,9 +54,9 @@ export default function RoiCalculator() {
             {/* Plan Selector Tabs with High Contrast */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-              gap: '0.75rem',
-              marginBottom: '2.5rem'
+              gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+              gap: '0.65rem',
+              marginBottom: '2rem'
             }}>
               {PACKAGES.map((pkg) => {
                 const isSelected = selectedPlanId === pkg.id
@@ -71,8 +70,8 @@ export default function RoiCalculator() {
                       border: '1px solid',
                       borderColor: isSelected ? '#060606' : '#e2e2e2',
                       borderRadius: '12px',
-                      padding: '0.85rem 1rem',
-                      fontSize: '0.9rem',
+                      padding: '0.75rem 0.6rem',
+                      fontSize: '0.85rem',
                       fontWeight: 700,
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',
@@ -98,8 +97,8 @@ export default function RoiCalculator() {
 
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '3rem',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: '2rem',
               alignItems: 'center'
             }}>
               {/* Left Side: Deposit Slider & Plan Specs */}
