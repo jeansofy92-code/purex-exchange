@@ -8,111 +8,84 @@ export const PACKAGES = [
     id: 'starter',
     name: 'Starter Arbitrage',
     badge: 'Novice Friendly',
-    description: 'Perfect for beginners looking for consistent automated daily returns with zero technical experience.',
+    description: 'Automated daily returns for beginner crypto investors.',
     minDeposit: 100,
     maxDeposit: 999,
     dailyRoi: '1.5% Daily',
-    roiMultiplier: 0.015,
-    monthlyRoi: '45.0% / month',
-    profitLimit: 'Up to $15.00 / day',
-    minWithdrawal: '$10',
+    monthlyRoi: '45.0% / mo',
     maxWithdrawal: '$500 / day',
-    tradingTeam: 'Level-1 AI Algorithmic Bot',
-    duration: '15 Days (Capital Return)',
+    tradingTeam: 'Level-1 AI Bot',
+    duration: '15 Days',
     isPopular: false,
     isWhiteCard: false,
     features: [
       '1.5% Daily Guaranteed Profit',
-      'Min Deposit: $100 — Max: $999',
-      '100% Principal Insurance SAFU',
-      'Daily Automatic Payouts',
-      'Standard 2-Exchange Arbitrage (Binance / OKX)',
-      'Withdrawal Limit: $500 / day',
-      '24/7 Community Support'
+      'Min: $100 — Max: $999 deposit',
+      '100% Principal SAFU Insurance',
+      'Instant Daily Auto Payouts'
     ]
   },
   {
     id: 'pro',
     name: 'Pro Quant Bot',
     badge: 'Most Popular',
-    description: 'Advanced multi-exchange cross-arbitrage with enhanced bot speed and higher daily yield.',
+    description: 'Multi-exchange triangular arbitrage with high daily yield.',
     minDeposit: 1000,
     maxDeposit: 4999,
     dailyRoi: '2.4% Daily',
-    roiMultiplier: 0.024,
-    monthlyRoi: '72.0% / month',
-    profitLimit: 'Up to $120.00 / day',
-    minWithdrawal: '$20',
+    monthlyRoi: '72.0% / mo',
     maxWithdrawal: '$2,500 / day',
-    tradingTeam: 'Pro Quant Algorithmic Cluster',
-    duration: '30 Days (Capital Return)',
+    tradingTeam: 'Quant Bot Cluster',
+    duration: '30 Days',
     isPopular: true,
     isWhiteCard: true, // Signature White Card
     features: [
       '2.4% Daily Guaranteed Profit',
-      'Min Deposit: $1,000 — Max: $4,999',
-      '100% Capital Insurance Protection',
-      'Instant Daily Payout Compounding',
-      'Triangular Arbitrage (6 Major Exchanges)',
-      'Sub-25ms High Speed Execution',
-      'Withdrawal Limit: $2,500 / day',
-      'Priority 24/7 Dedicated Support'
+      'Min: $1,000 — Max: $4,999 deposit',
+      '6-Exchange Triangular Routing',
+      'Sub-25ms High-Speed Arbitrage'
     ]
   },
   {
     id: 'elite',
     name: 'Elite Desk',
     badge: 'High Yield',
-    description: 'Institutional-grade arbitrage execution managed by senior quantitative traders and AI neural bots.',
+    description: 'Managed by senior quant traders and neural AI desks.',
     minDeposit: 5000,
     maxDeposit: 24999,
     dailyRoi: '3.5% Daily',
-    roiMultiplier: 0.035,
-    monthlyRoi: '105.0% / month',
-    profitLimit: 'Up to $875.00 / day',
-    minWithdrawal: '$50',
+    monthlyRoi: '105.0% / mo',
     maxWithdrawal: '$15,000 / day',
-    tradingTeam: 'Dedicated Senior Quant Trading Desk',
-    duration: '45 Days (Capital Return)',
+    tradingTeam: 'Senior Quant Desk',
+    duration: '45 Days',
     isPopular: false,
     isWhiteCard: false,
     features: [
       '3.5% Daily Guaranteed Profit',
-      'Min Deposit: $5,000 — Max: $24,999',
-      '100% Full Tier-1 Insurance Policy',
-      'Instant Auto Payout Direct to Wallet',
-      'Global 12-Exchange Cross-Liquidity Routing',
-      'Flash-Loan Zero Capital Arbitrage Tools',
-      'Withdrawal Limit: $15,000 / day',
-      'VIP Personal Account Manager'
+      'Min: $5,000 — Max: $24,999 deposit',
+      '12-Exchange Cross-Liquidity',
+      'Dedicated Quant Account Manager'
     ]
   },
   {
     id: 'vip',
     name: 'VIP Syndicate',
     badge: 'Institutional Master',
-    description: 'Bespoke high-volume quant syndicate trading with co-located exchange servers and highest tier profit allocation.',
+    description: 'High-volume syndicate with co-located exchange servers.',
     minDeposit: 25000,
     maxDeposit: 100000,
     dailyRoi: '4.8% Daily',
-    roiMultiplier: 0.048,
-    monthlyRoi: '144.0% / month',
-    profitLimit: 'Unlimited / Custom',
-    minWithdrawal: '$100',
-    maxWithdrawal: 'Unlimited / Instant',
-    tradingTeam: 'Chief Quant Officers & Dedicated Bot Swarm',
-    duration: '60 Days (Capital Return)',
+    monthlyRoi: '144.0% / mo',
+    maxWithdrawal: 'Unlimited',
+    tradingTeam: 'Chief Quant Officers',
+    duration: '60 Days',
     isPopular: false,
     isWhiteCard: false,
     features: [
       '4.8% Daily Guaranteed Profit',
-      'Min Deposit: $25,000 — Max: $100,000+',
-      '100% Principal Full Coverage Reserve',
-      'Institutional Flash Liquidity Desk',
-      'Unlimited Instant Withdrawals (0% Fee)',
-      'Sub-5ms Co-located Server Arbitrage',
-      'Custom Multi-Asset Strategy Balancing',
-      'Direct Private Telegram with Chief Traders'
+      'Min: $25,000 — Max: $100k+ deposit',
+      'Unlimited Instant 0% Fee Withdrawals',
+      'Sub-5ms Co-located Server Trading'
     ]
   }
 ]
@@ -158,7 +131,7 @@ export default function InvestmentPackages() {
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    padding: '2.25rem 1.75rem',
+                    padding: '1.5rem 1.35rem',
                     cursor: 'pointer',
                     height: '100%',
                     borderColor: isSelected && !isWhite ? '#B0F127' : isWhite ? '#e7e7e7' : '#232323'
@@ -170,140 +143,131 @@ export default function InvestmentPackages() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      marginBottom: '1.25rem'
+                      marginBottom: '0.85rem'
                     }}>
                       <span style={{
-                        fontSize: '0.75rem',
+                        fontSize: '0.7rem',
                         fontWeight: 800,
                         textTransform: 'uppercase',
-                        letterSpacing: '0.05em',
+                        letterSpacing: '0.04em',
                         backgroundColor: isWhite ? '#060606' : '#1e1e1e',
                         color: isWhite ? '#B0F127' : '#e7e7e7',
-                        padding: '0.35rem 0.85rem',
+                        padding: '0.25rem 0.65rem',
                         borderRadius: '999px'
                       }}>
                         {pkg.badge}
                       </span>
 
                       <span style={{
-                        fontSize: '0.75rem',
+                        fontSize: '0.72rem',
                         color: isWhite ? '#060606' : '#B0F127',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.3rem',
+                        gap: '0.25rem',
                         fontWeight: 700
                       }}>
-                        <ShieldCheck size={15} color={isWhite ? '#060606' : '#B0F127'} /> 100% Insured
+                        <ShieldCheck size={14} color={isWhite ? '#060606' : '#B0F127'} /> 100% SAFU
                       </span>
                     </div>
 
                     {/* Plan Name */}
                     <h3 style={{
-                      fontSize: '1.35rem',
+                      fontSize: '1.2rem',
                       fontWeight: 800,
                       color: isWhite ? '#060606' : '#fff',
-                      marginBottom: '0.5rem'
+                      marginBottom: '0.25rem'
                     }}>
                       {pkg.name}
                     </h3>
                     <p style={{
-                      fontSize: '0.85rem',
+                      fontSize: '0.8rem',
                       color: isWhite ? '#555555' : '#939393',
-                      lineHeight: 1.5,
-                      marginBottom: '1.5rem'
+                      lineHeight: 1.4,
+                      marginBottom: '0.9rem'
                     }}>
                       {pkg.description}
                     </p>
 
-                    {/* Daily ROI Box */}
+                    {/* Daily ROI Compact Box */}
                     <div style={{
                       backgroundColor: isWhite ? '#f4f4f4' : '#0c0c0c',
                       border: '1px solid',
-                      borderColor: isWhite ? '#e7e7e7' : '#232323',
-                      borderRadius: '14px',
-                      padding: '1.25rem',
-                      marginBottom: '1.5rem'
+                      borderColor: isWhite ? '#e5e5e5' : '#232323',
+                      borderRadius: '12px',
+                      padding: '0.75rem 0.9rem',
+                      marginBottom: '0.85rem',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
                     }}>
-                      <div style={{
-                        fontSize: '0.75rem',
-                        color: isWhite ? '#717172' : '#717172',
-                        fontWeight: 700,
-                        textTransform: 'uppercase'
-                      }}>
-                        DAILY RETURN RATE
+                      <div>
+                        <div style={{
+                          fontSize: '0.68rem',
+                          color: '#717172',
+                          fontWeight: 700,
+                          textTransform: 'uppercase'
+                        }}>
+                          Daily Return
+                        </div>
+                        <div style={{
+                          fontSize: '1.6rem',
+                          fontWeight: 800,
+                          color: isWhite ? '#060606' : '#B0F127',
+                          lineHeight: 1.1,
+                          marginTop: '0.1rem'
+                        }}>
+                          {pkg.dailyRoi}
+                        </div>
                       </div>
-                      <div style={{
-                        fontSize: '2.1rem',
-                        fontWeight: 800,
-                        color: isWhite ? '#060606' : '#B0F127',
-                        lineHeight: 1.1,
-                        marginTop: '0.2rem'
-                      }}>
-                        {pkg.dailyRoi}
-                      </div>
-                      <div style={{
-                        fontSize: '0.8rem',
-                        color: isWhite ? '#333333' : '#e7e7e7',
-                        marginTop: '0.35rem',
-                        fontWeight: 700
-                      }}>
-                        Yield: {pkg.monthlyRoi}
+                      <div style={{ textAlign: 'right' }}>
+                        <span style={{
+                          fontSize: '0.75rem',
+                          color: isWhite ? '#060606' : '#e7e7e7',
+                          fontWeight: 700,
+                          backgroundColor: isWhite ? '#e5e5e5' : '#181818',
+                          padding: '0.25rem 0.5rem',
+                          borderRadius: '6px'
+                        }}>
+                          {pkg.monthlyRoi}
+                        </span>
                       </div>
                     </div>
 
-                    {/* Limits Summary Box */}
+                    {/* Compact Specs Box */}
                     <div style={{
-                      backgroundColor: isWhite ? '#f9f9f9' : '#181818',
-                      borderRadius: '12px',
-                      padding: '1rem',
-                      marginBottom: '1.5rem',
-                      fontSize: '0.8rem',
+                      backgroundColor: isWhite ? '#f9f9f9' : '#141414',
+                      borderRadius: '10px',
+                      padding: '0.65rem 0.85rem',
+                      marginBottom: '1rem',
+                      fontSize: '0.78rem',
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: '0.5rem',
+                      gap: '0.35rem',
                       border: '1px solid',
-                      borderColor: isWhite ? '#eeeeee' : '#232323'
+                      borderColor: isWhite ? '#eeeeee' : '#202020'
                     }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: isWhite ? '#717172' : '#717172' }}>Deposit Range:</span>
+                        <span style={{ color: '#717172' }}>Deposit:</span>
                         <strong style={{ color: isWhite ? '#060606' : '#fff' }}>${pkg.minDeposit.toLocaleString()} – ${pkg.maxDeposit.toLocaleString()}</strong>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: isWhite ? '#717172' : '#717172' }}>Daily Withdrawal:</span>
-                        <strong style={{ color: isWhite ? '#060606' : '#B0F127' }}>{pkg.maxWithdrawal}</strong>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: isWhite ? '#717172' : '#717172' }}>Trading Desk:</span>
-                        <strong style={{ color: isWhite ? '#060606' : '#e7e7e7', textAlign: 'right' }}>{pkg.tradingTeam}</strong>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: isWhite ? '#717172' : '#717172' }}>Contract Cycle:</span>
-                        <strong style={{ color: isWhite ? '#060606' : '#fff' }}>{pkg.duration}</strong>
+                        <span style={{ color: '#717172' }}>Duration:</span>
+                        <strong style={{ color: isWhite ? '#060606' : '#B0F127' }}>{pkg.duration}</strong>
                       </div>
                     </div>
 
-                    {/* Features List */}
-                    <div style={{ marginBottom: '2rem' }}>
-                      <div style={{
-                        fontSize: '0.8rem',
-                        fontWeight: 700,
-                        color: isWhite ? '#060606' : '#e7e7e7',
-                        marginBottom: '0.75rem',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.05em'
-                      }}>
-                        Included Privileges:
-                      </div>
-                      <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                    {/* Compact Features List */}
+                    <div style={{ marginBottom: '1.25rem' }}>
+                      <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
                         {pkg.features.map((feat, fIdx) => (
                           <li key={fIdx} style={{
                             display: 'flex',
-                            alignItems: 'flex-start',
-                            gap: '0.5rem',
-                            fontSize: '0.825rem',
+                            alignItems: 'center',
+                            gap: '0.45rem',
+                            fontSize: '0.8rem',
                             color: isWhite ? '#333333' : '#c5c5c5'
                           }}>
-                            <Check size={16} color={isWhite ? '#060606' : '#B0F127'} style={{ flexShrink: 0, marginTop: '2px' }} strokeWidth={2.5} />
+                            <Check size={14} color={isWhite ? '#060606' : '#B0F127'} style={{ flexShrink: 0 }} strokeWidth={2.5} />
                             <span>{feat}</span>
                           </li>
                         ))}
@@ -317,19 +281,19 @@ export default function InvestmentPackages() {
                     className={isWhite ? 'btn-black' : 'btn-secondary'}
                     style={{
                       width: '100%',
-                      padding: '0.85rem',
+                      padding: '0.75rem',
                       textAlign: 'center',
-                      fontSize: '0.9rem',
+                      fontSize: '0.875rem',
                       fontWeight: 700,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: '0.4rem',
+                      gap: '0.35rem',
                       textDecoration: 'none'
                     }}
                   >
                     Select {pkg.name}
-                    <ArrowRight size={16} strokeWidth={2.5} />
+                    <ArrowRight size={15} strokeWidth={2.5} />
                   </Link>
                 </div>
               </ScrollReveal>

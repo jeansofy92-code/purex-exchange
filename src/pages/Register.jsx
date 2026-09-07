@@ -32,13 +32,6 @@ const COUNTRY_DIAL_CODES = [
   { code: '+52', label: 'Mexico (+52)', flag: '🇲🇽' },
 ]
 
-const PACKAGE_OPTIONS = [
-  { id: 'starter', name: 'Starter Arbitrage', roi: '1.5% Daily', range: '$100 – $999' },
-  { id: 'pro', name: 'Pro Quant Bot', roi: '2.4% Daily', range: '$1,000 – $4,999', popular: true },
-  { id: 'elite', name: 'Elite Desk', roi: '3.5% Daily', range: '$5,000 – $24,999' },
-  { id: 'vip', name: 'VIP Syndicate', roi: '4.8% Daily', range: '$25,000+' }
-]
-
 export default function Register() {
   const navigate = useNavigate()
   const { signup, isLoading } = useAuth()
@@ -47,7 +40,6 @@ export default function Register() {
   const [email, setEmail] = useState('')
   const [countryCode, setCountryCode] = useState('+1')
   const [phoneNumber, setPhoneNumber] = useState('')
-  const [selectedPlan, setSelectedPlan] = useState('pro')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [referralCode, setReferralCode] = useState('')
@@ -338,46 +330,6 @@ export default function Register() {
                 <span style={{ fontSize: '0.75rem', color: '#717172', marginTop: '0.35rem', display: 'block' }}>
                   Used for SMS trading alerts and withdrawal confirmations.
                 </span>
-              </div>
-
-              {/* Package Selection */}
-              <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', color: '#c5c5c5', fontWeight: 600, marginBottom: '0.5rem' }}>
-                  Target Investment Package
-                </label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem' }}>
-                  {PACKAGE_OPTIONS.map((pkg) => {
-                    const isSelected = selectedPlan === pkg.id
-                    return (
-                      <div
-                        key={pkg.id}
-                        onClick={() => setSelectedPlan(pkg.id)}
-                        style={{
-                          backgroundColor: isSelected ? '#1c2211' : '#181818',
-                          border: '1px solid',
-                          borderColor: isSelected ? '#B0F127' : '#282828',
-                          borderRadius: '10px',
-                          padding: '0.65rem 0.85rem',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s ease',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: '0.15rem'
-                        }}
-                      >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '0.85rem', fontWeight: 700, color: isSelected ? '#ffffff' : '#e7e7e7' }}>
-                            {pkg.name}
-                          </span>
-                          <span style={{ fontSize: '0.75rem', color: '#B0F127', fontWeight: 800 }}>
-                            {pkg.roi}
-                          </span>
-                        </div>
-                        <span style={{ fontSize: '0.72rem', color: '#717172' }}>{pkg.range}</span>
-                      </div>
-                    )
-                  })}
-                </div>
               </div>
 
               {/* Password & Confirm Password */}
