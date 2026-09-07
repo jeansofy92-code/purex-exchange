@@ -12,24 +12,27 @@ export default function PartnersStrip() {
 
   return (
     <section style={{
-      padding: '4rem 0',
+      padding: '3rem 0',
       borderTop: '1px solid #141414',
       borderBottom: '1px solid #141414',
-      backgroundColor: '#060606'
+      backgroundColor: '#060606',
+      width: '100%',
+      overflow: 'hidden'
     }}>
       <div className="container-max">
         <ScrollReveal delay={0.1}>
-          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-            <h2 className="display-3" style={{ fontSize: '1.4rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <h2 className="display-3" style={{ fontSize: '1.25rem' }}>
               Supported by top liquidity partners <span className="color-accent-1">around the globe</span>
             </h2>
           </div>
 
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-            gap: '1.25rem',
-            alignItems: 'center'
+            gridTemplateColumns: 'repeat(auto-fit, minmax(135px, 1fr))',
+            gap: '0.85rem',
+            alignItems: 'center',
+            width: '100%'
           }}>
             {exchanges.map((ex, idx) => (
               <div 
@@ -37,8 +40,8 @@ export default function PartnersStrip() {
                 style={{
                   backgroundColor: '#111111',
                   border: '1px solid #232323',
-                  borderRadius: '14px',
-                  padding: '1.25rem 1rem',
+                  borderRadius: '12px',
+                  padding: '1rem 0.75rem',
                   textAlign: 'center',
                   transition: 'transform 0.2s ease, border-color 0.2s ease'
                 }}
@@ -51,10 +54,10 @@ export default function PartnersStrip() {
                   e.currentTarget.style.transform = 'translateY(0)'
                 }}
               >
-                <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.01em' }}>
+                <div style={{ fontSize: '1rem', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.01em' }}>
                   {ex.name}
                 </div>
-                <div style={{ fontSize: '0.725rem', color: '#B0F127', fontWeight: 600, marginTop: '4px' }}>
+                <div style={{ fontSize: '0.7rem', color: '#B0F127', fontWeight: 600, marginTop: '2px' }}>
                   {ex.sub}
                 </div>
               </div>

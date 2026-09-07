@@ -58,22 +58,22 @@ export default function Navbar() {
         </nav>
 
         {/* Right CTA & Auth Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
           {isAuthenticated && user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.5rem',
+                gap: '0.4rem',
                 backgroundColor: '#141414',
                 border: '1px solid #282828',
                 borderRadius: '10px',
-                padding: '0.45rem 0.85rem',
-                fontSize: '0.85rem'
+                padding: '0.4rem 0.65rem',
+                fontSize: '0.8rem'
               }}>
                 <div style={{
-                  width: '24px',
-                  height: '24px',
+                  width: '22px',
+                  height: '22px',
                   borderRadius: '50%',
                   backgroundColor: '#B0F127',
                   color: '#060606',
@@ -81,11 +81,11 @@ export default function Navbar() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontWeight: 800,
-                  fontSize: '0.75rem'
+                  fontSize: '0.7rem'
                 }}>
                   {user.fullName ? user.fullName[0].toUpperCase() : 'U'}
                 </div>
-                <span style={{ color: '#fff', fontWeight: 700, maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span className="desktop-only" style={{ color: '#fff', fontWeight: 700, maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {user.fullName || user.email}
                 </span>
               </div>
@@ -96,7 +96,7 @@ export default function Navbar() {
                   border: '1px solid #282828',
                   borderRadius: '10px',
                   color: '#939393',
-                  padding: '0.5rem 0.75rem',
+                  padding: '0.45rem 0.65rem',
                   fontSize: '0.8rem',
                   cursor: 'pointer',
                   display: 'flex',
@@ -108,24 +108,24 @@ export default function Navbar() {
                 onMouseLeave={e => { e.currentTarget.style.borderColor = '#282828'; e.currentTarget.style.color = '#939393' }}
               >
                 <LogOut size={14} />
-                <span>Sign Out</span>
+                <span className="desktop-only">Sign Out</span>
               </button>
             </div>
           ) : (
             <>
-              {/* Log In Button */}
+              {/* Log In Button - Visible everywhere with compact mobile styling */}
               <Link
                 to="/login"
+                className="desktop-only"
                 style={{
                   color: '#ffffff',
                   textDecoration: 'none',
-                  fontSize: '0.9rem',
+                  fontSize: '0.875rem',
                   fontWeight: 700,
-                  padding: '0.6rem 1.1rem',
+                  padding: '0.55rem 0.95rem',
                   borderRadius: '10px',
                   border: '1px solid #282828',
                   backgroundColor: '#111111',
-                  display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.4rem',
                   transition: 'all 0.2s ease'
@@ -133,7 +133,7 @@ export default function Navbar() {
                 onMouseEnter={e => { e.currentTarget.style.borderColor = '#B0F127'; e.currentTarget.style.color = '#B0F127' }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = '#282828'; e.currentTarget.style.color = '#ffffff' }}
               >
-                <LogIn size={15} />
+                <LogIn size={14} />
                 <span>Log In</span>
               </Link>
 
@@ -142,18 +142,19 @@ export default function Navbar() {
                 to="/register"
                 className="btn-primary"
                 style={{
-                  padding: '0.6rem 1.25rem',
-                  fontSize: '0.9rem',
+                  padding: '0.5rem 0.9rem',
+                  fontSize: '0.85rem',
                   fontWeight: 800,
                   borderRadius: '10px',
                   textDecoration: 'none',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '0.4rem'
+                  gap: '0.35rem',
+                  minHeight: 'unset'
                 }}
               >
-                <UserPlus size={15} strokeWidth={2.5} />
-                <span>Register</span>
+                <UserPlus size={14} strokeWidth={2.5} />
+                <span>Sign Up</span>
               </Link>
             </>
           )}
@@ -167,12 +168,13 @@ export default function Navbar() {
               border: 'none',
               color: '#fff',
               cursor: 'pointer',
-              padding: '0.25rem'
+              padding: '0.35rem',
+              borderRadius: '8px'
             }}
             className="mobile-toggle"
             aria-label="Toggle menu"
           >
-            {mobileOpen ? <X size={26} color="#B0F127" /> : <Menu size={26} />}
+            {mobileOpen ? <X size={24} color="#B0F127" /> : <Menu size={24} />}
           </button>
         </div>
       </div>

@@ -41,11 +41,16 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
   }
 
   html {
     scroll-behavior: smooth;
     background-color: #060606;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
@@ -57,7 +62,24 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
+    width: 100%;
+    max-width: 100%;
     overflow-x: hidden;
+    position: relative;
+    overscroll-behavior-x: none;
+  }
+
+  #root {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  img, svg, video, canvas, audio, iframe, embed, object {
+    max-width: 100%;
+    height: auto;
+    display: block;
   }
 
   /* Custom scrollbar */
@@ -260,15 +282,21 @@
 /* Containers */
 .container-max {
   max-width: 1240px;
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
+  box-sizing: border-box;
 }
 
 .section-spacing {
-  padding-top: 6.5rem;
-  padding-bottom: 6.5rem;
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* Floating animation */
@@ -281,51 +309,72 @@
   animation: floatAnim 4.5s ease-in-out infinite;
 }
 
-/* Mobile Responsive Optimization Rules */
+/* Responsive Visibility Helpers */
+.desktop-only {
+  display: block;
+}
+
+.mobile-only {
+  display: none;
+}
+
+/* Mobile Responsive App Optimization Rules */
 @media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: block !important;
+  }
+
   .section-spacing {
-    padding-top: 3.5rem !important;
-    padding-bottom: 3.5rem !important;
+    padding-top: 3.25rem !important;
+    padding-bottom: 3.25rem !important;
+    overflow-x: hidden !important;
   }
 
   .container-max {
-    padding-left: 1.15rem !important;
-    padding-right: 1.15rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    max-width: 100% !important;
   }
 
   .finantech-card,
   .finantech-card-white {
-    padding: 1.5rem 1.25rem !important;
+    padding: 1.35rem 1.15rem !important;
     border-radius: 16px !important;
+    max-width: 100% !important;
   }
 
   .display-1 {
-    font-size: 2.15rem !important;
-    line-height: 1.2 !important;
-    letter-spacing: -0.02em !important;
+    font-size: 2rem !important;
+    line-height: 1.18 !important;
+    letter-spacing: -0.025em !important;
   }
 
   .display-2 {
-    font-size: 1.8rem !important;
+    font-size: 1.65rem !important;
     line-height: 1.22 !important;
     letter-spacing: -0.02em !important;
   }
 
   .display-3 {
-    font-size: 1.45rem !important;
-    line-height: 1.28 !important;
+    font-size: 1.35rem !important;
+    line-height: 1.25 !important;
   }
 
   .display-4 {
-    font-size: 1.15rem !important;
+    font-size: 1.1rem !important;
     line-height: 1.35 !important;
   }
 
   .btn-primary,
   .btn-secondary,
   .btn-black {
-    padding: 0.85rem 1.25rem !important;
-    font-size: 0.95rem !important;
+    padding: 0.85rem 1.15rem !important;
+    font-size: 0.925rem !important;
     min-height: 48px !important;
+    border-radius: 12px !important;
   }
 }

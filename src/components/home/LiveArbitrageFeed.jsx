@@ -91,7 +91,8 @@ export default function LiveArbitrageFeed() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.2}>
-          <div className="finantech-card" style={{ padding: '1.5rem', overflowX: 'auto', backgroundColor: '#111111' }}>
+          {/* Desktop Table View */}
+          <div className="finantech-card desktop-only" style={{ padding: '1.5rem', overflowX: 'auto', backgroundColor: '#111111' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '700px' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid #232323', color: '#717172', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -162,6 +163,73 @@ export default function LiveArbitrageFeed() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Native Card Stream (Zero Side-Scroll) */}
+          <div className="mobile-only" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
+            {trades.map((trade) => (
+              <div 
+                key={trade.id}
+                className="finantech-card"
+                style={{
+                  padding: '1rem 1.15rem',
+                  backgroundColor: '#111111',
+                  borderRadius: '14px',
+                  border: '1px solid #232323',
+                  width: '100%'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 800, color: '#fff', fontSize: '0.9rem' }}>
+                    <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#B0F127' }} />
+                    {trade.pair}
+                  </div>
+                  <span style={{
+                    backgroundColor: '#16231a',
+                    color: '#05C168',
+                    border: '1px solid #1f3d29',
+                    padding: '0.2rem 0.5rem',
+                    borderRadius: '999px',
+                    fontSize: '0.7rem',
+                    fontWeight: 700,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.25rem'
+                  }}>
+                    <CheckCircle size={11} /> {trade.status}
+                  </span>
+                </div>
+
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  backgroundColor: '#161616',
+                  borderRadius: '8px',
+                  padding: '0.45rem 0.65rem',
+                  marginBottom: '0.65rem',
+                  fontSize: '0.78rem'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <span style={{ color: '#e7e7e7' }}>{trade.buyEx}</span>
+                    <ArrowRight size={12} color="#B0F127" />
+                    <span style={{ color: '#B0F127', fontWeight: 700 }}>{trade.sellEx}</span>
+                  </div>
+                  <span style={{ color: '#939393', fontFamily: 'var(--font-mono)', fontSize: '0.72rem' }}>
+                    {trade.latency}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem' }}>
+                  <span style={{ color: '#B0F127', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+                    Spread: {trade.spread}
+                  </span>
+                  <span style={{ color: '#fff', fontWeight: 800, fontFamily: 'var(--font-mono)' }}>
+                    Net: {trade.profitUsd}
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
         </ScrollReveal>
       </div>

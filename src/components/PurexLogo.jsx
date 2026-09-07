@@ -73,18 +73,21 @@ export default function PurexLogo({ size = 'md', showBadge = true }) {
       </div>
 
       {showBadge && (
-        <span style={{
-          fontSize: '0.65rem',
-          backgroundColor: 'rgba(176, 241, 39, 0.1)',
-          color: '#B0F127',
-          border: '1px solid rgba(176, 241, 39, 0.3)',
-          padding: '0.2rem 0.5rem',
-          borderRadius: '999px',
-          fontWeight: 700,
-          textTransform: 'uppercase',
-          letterSpacing: '0.04em',
-          marginLeft: '0.25rem'
-        }}>
+        <span 
+          className="desktop-only"
+          style={{
+            fontSize: '0.65rem',
+            backgroundColor: 'rgba(176, 241, 39, 0.1)',
+            color: '#B0F127',
+            border: '1px solid rgba(176, 241, 39, 0.3)',
+            padding: '0.2rem 0.5rem',
+            borderRadius: '999px',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.04em',
+            marginLeft: '0.25rem'
+          }}
+        >
           AI Quant v2.4
         </span>
       )}

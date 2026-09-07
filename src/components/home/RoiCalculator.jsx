@@ -49,14 +49,16 @@ export default function RoiCalculator() {
           <div className="finantech-card-white" style={{
             maxWidth: '1080px',
             margin: '0 auto',
-            border: '1px solid #e7e7e7'
+            border: '1px solid #e7e7e7',
+            width: '100%'
           }}>
-            {/* Plan Selector Tabs with High Contrast */}
+            {/* Plan Selector Tabs with Clean Mobile 2x2 Grid */}
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
-              gap: '0.65rem',
-              marginBottom: '2rem'
+              gap: '0.5rem',
+              marginBottom: '1.75rem',
+              width: '100%'
             }}>
               {PACKAGES.map((pkg) => {
                 const isSelected = selectedPlanId === pkg.id
@@ -70,21 +72,21 @@ export default function RoiCalculator() {
                       border: '1px solid',
                       borderColor: isSelected ? '#060606' : '#e2e2e2',
                       borderRadius: '12px',
-                      padding: '0.75rem 0.6rem',
-                      fontSize: '0.85rem',
+                      padding: '0.65rem 0.5rem',
+                      fontSize: '0.825rem',
                       fontWeight: 700,
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
-                      gap: '0.2rem',
+                      gap: '0.15rem',
                       boxShadow: isSelected ? '0 6px 16px rgba(0,0,0,0.15)' : 'none'
                     }}
                   >
-                    <span>{pkg.name}</span>
+                    <span style={{ fontSize: '0.8rem' }}>{pkg.name.split(' ')[0]}</span>
                     <span style={{
-                      fontSize: '0.75rem',
+                      fontSize: '0.72rem',
                       fontWeight: 800,
                       color: isSelected ? '#B0F127' : '#717172'
                     }}>
@@ -98,23 +100,24 @@ export default function RoiCalculator() {
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: '2rem',
-              alignItems: 'center'
+              gap: '1.75rem',
+              alignItems: 'center',
+              width: '100%'
             }}>
               {/* Left Side: Deposit Slider & Plan Specs */}
-              <div>
-                <div style={{ marginBottom: '1.75rem' }}>
+              <div style={{ width: '100%' }}>
+                <div style={{ marginBottom: '1.5rem' }}>
                   <div style={{
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    marginBottom: '0.75rem'
+                    marginBottom: '0.65rem'
                   }}>
-                    <label htmlFor={sliderId} style={{ fontSize: '0.9rem', color: '#555555', fontWeight: 700 }}>
-                      Select Investment Capital:
+                    <label htmlFor={sliderId} style={{ fontSize: '0.85rem', color: '#555555', fontWeight: 700 }}>
+                      Investment Capital:
                     </label>
                     <span style={{
-                      fontSize: '1.75rem',
+                      fontSize: '1.5rem',
                       fontWeight: 800,
                       color: '#060606',
                       fontFamily: 'var(--font-mono)'
@@ -144,9 +147,9 @@ export default function RoiCalculator() {
                   <div style={{
                     display: 'flex',
                     justifyContent: 'space-between',
-                    fontSize: '0.75rem',
+                    fontSize: '0.72rem',
                     color: '#717172',
-                    marginTop: '0.5rem',
+                    marginTop: '0.4rem',
                     fontWeight: 600
                   }}>
                     <span>Min: ${currentPlan.minDeposit.toLocaleString()}</span>
@@ -156,28 +159,28 @@ export default function RoiCalculator() {
 
                 <div style={{
                   backgroundColor: '#f8f8f8',
-                  borderRadius: '16px',
-                  padding: '1.5rem',
+                  borderRadius: '14px',
+                  padding: '1.15rem',
                   border: '1px solid #e8e8e8',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '0.85rem'
+                  gap: '0.7rem'
                 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.825rem' }}>
                     <span style={{ color: '#666666' }}>Selected Tier:</span>
                     <strong style={{ color: '#060606' }}>{currentPlan.name}</strong>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                    <span style={{ color: '#666666' }}>Assigned Trading Engine:</span>
-                    <strong style={{ color: '#060606', backgroundColor: '#e2f7b8', padding: '0.15rem 0.5rem', borderRadius: '6px' }}>{currentPlan.tradingTeam}</strong>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.825rem' }}>
+                    <span style={{ color: '#666666' }}>Assigned Engine:</span>
+                    <strong style={{ color: '#060606', backgroundColor: '#e2f7b8', padding: '0.1rem 0.45rem', borderRadius: '6px' }}>{currentPlan.tradingTeam}</strong>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.825rem' }}>
                     <span style={{ color: '#666666' }}>Capital Protection:</span>
-                    <strong style={{ color: '#060606', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                      <ShieldCheck size={16} color="#05C168" /> 100% Insured SAFU
+                    <strong style={{ color: '#060606', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <ShieldCheck size={15} color="#05C168" /> 100% Insured SAFU
                     </strong>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.825rem' }}>
                     <span style={{ color: '#666666' }}>Contract Duration:</span>
                     <strong style={{ color: '#060606' }}>{currentPlan.duration}</strong>
                   </div>
@@ -188,24 +191,25 @@ export default function RoiCalculator() {
               <div style={{
                 backgroundColor: '#0c0c0c',
                 border: '1px solid #282828',
-                borderRadius: '20px',
-                padding: '2rem'
+                borderRadius: '18px',
+                padding: '1.5rem',
+                width: '100%'
               }}>
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   borderBottom: '1px solid #1f1f1f',
-                  paddingBottom: '1rem',
-                  marginBottom: '1.5rem'
+                  paddingBottom: '0.85rem',
+                  marginBottom: '1.25rem'
                 }}>
-                  <span style={{ fontSize: '0.85rem', color: '#939393', fontWeight: 600 }}>PROFIT BREAKDOWN</span>
+                  <span style={{ fontSize: '0.8rem', color: '#939393', fontWeight: 600 }}>PROFIT BREAKDOWN</span>
                   <span style={{
-                    fontSize: '0.75rem',
+                    fontSize: '0.72rem',
                     backgroundColor: '#181818',
                     color: '#B0F127',
                     border: '1px solid #282828',
-                    padding: '0.25rem 0.6rem',
+                    padding: '0.2rem 0.55rem',
                     borderRadius: '999px',
                     fontWeight: 700
                   }}>
@@ -213,10 +217,10 @@ export default function RoiCalculator() {
                   </span>
                 </div>
 
-                <div style={{ marginBottom: '1.5rem' }}>
-                  <div style={{ fontSize: '0.8rem', color: '#717172', fontWeight: 600 }}>DAILY NET PROFIT (PAID EVERY 24H)</div>
+                <div style={{ marginBottom: '1.25rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: '#717172', fontWeight: 600 }}>DAILY NET PROFIT (PAID EVERY 24H)</div>
                   <div style={{
-                    fontSize: '2.5rem',
+                    fontSize: '2.15rem',
                     fontWeight: 800,
                     color: '#B0F127',
                     fontFamily: 'var(--font-mono)',
@@ -230,19 +234,19 @@ export default function RoiCalculator() {
                 <div style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(2, 1fr)',
-                  gap: '1rem',
-                  marginBottom: '1.75rem'
+                  gap: '0.75rem',
+                  marginBottom: '1.25rem'
                 }}>
-                  <div style={{ backgroundColor: '#141414', padding: '1rem', borderRadius: '12px', border: '1px solid #232323' }}>
-                    <div style={{ fontSize: '0.7rem', color: '#717172' }}>WEEKLY PROFIT</div>
-                    <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#fff', fontFamily: 'var(--font-mono)', marginTop: '0.15rem' }}>
+                  <div style={{ backgroundColor: '#141414', padding: '0.85rem', borderRadius: '12px', border: '1px solid #232323' }}>
+                    <div style={{ fontSize: '0.68rem', color: '#717172' }}>WEEKLY PROFIT</div>
+                    <div style={{ fontSize: '1rem', fontWeight: 700, color: '#fff', fontFamily: 'var(--font-mono)', marginTop: '0.15rem' }}>
                       +${weeklyProfit.toFixed(2)}
                     </div>
                   </div>
 
-                  <div style={{ backgroundColor: '#141414', padding: '1rem', borderRadius: '12px', border: '1px solid #232323' }}>
-                    <div style={{ fontSize: '0.7rem', color: '#717172' }}>30-DAY PROFIT</div>
-                    <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#fff', fontFamily: 'var(--font-mono)', marginTop: '0.15rem' }}>
+                  <div style={{ backgroundColor: '#141414', padding: '0.85rem', borderRadius: '12px', border: '1px solid #232323' }}>
+                    <div style={{ fontSize: '0.68rem', color: '#717172' }}>30-DAY PROFIT</div>
+                    <div style={{ fontSize: '1rem', fontWeight: 700, color: '#fff', fontFamily: 'var(--font-mono)', marginTop: '0.15rem' }}>
                       +${monthlyProfit.toFixed(2)}
                     </div>
                   </div>
@@ -250,38 +254,38 @@ export default function RoiCalculator() {
 
                 <div style={{
                   backgroundColor: '#141414',
-                  padding: '1.25rem',
-                  borderRadius: '14px',
+                  padding: '1rem',
+                  borderRadius: '12px',
                   border: '1px solid #232323',
-                  marginBottom: '1.5rem'
+                  marginBottom: '1.25rem'
                 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.85rem' }}>
-                    <span style={{ color: '#939393' }}>Initial Capital Backing:</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem', fontSize: '0.8rem' }}>
+                    <span style={{ color: '#939393' }}>Capital Backing:</span>
                     <span style={{ color: '#fff', fontWeight: 700 }}>${depositAmount.toLocaleString()} (100% Insured)</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem', fontSize: '0.85rem' }}>
-                    <span style={{ color: '#939393' }}>Total Net Profit ({currentPlan.duration}):</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem', fontSize: '0.8rem' }}>
+                    <span style={{ color: '#939393' }}>Total Cycle Profit ({currentPlan.duration}):</span>
                     <span style={{ color: '#B0F127', fontWeight: 700 }}>+${totalCycleProfit.toFixed(2)}</span>
                   </div>
                   <div style={{
                     display: 'flex',
                     justifyContent: 'space-between',
-                    paddingTop: '0.6rem',
+                    paddingTop: '0.5rem',
                     borderTop: '1px solid #232323',
-                    fontSize: '0.95rem'
+                    fontSize: '0.875rem'
                   }}>
                     <strong style={{ color: '#fff' }}>Total Capital & Return:</strong>
-                    <strong style={{ color: '#B0F127', fontSize: '1.1rem' }}>${totalReturn.toFixed(2)}</strong>
+                    <strong style={{ color: '#B0F127', fontSize: '1rem' }}>${totalReturn.toFixed(2)}</strong>
                   </div>
                 </div>
 
                 <Link
                   to="/register"
                   className="btn-primary"
-                  style={{ width: '100%', padding: '0.9rem', fontSize: '0.95rem', textDecoration: 'none' }}
+                  style={{ width: '100%', padding: '0.85rem', fontSize: '0.9rem', textDecoration: 'none', textAlign: 'center' }}
                 >
                   Invest ${depositAmount.toLocaleString()} in {currentPlan.name}
-                  <ArrowRight size={18} strokeWidth={2.5} />
+                  <ArrowRight size={17} strokeWidth={2.5} />
                 </Link>
               </div>
             </div>
