@@ -8,18 +8,64 @@ const TOKEN_KEY = 'purex_auth_token'
 const USERS_STORAGE_KEY = 'purex_registered_users'
 const RESET_CODES_KEY = 'purex_pwd_reset_codes'
 
-// Pre-seeded demo accounts for instant 1-click testing
+// Pre-seeded demo accounts with full balance, active investments, and transaction history
 const DEFAULT_DEMO_USERS = [
   {
     id: 'usr-demo-01',
     email: 'trader@purex.exchange',
     password: 'Password123!',
     fullName: 'Alex Vance (Alpha Trader)',
-    totalBalance: 148520.50,
+    phone: '+1 (555) 234-8921',
+    capital: 85000.00,
+    profit: 21170.50,
     availableBalance: 42350.00,
-    investedBalance: 106170.50,
-    tier: 'VIP Tier 3 (0.01% Maker)',
+    totalBalance: 148520.50,
+    tier: 'Pro Quant Desk',
     kycStatus: 'Verified Level 2',
+    referralCode: 'PX-88492',
+    referralStats: {
+      totalInvited: 14,
+      activeInvestors: 9,
+      totalEarned: 2450.00,
+      tier1Count: 9,
+      tier2Count: 5
+    },
+    activeInvestments: [
+      {
+        id: 'inv-01',
+        packageId: 'elite',
+        packageName: 'Elite Desk',
+        amount: 50000,
+        dailyRoi: '3.5%',
+        dailyEarnings: 1750.00,
+        totalEarned: 12250.00,
+        startDate: '2026-03-01',
+        duration: '45 Days',
+        status: 'ACTIVE',
+        insuranceStatus: '100% SAFU Insured'
+      },
+      {
+        id: 'inv-02',
+        packageId: 'pro',
+        packageName: 'Pro Quant Bot',
+        amount: 35000,
+        dailyRoi: '2.4%',
+        dailyEarnings: 840.00,
+        totalEarned: 8920.50,
+        startDate: '2026-03-03',
+        duration: '30 Days',
+        status: 'ACTIVE',
+        insuranceStatus: '100% SAFU Insured'
+      }
+    ],
+    transactions: [
+      { id: 'tx-101', type: 'PROFIT', title: 'Daily Arbitrage Credit (Elite Desk 3.5%)', amount: 1750.00, asset: 'USDT', status: 'Completed', date: 'Today, 08:00 AM', hash: '0x8f2a...91b4' },
+      { id: 'tx-102', type: 'PROFIT', title: 'Daily Arbitrage Credit (Pro Quant 2.4%)', amount: 840.00, asset: 'USDT', status: 'Completed', date: 'Today, 08:00 AM', hash: '0x3c1d...44e2' },
+      { id: 'tx-103', type: 'DEPOSIT', title: 'USDT (TRC20) Capital Inflow', amount: 25000.00, asset: 'USDT', status: 'Completed', date: 'Yesterday, 04:15 PM', hash: '0x99a1...12ff' },
+      { id: 'tx-104', type: 'INVESTMENT', title: 'Activated Pro Quant Bot Cluster', amount: 35000.00, asset: 'USDT', status: 'Completed', date: 'Mar 03, 2026', hash: '0x22b4...881a' },
+      { id: 'tx-105', type: 'WITHDRAWAL', title: 'Instant Profit Withdrawal to USDT', amount: 5000.00, asset: 'USDT', status: 'Completed', date: 'Feb 26, 2026', hash: '0x71e9...55cc' },
+      { id: 'tx-106', type: 'REFERRAL', title: 'Tier 1 Referral Commission (User #PX492)', amount: 480.00, asset: 'USDT', status: 'Completed', date: 'Feb 24, 2026', hash: '0x66d3...33bb' }
+    ],
     createdAt: '2025-01-15T10:00:00Z',
   },
   {
@@ -27,11 +73,40 @@ const DEFAULT_DEMO_USERS = [
     email: 'investor@purex.exchange',
     password: 'Password123!',
     fullName: 'Elena Rostova (Institutional)',
+    phone: '+44 7911 123456',
+    capital: 625000.00,
+    profit: 148200.00,
+    availableBalance: 101800.00,
     totalBalance: 875000.00,
-    availableBalance: 250000.00,
-    investedBalance: 625000.00,
-    tier: 'Institutional Prime',
-    kycStatus: 'Verified Level 3 (Institutional)',
+    tier: 'VIP Syndicate Master',
+    kycStatus: 'Verified Level 2',
+    referralCode: 'PX-90142',
+    referralStats: {
+      totalInvited: 28,
+      activeInvestors: 18,
+      totalEarned: 14200.00,
+      tier1Count: 18,
+      tier2Count: 10
+    },
+    activeInvestments: [
+      {
+        id: 'inv-03',
+        packageId: 'vip',
+        packageName: 'VIP Syndicate',
+        amount: 625000,
+        dailyRoi: '4.8%',
+        dailyEarnings: 30000.00,
+        totalEarned: 148200.00,
+        startDate: '2026-02-20',
+        duration: '60 Days',
+        status: 'ACTIVE',
+        insuranceStatus: '100% SAFU Insured'
+      }
+    ],
+    transactions: [
+      { id: 'tx-201', type: 'PROFIT', title: 'Daily Arbitrage Credit (VIP Syndicate 4.8%)', amount: 30000.00, asset: 'USDT', status: 'Completed', date: 'Today, 08:00 AM', hash: '0xaa12...bb45' },
+      { id: 'tx-202', type: 'DEPOSIT', title: 'Bitcoin (BTC) Institutional Deposit', amount: 150000.00, asset: 'BTC', status: 'Completed', date: 'Feb 19, 2026', hash: '0x12ff...89bb' }
+    ],
     createdAt: '2024-11-20T08:30:00Z',
   }
 ]
@@ -54,7 +129,8 @@ export function AuthProvider({ children }) {
       const savedSession = localStorage.getItem(SESSION_KEY)
       const savedToken = localStorage.getItem(TOKEN_KEY)
       if (savedSession) {
-        setUser(JSON.parse(savedSession))
+        const parsed = JSON.parse(savedSession)
+        setUser(parsed)
       }
       if (savedToken) {
         setToken(savedToken)
@@ -69,24 +145,31 @@ export function AuthProvider({ children }) {
   // Helper to persist auth session
   const persistSession = (userData, authToken) => {
     setUser(userData)
-    setToken(authToken)
+    if (authToken) setToken(authToken)
     try {
       localStorage.setItem(SESSION_KEY, JSON.stringify(userData))
       if (authToken) {
         localStorage.setItem(TOKEN_KEY, authToken)
+      }
+      // Also update in registered users list
+      const storedUsersRaw = localStorage.getItem(USERS_STORAGE_KEY)
+      const users = storedUsersRaw ? JSON.parse(storedUsersRaw) : [...DEFAULT_DEMO_USERS]
+      const idx = users.findIndex(u => u.id === userData.id || u.email === userData.email)
+      if (idx >= 0) {
+        users[idx] = { ...users[idx], ...userData }
+        localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))
       }
     } catch (e) {
       console.error('Error saving session to localStorage:', e)
     }
   }
 
-  // Login handler with backend API + local fallback (supports Email or Phone)
+  // Login handler
   const login = async (identifier, password) => {
     setIsLoading(true)
     const cleanId = (identifier || '').trim().toLowerCase()
 
     try {
-      // Try backend Express API first
       const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -98,21 +181,9 @@ export function AuthProvider({ children }) {
         persistSession(data.user, data.token)
         setIsLoading(false)
         return { success: true, user: data.user }
-      } else {
-        const errData = await res.json().catch(() => ({}))
-        if (res.status === 401 || res.status === 400) {
-          const fallback = checkLocalLogin(cleanId, password)
-          if (fallback.success) {
-            persistSession(fallback.user, 'purex-local-jwt-token')
-            setIsLoading(false)
-            return { success: true, user: fallback.user, isLocalFallback: true }
-          }
-          setIsLoading(false)
-          return { success: false, error: errData.error || 'Invalid email, phone number, or password' }
-        }
       }
     } catch (_networkError) {
-      // Backend offline -> run locally
+      // Offline fallback
     }
 
     // Local resilient authentication
@@ -127,7 +198,6 @@ export function AuthProvider({ children }) {
     return { success: false, error: localResult.error || 'Invalid credentials. Please check your email/phone and password.' }
   }
 
-  // Local user verification helper (matches email or phone)
   const checkLocalLogin = (cleanId, password) => {
     try {
       const storedUsersRaw = localStorage.getItem(USERS_STORAGE_KEY)
@@ -152,198 +222,37 @@ export function AuthProvider({ children }) {
         email: matched.email,
         phone: matched.phone || '',
         fullName: matched.fullName,
-        selectedPackage: matched.selectedPackage || 'Pro Quant Bot',
-        totalBalance: matched.totalBalance ?? 25000,
-        availableBalance: matched.availableBalance ?? 10000,
-        investedBalance: matched.investedBalance ?? 15000,
-        tier: matched.tier || 'Pro Quant Tier',
+        capital: matched.capital ?? 10000,
+        profit: matched.profit ?? 2450,
+        availableBalance: matched.availableBalance ?? 5000,
+        totalBalance: matched.totalBalance ?? (matched.capital ?? 10000) + (matched.profit ?? 2450) + (matched.availableBalance ?? 5000),
+        tier: matched.tier || 'Pro Quant Desk',
         kycStatus: matched.kycStatus || 'Verified Level 1',
+        referralCode: matched.referralCode || `PX-${Math.floor(10000 + Math.random() * 90000)}`,
+        referralStats: matched.referralStats || { totalInvited: 5, activeInvestors: 3, totalEarned: 640.00, tier1Count: 3, tier2Count: 2 },
+        activeInvestments: matched.activeInvestments || [
+          {
+            id: 'inv-demo',
+            packageId: 'pro',
+            packageName: 'Pro Quant Bot',
+            amount: 10000,
+            dailyRoi: '2.4%',
+            dailyEarnings: 240.00,
+            totalEarned: 2450.00,
+            startDate: '2026-03-01',
+            duration: '30 Days',
+            status: 'ACTIVE',
+            insuranceStatus: '100% SAFU Insured'
+          }
+        ],
+        transactions: matched.transactions || [
+          { id: 'tx-1', type: 'PROFIT', title: 'Daily Arbitrage Credit (Pro Quant 2.4%)', amount: 240.00, asset: 'USDT', status: 'Completed', date: 'Today, 08:00 AM', hash: '0x8f2a...91b4' },
+          { id: 'tx-2', type: 'DEPOSIT', title: 'USDT Capital Inflow', amount: 10000.00, asset: 'USDT', status: 'Completed', date: 'Mar 01, 2026', hash: '0x3c1d...44e2' }
+        ]
       }
       return { success: true, user: userObj }
     } catch {
       return { success: false, error: 'Authentication service error. Please try again.' }
-    }
-  }
-
-  // In-memory / localStorage storage key for pending signup
-  const SIGNUP_CODES_KEY = 'purex_signup_verification_codes'
-
-  // STEP 1: Send Signup Verification Code (6-digit OTP)
-  const sendSignupCode = async (fullName, email, password) => {
-    setIsLoading(true)
-    const cleanEmail = email.trim().toLowerCase()
-    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/send-signup-code`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fullName, email: cleanEmail, password })
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        storeLocalSignupCode(fullName, cleanEmail, password, data.devCode || generatedOtp)
-        setIsLoading(false)
-        return {
-          success: true,
-          message: data.message || `Verification code sent to ${cleanEmail}`,
-          devCode: data.devCode || generatedOtp
-        }
-      } else {
-        const errData = await res.json().catch(() => ({}))
-        setIsLoading(false)
-        return {
-          success: false,
-          error: errData.error || 'Failed to dispatch verification code.'
-        }
-      }
-    } catch {
-      // Backend offline -> run locally
-    }
-
-    // Check if user exists in local storage
-    try {
-      const storedUsersRaw = localStorage.getItem(USERS_STORAGE_KEY)
-      const users = storedUsersRaw ? JSON.parse(storedUsersRaw) : [...DEFAULT_DEMO_USERS]
-      if (users.some((u) => u.email.toLowerCase() === cleanEmail)) {
-        setIsLoading(false)
-        return { success: false, error: 'An account with this email address already exists. Please log in.' }
-      }
-    } catch (_e) {}
-
-    storeLocalSignupCode(fullName, cleanEmail, password, generatedOtp)
-    setIsLoading(false)
-    return {
-      success: true,
-      message: `Verification code generated and sent to ${cleanEmail}`,
-      devCode: generatedOtp,
-      isLocal: true
-    }
-  }
-
-  const storeLocalSignupCode = (fullName, email, password, code) => {
-    try {
-      const stored = localStorage.getItem(SIGNUP_CODES_KEY)
-      const codes = stored ? JSON.parse(stored) : {}
-      codes[email.toLowerCase()] = {
-        fullName,
-        email,
-        password,
-        code,
-        expiresAt: Date.now() + 15 * 60 * 1000,
-        attempts: 0
-      }
-      localStorage.setItem(SIGNUP_CODES_KEY, JSON.stringify(codes))
-    } catch (e) {
-      console.error('Failed to save signup code:', e)
-    }
-  }
-
-  // STEP 2: Verify Signup Code & Complete Account Creation
-  const verifySignupCode = async (email, code) => {
-    setIsLoading(true)
-    const cleanEmail = email.trim().toLowerCase()
-    const cleanCode = code.trim()
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/verify-signup-code`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: cleanEmail, code: cleanCode })
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        persistSession(data.user, data.token)
-        setIsLoading(false)
-        return { success: true, user: data.user }
-      } else {
-        const errData = await res.json().catch(() => ({}))
-        if (res.status === 400 || res.status === 401) {
-          const localCheck = checkLocalSignupVerification(cleanEmail, cleanCode)
-          if (localCheck.success) {
-            persistSession(localCheck.user, 'purex-local-jwt-token')
-            setIsLoading(false)
-            return localCheck
-          }
-          setIsLoading(false)
-          return { success: false, error: errData.error || 'Invalid verification code' }
-        }
-      }
-    } catch {
-      // Backend offline -> fallback
-    }
-
-    const localResult = checkLocalSignupVerification(cleanEmail, cleanCode)
-    if (localResult.success) {
-      persistSession(localResult.user, 'purex-local-jwt-token')
-      setIsLoading(false)
-      return localResult
-    }
-
-    setIsLoading(false)
-    return localResult
-  }
-
-  const checkLocalSignupVerification = (cleanEmail, cleanCode) => {
-    try {
-      const stored = localStorage.getItem(SIGNUP_CODES_KEY)
-      const codes = stored ? JSON.parse(stored) : {}
-      const record = codes[cleanEmail.toLowerCase()]
-
-      const isMaster = cleanCode === '123456' || cleanCode === '888888'
-
-      if (!record && !isMaster) {
-        return { success: false, error: 'No active signup verification found. Please restart sign-up.' }
-      }
-
-      if (record && Date.now() > record.expiresAt) {
-        return { success: false, error: 'Verification code has expired. Please request a new code.' }
-      }
-
-      if (record && record.code !== cleanCode && !isMaster) {
-        return { success: false, error: 'Invalid verification code. Please check and try again.' }
-      }
-
-      // Create new local user
-      const storedUsersRaw = localStorage.getItem(USERS_STORAGE_KEY)
-      const users = storedUsersRaw ? JSON.parse(storedUsersRaw) : [...DEFAULT_DEMO_USERS]
-
-      const newUser = {
-        id: `usr-${Date.now()}`,
-        email: cleanEmail,
-        password: record ? record.password : 'Password123!',
-        fullName: record ? record.fullName : cleanEmail.split('@')[0],
-        totalBalance: 0,
-        availableBalance: 0,
-        investedBalance: 0,
-        tier: 'Standard Trader',
-        kycStatus: 'Verified Level 1',
-        createdAt: new Date().toISOString()
-      }
-
-      users.push(newUser)
-      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))
-
-      // Clean up signup code
-      delete codes[cleanEmail.toLowerCase()]
-      localStorage.setItem(SIGNUP_CODES_KEY, JSON.stringify(codes))
-
-      const userSession = {
-        id: newUser.id,
-        email: newUser.email,
-        fullName: newUser.fullName,
-        totalBalance: 0,
-        availableBalance: 0,
-        investedBalance: 0,
-        tier: newUser.tier,
-        kycStatus: newUser.kycStatus
-      }
-
-      return { success: true, user: userSession }
-    } catch {
-      return { success: false, error: 'Registration verification failed.' }
     }
   }
 
@@ -364,18 +273,11 @@ export function AuthProvider({ children }) {
         persistSession(data.user, data.token)
         setIsLoading(false)
         return { success: true, user: data.user }
-      } else {
-        const errData = await res.json().catch(() => ({}))
-        if (errData.error) {
-          setIsLoading(false)
-          return { success: false, error: errData.error }
-        }
       }
     } catch {
-      // Fallback to local storage
+      // Fallback
     }
 
-    // Local signup registration
     try {
       const storedUsersRaw = localStorage.getItem(USERS_STORAGE_KEY)
       const users = storedUsersRaw ? JSON.parse(storedUsersRaw) : [...DEFAULT_DEMO_USERS]
@@ -385,40 +287,51 @@ export function AuthProvider({ children }) {
         return { success: false, error: 'An account with this email address already exists. Please log in.' }
       }
 
+      const newRefCode = `PX-${Math.floor(10000 + Math.random() * 90000)}`
+
       const newUser = {
         id: `usr-${Date.now()}`,
         email: cleanEmail,
         password,
         fullName: fullName.trim() || cleanEmail.split('@')[0],
         phone: phone ? phone.trim() : '',
-        referralCode: referralCode ? referralCode.trim() : '',
-        totalBalance: 0,
+        referralCode: newRefCode,
+        referredBy: referralCode ? referralCode.trim() : null,
+        capital: 0,
+        profit: 0,
         availableBalance: 0,
-        investedBalance: 0,
-        tier: 'Standard Trader',
+        totalBalance: 0,
+        tier: 'Starter Tier',
         kycStatus: 'Verified Level 1',
+        referralStats: {
+          totalInvited: 0,
+          activeInvestors: 0,
+          totalEarned: 0,
+          tier1Count: 0,
+          tier2Count: 0
+        },
+        activeInvestments: [],
+        transactions: [
+          {
+            id: `tx-${Date.now()}`,
+            type: 'SYSTEM',
+            title: 'Account Registered & 100% Capital SAFU Policy Activated',
+            amount: 0,
+            asset: 'USD',
+            status: 'Completed',
+            date: 'Just now',
+            hash: '0x' + Math.random().toString(16).slice(2, 10) + '...'
+          }
+        ],
         createdAt: new Date().toISOString()
       }
 
       users.push(newUser)
       localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))
 
-      const userSession = {
-        id: newUser.id,
-        email: newUser.email,
-        fullName: newUser.fullName,
-        phone: newUser.phone,
-        referralCode: newUser.referralCode,
-        totalBalance: 0,
-        availableBalance: 0,
-        investedBalance: 0,
-        tier: newUser.tier,
-        kycStatus: newUser.kycStatus
-      }
-
-      persistSession(userSession, 'purex-local-jwt-token')
+      persistSession(newUser, 'purex-local-jwt-token')
       setIsLoading(false)
-      return { success: true, user: userSession }
+      return { success: true, user: newUser }
     } catch (e) {
       setIsLoading(false)
       return { success: false, error: e.message || 'Failed to create account.' }
@@ -437,190 +350,236 @@ export function AuthProvider({ children }) {
     }
   }
 
-  // STEP 1: Send Password Reset Code (6-digit OTP)
-  const sendResetCode = async (email) => {
-    const cleanEmail = email.trim().toLowerCase()
-    
-    // Generate secure 6-digit verification code
-    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
+  // ==========================================
+  // DASHBOARD FINANCIAL ACTIONS
+  // ==========================================
 
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: cleanEmail })
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        // Save local copy for fallback verification
-        storeLocalResetCode(cleanEmail, data.devCode || generatedOtp)
-        return {
-          success: true,
-          message: data.message || `Reset code dispatched to ${cleanEmail}`,
-          devCode: data.devCode || generatedOtp
-        }
-      }
-    } catch {
-      // Backend offline -> run locally
+  // 1. Deposit Funds
+  const depositFunds = (amount, asset = 'USDT', network = 'TRC20', txHash = '') => {
+    if (!user) return { success: false, error: 'User not logged in' }
+    const numAmount = Number(amount)
+    if (isNaN(numAmount) || numAmount <= 0) {
+      return { success: false, error: 'Please enter a valid deposit amount' }
     }
 
-    // Local code storage with 15-minute expiration
-    storeLocalResetCode(cleanEmail, generatedOtp)
-    return {
-      success: true,
-      message: `6-digit security code generated and sent to ${cleanEmail}`,
-      devCode: generatedOtp,
-      isLocal: true
+    const newTx = {
+      id: `tx-dep-${Date.now()}`,
+      type: 'DEPOSIT',
+      title: `${asset} (${network}) Deposit Inflow`,
+      amount: numAmount,
+      asset: asset,
+      status: 'Completed',
+      date: 'Just now',
+      hash: txHash ? (txHash.length > 12 ? `${txHash.slice(0, 6)}...${txHash.slice(-4)}` : txHash) : `0x${Math.random().toString(16).slice(2, 10)}...${Math.random().toString(16).slice(2, 6)}`
     }
+
+    const updatedUser = {
+      ...user,
+      availableBalance: (user.availableBalance || 0) + numAmount,
+      totalBalance: (user.totalBalance || 0) + numAmount,
+      transactions: [newTx, ...(user.transactions || [])]
+    }
+
+    persistSession(updatedUser, token)
+    return { success: true, user: updatedUser, transaction: newTx }
   }
 
-  const storeLocalResetCode = (email, code) => {
-    try {
-      const stored = localStorage.getItem(RESET_CODES_KEY)
-      const codes = stored ? JSON.parse(stored) : {}
-      codes[email.toLowerCase()] = {
-        code,
-        expiresAt: Date.now() + 15 * 60 * 1000, // 15 mins
-        attempts: 0
-      }
-      localStorage.setItem(RESET_CODES_KEY, JSON.stringify(codes))
-    } catch (e) {
-      console.error('Failed to save reset code:', e)
+  // 2. Request Withdrawal
+  const requestWithdrawal = (amount, asset = 'USDT', destinationAddress = '', balanceType = 'profit') => {
+    if (!user) return { success: false, error: 'User not logged in' }
+    const numAmount = Number(amount)
+    if (isNaN(numAmount) || numAmount <= 0) {
+      return { success: false, error: 'Please enter a valid withdrawal amount' }
     }
+
+    if (balanceType === 'profit') {
+      if ((user.profit || 0) < numAmount) {
+        return { success: false, error: `Insufficient profit balance. Available profit: $${(user.profit || 0).toLocaleString()}` }
+      }
+    } else if (balanceType === 'available') {
+      if ((user.availableBalance || 0) < numAmount) {
+        return { success: false, error: `Insufficient available balance. Available: $${(user.availableBalance || 0).toLocaleString()}` }
+      }
+    } else {
+      // capital withdrawal
+      if ((user.capital || 0) < numAmount) {
+        return { success: false, error: `Insufficient capital balance. Available: $${(user.capital || 0).toLocaleString()}` }
+      }
+    }
+
+    const newTx = {
+      id: `tx-wdr-${Date.now()}`,
+      type: 'WITHDRAWAL',
+      title: `Instant ${asset} Withdrawal to ${destinationAddress.slice(0, 6)}...`,
+      amount: numAmount,
+      asset: asset,
+      status: 'Completed',
+      date: 'Just now',
+      hash: `0x${Math.random().toString(16).slice(2, 10)}...${Math.random().toString(16).slice(2, 6)}`
+    }
+
+    let newProfit = user.profit || 0
+    let newCapital = user.capital || 0
+    let newAvailable = user.availableBalance || 0
+
+    if (balanceType === 'profit') {
+      newProfit -= numAmount
+    } else if (balanceType === 'available') {
+      newAvailable -= numAmount
+    } else {
+      newCapital -= numAmount
+    }
+
+    const updatedUser = {
+      ...user,
+      profit: Math.max(0, newProfit),
+      capital: Math.max(0, newCapital),
+      availableBalance: Math.max(0, newAvailable),
+      totalBalance: Math.max(0, (user.totalBalance || 0) - numAmount),
+      transactions: [newTx, ...(user.transactions || [])]
+    }
+
+    persistSession(updatedUser, token)
+    return { success: true, user: updatedUser, transaction: newTx }
   }
 
-  // STEP 2: Verify 6-digit OTP Code
-  const verifyResetCode = async (email, code) => {
-    const cleanEmail = email.trim().toLowerCase()
-    const cleanCode = code.trim()
+  // 3. Convert / Swap Crypto
+  const convertCrypto = (fromAsset, toAsset, fromAmount, toAmount) => {
+    if (!user) return { success: false, error: 'User not logged in' }
+    const numFrom = Number(fromAmount)
+    const numTo = Number(toAmount)
 
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/verify-reset-code`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: cleanEmail, code: cleanCode })
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        return {
-          success: true,
-          resetToken: data.resetToken || `rst-${Date.now()}`
-        }
-      } else {
-        const errData = await res.json().catch(() => ({}))
-        if (res.status === 400 || res.status === 401) {
-          // Check local
-          const localCheck = checkLocalResetCode(cleanEmail, cleanCode)
-          if (localCheck.success) return localCheck
-          return { success: false, error: errData.error || 'Invalid or expired verification code' }
-        }
-      }
-    } catch {
-      // Backend offline -> fallback
+    const newTx = {
+      id: `tx-cnv-${Date.now()}`,
+      type: 'CONVERT',
+      title: `Instant Swap ${numFrom} ${fromAsset} → ${numTo.toFixed(4)} ${toAsset}`,
+      amount: numFrom,
+      asset: fromAsset,
+      status: 'Completed',
+      date: 'Just now',
+      hash: `0x${Math.random().toString(16).slice(2, 10)}...`
     }
 
-    return checkLocalResetCode(cleanEmail, cleanCode)
+    const updatedUser = {
+      ...user,
+      transactions: [newTx, ...(user.transactions || [])]
+    }
+
+    persistSession(updatedUser, token)
+    return { success: true, user: updatedUser }
   }
 
-  const checkLocalResetCode = (cleanEmail, cleanCode) => {
-    try {
-      const stored = localStorage.getItem(RESET_CODES_KEY)
-      const codes = stored ? JSON.parse(stored) : {}
-      const record = codes[cleanEmail.toLowerCase()]
-
-      // Allow master dev bypass code '123456' or '888888' during demo
-      if (cleanCode === '123456' || cleanCode === '888888') {
-        return { success: true, resetToken: `rst-master-${Date.now()}` }
-      }
-
-      if (!record) {
-        return { success: false, error: 'No active reset request found for this email. Please request a new code.' }
-      }
-
-      if (Date.now() > record.expiresAt) {
-        return { success: false, error: 'Verification code has expired. Please request a new code.' }
-      }
-
-      if (record.code !== cleanCode) {
-        record.attempts = (record.attempts || 0) + 1
-        localStorage.setItem(RESET_CODES_KEY, JSON.stringify(codes))
-        return { success: false, error: `Invalid verification code. Please check and try again.` }
-      }
-
-      return { success: true, resetToken: `rst-${Date.now()}` }
-    } catch {
-      return { success: false, error: 'Verification failed. Please try again.' }
+  // 4. Start Investing / Activate Package
+  const activateInvestmentPlan = (packageId, packageName, amount, dailyRoiRate, durationDays = 30) => {
+    if (!user) return { success: false, error: 'User not logged in' }
+    const numAmount = Number(amount)
+    if (isNaN(numAmount) || numAmount <= 0) {
+      return { success: false, error: 'Please enter a valid investment amount' }
     }
+
+    const availableToInvest = (user.availableBalance || 0)
+    if (availableToInvest < numAmount) {
+      return { success: false, error: `Insufficient available balance ($${availableToInvest.toLocaleString()}). Please deposit funds first.` }
+    }
+
+    const dailyRateNum = parseFloat(dailyRoiRate) || 2.4
+    const dailyEarnings = numAmount * (dailyRateNum / 100)
+
+    const newInvestment = {
+      id: `inv-${Date.now()}`,
+      packageId,
+      packageName,
+      amount: numAmount,
+      dailyRoi: `${dailyRateNum}%`,
+      dailyEarnings: dailyEarnings,
+      totalEarned: 0,
+      startDate: new Date().toISOString().split('T')[0],
+      duration: `${durationDays} Days`,
+      status: 'ACTIVE',
+      insuranceStatus: '100% SAFU Insured'
+    }
+
+    const newTx = {
+      id: `tx-inv-${Date.now()}`,
+      type: 'INVESTMENT',
+      title: `Activated ${packageName} (${dailyRateNum}% / Day)`,
+      amount: numAmount,
+      asset: 'USDT',
+      status: 'Completed',
+      date: 'Just now',
+      hash: `0x${Math.random().toString(16).slice(2, 10)}...`
+    }
+
+    const updatedUser = {
+      ...user,
+      availableBalance: Math.max(0, availableToInvest - numAmount),
+      capital: (user.capital || 0) + numAmount,
+      tier: packageName,
+      activeInvestments: [newInvestment, ...(user.activeInvestments || [])],
+      transactions: [newTx, ...(user.transactions || [])]
+    }
+
+    persistSession(updatedUser, token)
+    return { success: true, user: updatedUser, investment: newInvestment }
   }
 
-  // STEP 3: Reset Password with verified token/code
-  const resetPassword = async (email, resetToken, newPassword) => {
-    const cleanEmail = email.trim().toLowerCase()
+  // 5. Submit KYC Verification
+  const submitKycDocuments = (tierLevel, docType, docNumber) => {
+    if (!user) return { success: false, error: 'User not logged in' }
 
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: cleanEmail, resetToken, newPassword })
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        updateLocalUserPassword(cleanEmail, newPassword)
-        return { success: true, message: data.message || 'Password successfully updated!' }
-      }
-    } catch {
-      // Backend offline
+    const updatedUser = {
+      ...user,
+      kycStatus: `Verified Level ${tierLevel}`
     }
 
-    // Update in local users store
-    const localUpdated = updateLocalUserPassword(cleanEmail, newPassword)
-    if (localUpdated) {
-      return { success: true, message: 'Password updated successfully! You can now log in.' }
+    const newTx = {
+      id: `tx-kyc-${Date.now()}`,
+      type: 'SYSTEM',
+      title: `KYC Level ${tierLevel} (${docType}) Approved & Verified`,
+      amount: 0,
+      asset: 'KYC',
+      status: 'Completed',
+      date: 'Just now',
+      hash: `0x${Math.random().toString(16).slice(2, 10)}...`
     }
 
-    return { success: true, message: 'Password reset verified. Please log in with your new password.' }
+    updatedUser.transactions = [newTx, ...(user.transactions || [])]
+    persistSession(updatedUser, token)
+    return { success: true, user: updatedUser }
   }
 
-  const updateLocalUserPassword = (cleanEmail, newPassword) => {
-    try {
-      const storedUsersRaw = localStorage.getItem(USERS_STORAGE_KEY)
-      const users = storedUsersRaw ? JSON.parse(storedUsersRaw) : [...DEFAULT_DEMO_USERS]
-      const userIdx = users.findIndex((u) => u.email.toLowerCase() === cleanEmail)
-
-      if (userIdx >= 0) {
-        users[userIdx].password = newPassword
-        localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))
-      } else {
-        // Create user with this password if not present
-        users.push({
-          id: `usr-${Date.now()}`,
-          email: cleanEmail,
-          password: newPassword,
-          fullName: cleanEmail.split('@')[0],
-          totalBalance: 10000,
-          availableBalance: 10000,
-          investedBalance: 0,
-          tier: 'Standard Trader',
-          kycStatus: 'Verified Level 1',
-        })
-        localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))
-      }
-
-      // Clear the reset code
-      const stored = localStorage.getItem(RESET_CODES_KEY)
-      if (stored) {
-        const codes = JSON.parse(stored)
-        delete codes[cleanEmail]
-        localStorage.setItem(RESET_CODES_KEY, JSON.stringify(codes))
-      }
-      return true
-    } catch (e) {
-      console.error('Failed to update local password:', e)
-      return false
+  // 6. Claim Referral Earnings
+  const claimReferralCommission = () => {
+    if (!user) return { success: false, error: 'User not logged in' }
+    const commission = user.referralStats?.totalEarned || 0
+    if (commission <= 0) {
+      return { success: false, error: 'No unclaimed referral commissions available.' }
     }
+
+    const newTx = {
+      id: `tx-ref-${Date.now()}`,
+      type: 'REFERRAL',
+      title: 'Claimed 2-Tier Affiliate Referral Payout',
+      amount: commission,
+      asset: 'USDT',
+      status: 'Completed',
+      date: 'Just now',
+      hash: `0x${Math.random().toString(16).slice(2, 10)}...`
+    }
+
+    const updatedUser = {
+      ...user,
+      profit: (user.profit || 0) + commission,
+      totalBalance: (user.totalBalance || 0) + commission,
+      referralStats: {
+        ...user.referralStats,
+        totalEarned: 0
+      },
+      transactions: [newTx, ...(user.transactions || [])]
+    }
+
+    persistSession(updatedUser, token)
+    return { success: true, user: updatedUser, amount: commission }
   }
 
   return (
@@ -632,12 +591,13 @@ export function AuthProvider({ children }) {
         isLoading,
         login,
         signup,
-        sendSignupCode,
-        verifySignupCode,
         logout,
-        sendResetCode,
-        verifyResetCode,
-        resetPassword,
+        depositFunds,
+        requestWithdrawal,
+        convertCrypto,
+        activateInvestmentPlan,
+        submitKycDocuments,
+        claimReferralCommission,
       }}
     >
       {children}
@@ -652,3 +612,4 @@ export function useAuth() {
   }
   return context
 }
+

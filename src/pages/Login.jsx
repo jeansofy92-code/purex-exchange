@@ -38,7 +38,7 @@ export default function Login() {
       if (res.success) {
         setSuccessMessage('Authentication successful! Loading your portfolio...')
         setTimeout(() => {
-          navigate('/')
+          navigate('/dashboard')
         }, 800)
       } else {
         setErrorMessage(res.error || 'Invalid credentials. Please verify and try again.')

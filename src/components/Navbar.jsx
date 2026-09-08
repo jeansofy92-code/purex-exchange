@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Menu, X, ArrowUpRight, ShieldCheck, LogIn, UserPlus, LogOut, User } from 'lucide-react'
+import { Menu, X, ArrowUpRight, ShieldCheck, LogIn, UserPlus, LogOut, User, LayoutDashboard } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import PurexLogo from './PurexLogo'
 
@@ -61,6 +61,26 @@ export default function Navbar() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
           {isAuthenticated && user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Link
+                to="/dashboard"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  backgroundColor: '#B0F127',
+                  color: '#060606',
+                  borderRadius: '10px',
+                  padding: '0.45rem 0.8rem',
+                  fontSize: '0.8rem',
+                  fontWeight: 800,
+                  textDecoration: 'none',
+                  boxShadow: '0 0 15px rgba(176,241,39,0.25)',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <LayoutDashboard size={14} />
+                <span>Dashboard</span>
+              </Link>
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -198,20 +218,40 @@ export default function Navbar() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem', paddingTop: '1rem', borderTop: '1px solid #232323' }}>
             {isAuthenticated ? (
-              <button
-                onClick={() => { logout(); setMobileOpen(false); navigate('/') }}
-                style={{
-                  backgroundColor: '#181818',
-                  border: '1px solid #282828',
-                  color: '#FF5A65',
-                  padding: '0.85rem',
-                  borderRadius: '10px',
-                  fontWeight: 700,
-                  cursor: 'pointer'
-                }}
-              >
-                Sign Out ({user?.fullName || user?.email})
-              </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                <Link
+                  to="/dashboard"
+                  onClick={() => setMobileOpen(false)}
+                  className="btn-primary"
+                  style={{
+                    padding: '0.85rem',
+                    borderRadius: '10px',
+                    fontWeight: 800,
+                    textAlign: 'center',
+                    textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <LayoutDashboard size={16} /> Open Dashboard
+                </Link>
+                <button
+                  onClick={() => { logout(); setMobileOpen(false); navigate('/') }}
+                  style={{
+                    backgroundColor: '#181818',
+                    border: '1px solid #282828',
+                    color: '#FF5A65',
+                    padding: '0.85rem',
+                    borderRadius: '10px',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Sign Out ({user?.fullName || user?.email})
+                </button>
+              </div>
             ) : (
               <>
                 <Link

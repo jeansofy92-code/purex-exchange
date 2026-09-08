@@ -95,7 +95,7 @@ export default function Register() {
       if (res.success) {
         setSuccessMessage('Account registered successfully! Redirecting to your dashboard...')
         setTimeout(() => {
-          navigate('/')
+          navigate('/dashboard')
         }, 1000)
       } else {
         setErrorMessage(res.error || 'Failed to complete registration. Please check your details.')
