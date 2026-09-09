@@ -196,7 +196,15 @@ export default function Dashboard() {
           </div>
 
           {/* Bottom Actions */}
-          <div className="space-y-3 pt-4 border-t border-white/10">
+          <div className="space-y-2 pt-4 border-t border-white/10">
+            <Link
+              to="/admin"
+              className="w-full flex items-center justify-between px-3.5 py-2 text-xs text-[#B0F127] hover:bg-[#B0F127]/10 rounded-lg transition-all font-semibold"
+            >
+              <span>Admin Console</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
+
             <Link
               to="/"
               className="w-full flex items-center justify-between px-3.5 py-2 text-xs text-white/50 hover:text-white hover:bg-white/5 rounded-lg transition-all"
@@ -304,6 +312,14 @@ export default function Dashboard() {
               </div>
 
               <div className="pt-4 border-t border-white/10 space-y-2">
+                <Link
+                  to="/admin"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-[#B0F127] hover:bg-[#B0F127]/10 rounded-xl transition-all"
+                >
+                  <span>Admin Console</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center gap-2 px-3 py-2.5 text-xs font-semibold text-rose-400 hover:bg-rose-500/10 rounded-xl"
