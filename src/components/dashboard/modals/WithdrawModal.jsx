@@ -22,7 +22,6 @@ const LOCAL_CURRENCIES = [
   { code: 'USD', name: 'US Dollar ($)', symbol: '$', rate: 1.0 },
   { code: 'EUR', name: 'Euro (€)', symbol: '€', rate: 0.92 },
   { code: 'GBP', name: 'British Pound (£)', symbol: '£', rate: 0.79 },
-  { code: 'NGN', name: 'Nigerian Naira (₦)', symbol: '₦', rate: 1550.0 },
   { code: 'CAD', name: 'Canadian Dollar (C$)', symbol: 'C$', rate: 1.36 },
   { code: 'AUD', name: 'Australian Dollar (A$)', symbol: 'A$', rate: 1.52 },
   { code: 'ZAR', name: 'South African Rand (R)', symbol: 'R', rate: 18.5 }
@@ -300,7 +299,7 @@ export default function WithdrawModal({ isOpen, onClose }) {
                     </span>
                   </div>
                   <p className="text-xs text-black/70">
-                    Convert crypto to your local fiat currency (USD, EUR, GBP, NGN, CAD, etc.) and transfer directly to your bank account.
+                    Convert crypto to your local fiat currency (USD, EUR, GBP, CAD, AUD, ZAR, etc.) and transfer directly to your bank account.
                   </p>
                 </div>
               </div>
