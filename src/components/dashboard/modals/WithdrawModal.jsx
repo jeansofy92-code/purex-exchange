@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../../../context/AuthContext'
+import { LOCAL_CURRENCIES } from '../../../data/currencies'
 import {
   X,
   ArrowUpRight,
@@ -17,15 +18,6 @@ import {
   Landmark,
   Wallet
 } from 'lucide-react'
-
-const LOCAL_CURRENCIES = [
-  { code: 'USD', name: 'US Dollar ($)', symbol: '$', rate: 1.0 },
-  { code: 'EUR', name: 'Euro (€)', symbol: '€', rate: 0.92 },
-  { code: 'GBP', name: 'British Pound (£)', symbol: '£', rate: 0.79 },
-  { code: 'CAD', name: 'Canadian Dollar (C$)', symbol: 'C$', rate: 1.36 },
-  { code: 'AUD', name: 'Australian Dollar (A$)', symbol: 'A$', rate: 1.52 },
-  { code: 'ZAR', name: 'South African Rand (R)', symbol: 'R', rate: 18.5 }
-]
 
 export default function WithdrawModal({ isOpen, onClose }) {
   const { user, requestWithdrawal, platformSettings } = useAuth()
@@ -587,7 +579,7 @@ export default function WithdrawModal({ isOpen, onClose }) {
                 >
                   {LOCAL_CURRENCIES.map((c) => (
                     <option key={c.code} value={c.code}>
-                      {c.name} (1 USD ≈ {c.rate} {c.code})
+                      {c.code} ({c.symbol}) - {c.name} [1 USD ≈ {c.rate} {c.code}]
                     </option>
                   ))}
                 </select>

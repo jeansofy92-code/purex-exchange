@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../../../context/AuthContext'
+import { LOCAL_CURRENCIES, LOCAL_CURRENCIES_MAP } from '../../../data/currencies'
 import {
   X,
   RefreshCw,
@@ -23,16 +24,6 @@ const CRYPTO_INPUT_ASSETS = {
   SOL: { name: 'Solana', symbol: 'SOL', baseUsdRate: 267.75, min: 0.05 }
 }
 
-// Local Fiat Output Currencies
-const LOCAL_FIAT_CURRENCIES = {
-  USD: { name: 'US Dollar', symbol: '$', code: 'USD', fiatMultiplier: 1.0 },
-  EUR: { name: 'Euro', symbol: '€', code: 'EUR', fiatMultiplier: 0.92 },
-  GBP: { name: 'British Pound', symbol: '£', code: 'GBP', fiatMultiplier: 0.79 },
-  CAD: { name: 'Canadian Dollar', symbol: 'C$', code: 'CAD', fiatMultiplier: 1.36 },
-  AUD: { name: 'Australian Dollar', symbol: 'A$', code: 'AUD', fiatMultiplier: 1.52 },
-  ZAR: { name: 'South African Rand', symbol: 'R', code: 'ZAR', fiatMultiplier: 18.5 }
-}
-
 export default function ConvertModal({ isOpen, onClose }) {
   const { user, convertCrypto, platformSettings } = useAuth()
 
@@ -48,10 +39,10 @@ export default function ConvertModal({ isOpen, onClose }) {
   if (!isOpen) return null
 
   const cryptoObj = CRYPTO_INPUT_ASSETS[fromCrypto]
-  const fiatObj = LOCAL_FIAT_CURRENCIES[toFiat]
+  const fiatObj = LOCAL_CURRENCIES_MAP[toFiat] || LOCAL_CURRENCIES[0]
 
   // Premium high rate calculation (e.g. 1 USDT = $1.50 USD)
-  const effectiveRate = cryptoObj.baseUsdRate * fiatObj.fiatMultiplier
+  const effectiveRate = cryptoObj.baseUsdRate * fiatObj.rate
   const numAmount = Number(fromAmount) || 0
   const convertedFiatOutput = numAmount * effectiveRate
 
@@ -213,11 +204,11 @@ export default function ConvertModal({ isOpen, onClose }) {
                   <select
                     value={toFiat}
                     onChange={(e) => setToFiat(e.target.value)}
-                    className="bg-[#1a1a1a] border border-white/15 focus:border-[#B0F127] rounded-xl px-3 py-2 text-xs font-bold text-white outline-none cursor-pointer font-mono"
+                    className="bg-[#1a1a1a] border border-white/15 focus:border-[#B0F127] rounded-xl px-3 py-2 text-xs font-bold text-white outline-none cursor-pointer font-mono max-w-[140px]"
                   >
-                    {Object.keys(LOCAL_FIAT_CURRENCIES).map((code) => (
-                      <option key={code} value={code}>
-                        {code} ({LOCAL_FIAT_CURRENCIES[code].symbol})
+                    {LOCAL_CURRENCIES.map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.code} ({c.symbol}) - {c.name}
                       </option>
                     ))}
                   </select>
