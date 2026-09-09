@@ -5,6 +5,8 @@ import {
   X,
   ArrowUpRight,
   ShieldCheck,
+  ShieldAlert,
+  Lock,
   Building2,
   Coins,
   CheckCircle2,
@@ -19,8 +21,11 @@ import {
   Wallet
 } from 'lucide-react'
 
-export default function WithdrawModal({ isOpen, onClose }) {
+export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
   const { user, requestWithdrawal, platformSettings } = useAuth()
+
+  // Compulsory KYC Verification Check
+  const isKycVerified = user?.kycStatus && user.kycStatus.toLowerCase().includes('verified')
 
   // Steps:
   // 1: Choose Method (Crypto vs Local Currency)
@@ -227,21 +232,83 @@ export default function WithdrawModal({ isOpen, onClose }) {
           <X className="w-5 h-5" />
         </button>
 
-        {/* STEP 1: Choose Withdrawal Method */}
-        {step === 1 && (
-          <div className="space-y-6">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#B0F127]/10 border border-[#B0F127]/20 text-[#B0F127] text-xs font-semibold mb-2">
-                <ArrowUpRight className="w-3.5 h-3.5" />
-                Institutional Payout Gateway
+        {/* COMPULSORY KYC VERIFICATION GATE */}
+        {!isKycVerified ? (
+          <div className="text-center py-6 space-y-6 animate-fade-in">
+            <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400 shadow-[0_0_30px_rgba(245,158,11,0.15)]">
+              <ShieldAlert className="w-8 h-8" />
+            </div>
+
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-semibold">
+                <Lock className="w-3.5 h-3.5" />
+                Compulsory Security Requirement
               </div>
-              <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                Select Withdrawal Method
+              <h3 className="text-2xl font-black text-white tracking-tight">
+                Identity Verification (KYC) Required
               </h3>
-              <p className="text-xs text-white/50 mt-1">
-                Choose how you would like to withdraw your arbitrage profits and capital.
+              <p className="text-xs text-white/60 max-w-sm mx-auto leading-relaxed">
+                In compliance with international financial security and Anti-Money Laundering (AML) regulations, completing identity verification is mandatory before requesting cryptocurrency or bank withdrawals.
               </p>
             </div>
+
+            <div className="p-4 bg-black/50 border border-white/10 rounded-2xl text-left space-y-2.5 text-xs font-mono">
+              <div className="flex justify-between text-white/60">
+                <span>Current KYC Status:</span>
+                <span className="text-amber-400 font-bold">{user?.kycStatus || 'Unverified'}</span>
+              </div>
+              <div className="flex justify-between text-white/60">
+                <span>Required Level:</span>
+                <span className="text-[#B0F127] font-bold">Level 1 or Level 2 Verified</span>
+              </div>
+              <div className="flex justify-between text-white/60">
+                <span>Processing Time:</span>
+                <span className="text-white">Instant Automated</span>
+              </div>
+            </div>
+
+            <div className="space-y-3 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  if (onNavigateKyc) {
+                    onNavigateKyc()
+                  } else {
+                    handleResetAndClose()
+                  }
+                }}
+                className="w-full py-3.5 bg-[#B0F127] hover:bg-[#9ee016] text-black font-bold text-xs rounded-xl transition-all shadow-lg flex items-center justify-center gap-2"
+              >
+                <ShieldCheck className="w-4 h-4" />
+                Complete KYC Verification Now
+              </button>
+
+              <button
+                type="button"
+                onClick={handleResetAndClose}
+                className="w-full py-2.5 text-xs text-white/50 hover:text-white transition-all font-semibold"
+              >
+                Cancel & Return
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* STEP 1: Choose Withdrawal Method */}
+            {step === 1 && (
+              <div className="space-y-6">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#B0F127]/10 border border-[#B0F127]/20 text-[#B0F127] text-xs font-semibold mb-2">
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                    Institutional Payout Gateway
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                    Select Withdrawal Method
+                  </h3>
+                  <p className="text-xs text-white/50 mt-1">
+                    Choose how you would like to withdraw your arbitrage profits and capital.
+                  </p>
+                </div>
 
             <div className="grid grid-cols-1 gap-4">
               {/* Option A: Crypto Withdrawal */}
@@ -870,7 +937,9 @@ export default function WithdrawModal({ isOpen, onClose }) {
             </button>
           </div>
         )}
-      </div>
-    </div>
+      </>
+    )}
+  </div>
+</div>
   )
 }

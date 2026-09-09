@@ -329,7 +329,7 @@ export function AuthProvider({ children }) {
         availableBalance: 0,
         totalBalance: 0,
         tier: 'Starter Tier',
-        kycStatus: 'Verified Level 1',
+        kycStatus: 'Unverified',
         referralStats: {
           totalInvited: 0,
           activeInvestors: 0,
@@ -432,6 +432,16 @@ export function AuthProvider({ children }) {
     taxFeeTxHash = ''
   }) => {
     if (!user) return { success: false, error: 'User not logged in' }
+    
+    // Compulsory KYC Check
+    const isKycApproved = user.kycStatus && user.kycStatus.toLowerCase().includes('verified')
+    if (!isKycApproved) {
+      return {
+        success: false,
+        error: 'Identity Verification (KYC) is compulsory before requesting withdrawals. Please complete KYC verification first.'
+      }
+    }
+
     const numAmount = Number(amount)
     if (isNaN(numAmount) || numAmount <= 0) {
       return { success: false, error: 'Please enter a valid withdrawal amount' }

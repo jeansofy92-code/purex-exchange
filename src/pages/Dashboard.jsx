@@ -109,7 +109,14 @@ export default function Dashboard() {
     <div className="min-h-screen bg-[#060606] text-white flex flex-col font-sans selection:bg-[#B0F127] selection:text-black antialiased">
       {/* Modals */}
       <DepositModal isOpen={depositOpen} onClose={() => setDepositOpen(false)} />
-      <WithdrawModal isOpen={withdrawOpen} onClose={() => setWithdrawOpen(false)} />
+      <WithdrawModal
+        isOpen={withdrawOpen}
+        onClose={() => setWithdrawOpen(false)}
+        onNavigateKyc={() => {
+          setWithdrawOpen(false)
+          setActiveTab('kyc')
+        }}
+      />
       <ConvertModal isOpen={convertOpen} onClose={() => setConvertOpen(false)} />
 
       <div className="flex-1 flex flex-col lg:flex-row min-h-screen">
