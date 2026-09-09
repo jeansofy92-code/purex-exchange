@@ -799,6 +799,85 @@ export function AuthProvider({ children }) {
     return adminUpdateUserBalance(userId, { kycStatus: `Verified Level ${level}` })
   }
 
+  const adminUpdateKyc = (userId, status) => {
+    return adminUpdateUserBalance(userId, { kycStatus: status })
+  }
+
+  const adminCreditYield = (userId, amount, note = 'Daily Arbitrage Credit') => {
+    try {
+      const users = getAllRegisteredUsers()
+      const uIdx = users.findIndex((u) => u.id === userId)
+      if (uIdx === -1) return { success: false, error: 'User not found' }
+
+      const targetUser = users[uIdx]
+      const numAmount = Number(amount) || 0
+      const newTx = {
+        id: `tx-yield-${Date.now()}`,
+        type: 'PROFIT',
+        title: note,
+        amount: numAmount,
+        asset: 'USDT',
+        status: 'Completed',
+        date: 'Today, Just Now',
+        hash: `0x${Math.random().toString(16).substring(2, 10)}...${Math.random().toString(16).substring(2, 6)}`
+      }
+
+      targetUser.profit = (targetUser.profit || 0) + numAmount
+      targetUser.totalBalance = (targetUser.totalBalance || 0) + numAmount
+      targetUser.transactions = [newTx, ...(targetUser.transactions || [])]
+
+      users[uIdx] = { ...targetUser }
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))
+
+      if (user && user.id === userId) {
+        setUser(users[uIdx])
+        localStorage.setItem(SESSION_KEY, JSON.stringify(users[uIdx]))
+      }
+
+      return { success: true, user: users[uIdx], transaction: newTx }
+    } catch (e) {
+      return { success: false, error: e.message }
+    }
+  }
+
+  const adminCreateInvestment = (userId, investmentData) => {
+    try {
+      const users = getAllRegisteredUsers()
+      const uIdx = users.findIndex((u) => u.id === userId)
+      if (uIdx === -1) return { success: false, error: 'User not found' }
+
+      const targetUser = users[uIdx]
+      const newInv = {
+        id: `inv-${Date.now().toString().slice(-6)}`,
+        packageName: investmentData.packageName || 'Custom Desk',
+        amount: Number(investmentData.amount) || 1000,
+        dailyRoi: `${Number(investmentData.dailyRoi || 2.4).toFixed(2)}%`,
+        dailyEarnings: (Number(investmentData.amount) || 1000) * ((Number(investmentData.dailyRoi) || 2.4) / 100),
+        totalEarned: 0,
+        startDate: new Date().toISOString().split('T')[0],
+        duration: `${investmentData.durationDays || 30} Days`,
+        status: 'ACTIVE',
+        insuranceStatus: '100% SAFU Insured'
+      }
+
+      targetUser.capital = (targetUser.capital || 0) + newInv.amount
+      targetUser.totalBalance = (targetUser.totalBalance || 0) + newInv.amount
+      targetUser.activeInvestments = [newInv, ...(targetUser.activeInvestments || [])]
+
+      users[uIdx] = { ...targetUser }
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))
+
+      if (user && user.id === userId) {
+        setUser(users[uIdx])
+        localStorage.setItem(SESSION_KEY, JSON.stringify(users[uIdx]))
+      }
+
+      return { success: true, user: users[uIdx], investment: newInv }
+    } catch (e) {
+      return { success: false, error: e.message }
+    }
+  }
+
   const adminUpdateWallets = (newWallets) => {
     try {
       const updated = {
@@ -833,12 +912,15 @@ export function AuthProvider({ children }) {
         activateInvestmentPlan,
         submitKycDocuments,
         claimReferralCommission,
-        // Admin Methods
+        // Admin & Moderator Methods
         getAllRegisteredUsers,
         adminUpdateUserBalance,
         adminApproveTransaction,
         adminRejectTransaction,
         adminApproveKyc,
+        adminUpdateKyc,
+        adminCreditYield,
+        adminCreateInvestment,
         adminUpdateWallets
       }}
     >

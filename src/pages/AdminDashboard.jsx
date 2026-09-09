@@ -119,10 +119,18 @@ export default function AdminDashboard() {
           </div>
 
           {/* Bottom Actions */}
-          <div className="space-y-3 pt-4 border-t border-white/10">
+          <div className="space-y-2 pt-4 border-t border-white/10">
+            <Link
+              to="/moderator"
+              className="w-full flex items-center justify-between px-3.5 py-2 text-xs text-[#B0F127] bg-[#B0F127]/10 hover:bg-[#B0F127]/20 rounded-xl transition-all font-semibold"
+            >
+              <span>Moderator Support Desk</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+
             <Link
               to="/dashboard"
-              className="w-full flex items-center justify-between px-3.5 py-2 text-xs text-white/70 hover:text-[#B0F127] hover:bg-white/5 rounded-lg transition-all font-semibold"
+              className="w-full flex items-center justify-between px-3.5 py-2 text-xs text-white/70 hover:text-[#B0F127] hover:bg-white/5 rounded-xl transition-all font-semibold"
             >
               <span>Switch to User View</span>
               <ArrowRight className="w-3.5 h-3.5" />

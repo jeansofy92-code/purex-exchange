@@ -7,6 +7,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import AdminDashboard from './pages/AdminDashboard'
+import ModeratorDashboard from './pages/ModeratorDashboard'
 import ErrorBoundary from './components/ErrorBoundary'
 import './App.css'
 
@@ -36,6 +37,9 @@ function AppRoutes() {
 
       {/* Master Admin Management Console */}
       <Route path="/admin" element={<AdminDashboard />} />
+
+      {/* Operations & Moderator Support Desk */}
+      <Route path="/moderator" element={<ModeratorDashboard />} />
     </Routes>
   )
 }
