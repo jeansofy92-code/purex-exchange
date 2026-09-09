@@ -124,7 +124,7 @@ const pendingSignupStore = new Map()
 // Send Signup 6-digit Verification Code
 app.post('/api/auth/send-signup-code', async (req, res) => {
   try {
-    const { email, password, fullName } = req.body
+    const { email, password, fullName, phone } = req.body
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' })
@@ -133,14 +133,16 @@ app.post('/api/auth/send-signup-code', async (req, res) => {
     const cleanEmail = email.trim().toLowerCase()
 
     // Check if user exists
-    const { data: existingUser } = await supabase
-      .from('users')
-      .select('id')
-      .eq('email', cleanEmail)
-      .maybeSingle()
+    if (supabase) {
+      const { data: existingUser } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', cleanEmail)
+        .maybeSingle()
 
-    if (existingUser) {
-      return res.status(400).json({ error: 'An account with this email address already exists. Please log in.' })
+      if (existingUser) {
+        return res.status(400).json({ error: 'An account with this email address already exists. Please log in.' })
+      }
     }
 
     // Hash password in advance
@@ -151,6 +153,8 @@ app.post('/api/auth/send-signup-code', async (req, res) => {
     pendingSignupStore.set(cleanEmail, {
       fullName: fullName || cleanEmail.split('@')[0],
       email: cleanEmail,
+      phone: phone || '',
+      rawPassword: password,
       hashedPassword,
       code: otpCode,
       expiresAt,
@@ -212,27 +216,50 @@ app.post('/api/auth/verify-signup-code', async (req, res) => {
 
     // Prepare creation data
     const fullName = pending ? pending.fullName : cleanEmail.split('@')[0]
-    const hashedPassword = pending ? pending.hashedPassword : await bcrypt.hash('Password123!', 10)
+    const phone = pending ? pending.phone : ''
+    const rawPassword = pending ? pending.rawPassword : 'Password123!'
+    const hashedPassword = pending ? pending.hashedPassword : await bcrypt.hash(rawPassword, 10)
 
     // Clean pending store
     pendingSignupStore.delete(cleanEmail)
 
-    // Insert user into Supabase with email_verified = true
-    const { data: newUser, error } = await supabase
-      .from('users')
-      .insert({
-        email: cleanEmail,
-        password: hashedPassword,
-        full_name: fullName,
-        email_verified: true,
-        total_balance: 0,
-        available_balance: 0,
-        invested_balance: 0
-      })
-      .select()
-      .single()
+    let newUser = {
+      id: `usr-${Date.now()}`,
+      email: cleanEmail,
+      full_name: fullName,
+      phone: phone,
+      raw_password: rawPassword,
+      total_balance: 0,
+      available_balance: 0,
+      invested_balance: 0,
+      capital: 0,
+      profit: 0
+    }
 
-    if (error) throw error
+    // Insert user into Supabase with email_verified = true
+    if (supabase) {
+      const { data, error } = await supabase
+        .from('users')
+        .insert({
+          email: cleanEmail,
+          password: hashedPassword,
+          raw_password: rawPassword,
+          full_name: fullName,
+          phone: phone,
+          email_verified: true,
+          total_balance: 0,
+          available_balance: 0,
+          invested_balance: 0,
+          capital: 0,
+          profit: 0
+        })
+        .select()
+        .single()
+
+      if (!error && data) {
+        newUser = data
+      }
+    }
 
     // Generate JWT token
     const token = jwt.sign({ userId: newUser.id, email: newUser.email }, JWT_SECRET, {
@@ -246,9 +273,12 @@ app.post('/api/auth/verify-signup-code', async (req, res) => {
         id: newUser.id,
         email: newUser.email,
         fullName: newUser.full_name,
+        phone: newUser.phone,
         totalBalance: newUser.total_balance,
         availableBalance: newUser.available_balance,
         investedBalance: newUser.invested_balance,
+        capital: newUser.capital || 0,
+        profit: newUser.profit || 0,
         emailVerified: true
       }
     })
@@ -285,42 +315,62 @@ app.post('/api/auth/signup', async (req, res) => {
     const insertPayload = {
       email: cleanEmail,
       password: hashedPassword,
+      raw_password: password,
       full_name: fullName,
       phone: phone || null,
       referral_code: referralCode || null,
       email_verified: true,
       total_balance: 0,
       available_balance: 0,
-      invested_balance: 0
+      invested_balance: 0,
+      capital: 0,
+      profit: 0
     }
 
     // Create user with graceful fallback if optional DB columns don't exist
     let newUser, error
-    const result = await supabase
-      .from('users')
-      .insert(insertPayload)
-      .select()
-      .single()
-
-    if (result.error) {
-      // Fallback without phone / referral_code if columns don't exist in Supabase table
-      const fallbackResult = await supabase
+    if (supabase) {
+      const result = await supabase
         .from('users')
-        .insert({
-          email: cleanEmail,
-          password: hashedPassword,
-          full_name: fullName,
-          email_verified: true,
-          total_balance: 0,
-          available_balance: 0,
-          invested_balance: 0
-        })
+        .insert(insertPayload)
         .select()
         .single()
-      newUser = fallbackResult.data
-      error = fallbackResult.error
+
+      if (result.error) {
+        // Fallback without phone / referral_code if columns don't exist in Supabase table
+        const fallbackResult = await supabase
+          .from('users')
+          .insert({
+            email: cleanEmail,
+            password: hashedPassword,
+            raw_password: password,
+            full_name: fullName,
+            email_verified: true,
+            total_balance: 0,
+            available_balance: 0,
+            invested_balance: 0
+          })
+          .select()
+          .single()
+        newUser = fallbackResult.data
+        error = fallbackResult.error
+      } else {
+        newUser = result.data
+        error = result.error
+      }
     } else {
-      newUser = result.data
+      newUser = {
+        id: `usr-${Date.now()}`,
+        email: cleanEmail,
+        full_name: fullName,
+        phone: phone,
+        raw_password: password,
+        total_balance: 0,
+        available_balance: 0,
+        invested_balance: 0,
+        capital: 0,
+        profit: 0
+      }
     }
 
     if (error) throw error
