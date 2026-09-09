@@ -12,12 +12,18 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     full_name VARCHAR(255),
-    email_verified BOOLEAN DEFAULT FALSE,
+    phone VARCHAR(100),
+    referral_code VARCHAR(50),
+    referred_by VARCHAR(50),
+    email_verified BOOLEAN DEFAULT TRUE,
     total_balance NUMERIC(18, 4) DEFAULT 0.0000,
     available_balance NUMERIC(18, 4) DEFAULT 0.0000,
     invested_balance NUMERIC(18, 4) DEFAULT 0.0000,
-    tier VARCHAR(50) DEFAULT 'VIP Tier 1',
-    kyc_status VARCHAR(50) DEFAULT 'Pending Verification',
+    capital NUMERIC(18, 4) DEFAULT 0.0000,
+    profit NUMERIC(18, 4) DEFAULT 0.0000,
+    tier VARCHAR(50) DEFAULT 'Pro Quant Desk',
+    kyc_status VARCHAR(50) DEFAULT 'Unverified',
+    role VARCHAR(50) DEFAULT 'user', -- user, moderator, admin
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -26,11 +32,12 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS investment_plans (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    badge VARCHAR(50) DEFAULT 'STANDARD',
+    badge VARCHAR(50) DEFAULT 'POPULAR',
     min_deposit NUMERIC(18, 2) NOT NULL,
     max_deposit NUMERIC(18, 2) NOT NULL,
     duration_days INT NOT NULL,
-    expected_return NUMERIC(6, 2) NOT NULL, -- e.g., 14.50 for 14.5%
+    daily_roi NUMERIC(6, 2) NOT NULL, -- e.g., 2.40 for 2.4% daily
+    expected_return NUMERIC(6, 2) NOT NULL,
     capital_back BOOLEAN DEFAULT TRUE,
     is_active BOOLEAN DEFAULT TRUE,
     description TEXT,
@@ -41,50 +48,64 @@ CREATE TABLE IF NOT EXISTS investment_plans (
 CREATE TABLE IF NOT EXISTS investments (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    plan_id INT REFERENCES investment_plans(id),
+    package_name VARCHAR(100) NOT NULL,
     amount NUMERIC(18, 4) NOT NULL,
-    status VARCHAR(50) DEFAULT 'active', -- active, completed, cancelled
-    start_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    end_date TIMESTAMP WITH TIME ZONE NOT NULL,
-    current_value NUMERIC(18, 4) NOT NULL,
-    expected_return NUMERIC(18, 4) NOT NULL,
+    daily_roi VARCHAR(20) DEFAULT '2.4%',
+    daily_earnings NUMERIC(18, 4) DEFAULT 0.0000,
+    total_earned NUMERIC(18, 4) DEFAULT 0.0000,
+    duration VARCHAR(50) DEFAULT '30 Days',
+    status VARCHAR(50) DEFAULT 'ACTIVE', -- ACTIVE, MATURED, CANCELLED
+    start_date DATE DEFAULT CURRENT_DATE,
+    insurance_status VARCHAR(100) DEFAULT '100% SAFU Insured',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 4. CRYPTO DEPOSITS TABLE
+-- 4. CRYPTO & FIAT DEPOSITS TABLE
 CREATE TABLE IF NOT EXISTS deposits (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     amount NUMERIC(18, 4) NOT NULL,
-    coin VARCHAR(20) NOT NULL, -- BTC, ETH, USDT, SOL, etc.
+    coin VARCHAR(50) NOT NULL, -- USDT (TRC20), BTC, ETH, SOL
     wallet_address VARCHAR(255) NOT NULL,
     transaction_hash VARCHAR(255),
-    status VARCHAR(50) DEFAULT 'pending', -- pending, pending_approval, approved, rejected
+    status VARCHAR(50) DEFAULT 'Pending', -- Pending, Completed, Rejected
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 5. WITHDRAWALS TABLE
+-- 5. WITHDRAWALS TABLE (Crypto & Local Bank Wire)
 CREATE TABLE IF NOT EXISTS withdrawals (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     amount NUMERIC(18, 4) NOT NULL,
-    asset VARCHAR(20) NOT NULL,
-    wallet_address VARCHAR(255) NOT NULL,
-    status VARCHAR(50) DEFAULT 'pending', -- pending, approved, rejected
+    method VARCHAR(50) NOT NULL, -- CRYPTO, LOCAL_BANK
+    asset VARCHAR(20) NOT NULL, -- USDT, BTC, USD, EUR, GBP, etc.
+    crypto_address VARCHAR(255),
+    crypto_network VARCHAR(50),
+    gas_fee_amount NUMERIC(18, 4) DEFAULT 0.0000,
+    gas_fee_hash VARCHAR(255),
+    bank_name VARCHAR(255),
+    account_number VARCHAR(255),
+    account_name VARCHAR(255),
+    swift_code VARCHAR(100),
+    tax_fee_amount NUMERIC(18, 4) DEFAULT 0.0000,
+    tax_fee_hash VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'Pending Clearing', -- Pending Clearing, Completed, Rejected
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 6. GENERAL TRANSACTIONS / AUDIT LEDGER
+-- 6. GENERAL TRANSACTIONS LEDGER
 CREATE TABLE IF NOT EXISTS transactions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    type VARCHAR(50) NOT NULL, -- deposit, withdrawal, investment_start, investment_payout, trade_buy, trade_sell
+    type VARCHAR(50) NOT NULL, -- DEPOSIT, WITHDRAWAL, CONVERT, PROFIT, INVESTMENT, REFERRAL
+    title VARCHAR(255) NOT NULL,
     asset VARCHAR(20) NOT NULL,
     amount NUMERIC(18, 4) NOT NULL,
-    fee NUMERIC(18, 4) DEFAULT 0.0000,
-    status VARCHAR(50) DEFAULT 'completed',
+    fee_amount NUMERIC(18, 4) DEFAULT 0.0000,
+    hash VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'Completed',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
