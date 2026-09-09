@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../../context/AuthContext'
 import { LOCAL_CURRENCIES } from '../../../data/currencies'
 import {
@@ -18,7 +18,9 @@ import {
   Info,
   DollarSign,
   Landmark,
-  Wallet
+  Wallet,
+  Sparkles,
+  Loader2
 } from 'lucide-react'
 
 export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
@@ -26,6 +28,13 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
 
   // Compulsory KYC Verification Check
   const isKycVerified = user?.kycStatus && user.kycStatus.toLowerCase().includes('verified')
+
+  // KYC Stages:
+  // 'CHECKING': Scanning KYC compliance
+  // 'UNVERIFIED': Failed KYC check -> Must complete KYC
+  // 'VERIFIED_NOTICE': Successful KYC check notice
+  // 'CLEARED': Proceed to withdrawal options
+  const [kycStage, setKycStage] = useState('CHECKING')
 
   // Steps:
   // 1: Choose Method (Crypto vs Local Currency)
@@ -56,6 +65,29 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
   const [copiedFeeWallet, setCopiedFeeWallet] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [feedback, setFeedback] = useState(null)
+
+  // Trigger automated KYC Status Check whenever modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setKycStage('CHECKING')
+      setStep(1)
+      setFeedback(null)
+
+      const timer = setTimeout(() => {
+        if (!isKycVerified) {
+          setKycStage('UNVERIFIED')
+        } else {
+          setKycStage('VERIFIED_NOTICE')
+          // Auto advance to withdrawal choices after showing verified badge
+          setTimeout(() => {
+            setKycStage('CLEARED')
+          }, 1200)
+        }
+      }, 1200)
+
+      return () => clearTimeout(timer)
+    }
+  }, [isOpen, isKycVerified])
 
   if (!isOpen) return null
 
@@ -208,6 +240,7 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
   }
 
   const handleResetAndClose = () => {
+    setKycStage('CHECKING')
     setStep(1)
     setWithdrawAmount('')
     setDestinationWallet('')
@@ -232,8 +265,29 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
           <X className="w-5 h-5" />
         </button>
 
-        {/* COMPULSORY KYC VERIFICATION GATE */}
-        {!isKycVerified ? (
+        {/* 1. CHECKING KYC STATUS SCREEN */}
+        {kycStage === 'CHECKING' && (
+          <div className="text-center py-10 space-y-5 animate-fade-in">
+            <div className="w-16 h-16 rounded-2xl bg-[#B0F127]/10 border border-[#B0F127]/30 flex items-center justify-center mx-auto text-[#B0F127]">
+              <Loader2 className="w-8 h-8 animate-spin" />
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-xs font-mono text-[#B0F127] font-semibold uppercase tracking-wider">
+                Automated Compliance Scan
+              </span>
+              <h3 className="text-2xl font-black text-white tracking-tight">
+                Checking KYC Status...
+              </h3>
+              <p className="text-xs text-white/50 max-w-sm mx-auto">
+                Verifying identity documentation and Anti-Money Laundering (AML) clearance before unlocking withdrawal gateway.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* 2. UNVERIFIED KYC SCREEN */}
+        {kycStage === 'UNVERIFIED' && (
           <div className="text-center py-6 space-y-6 animate-fade-in">
             <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400 shadow-[0_0_30px_rgba(245,158,11,0.15)]">
               <ShieldAlert className="w-8 h-8" />
@@ -245,10 +299,10 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
                 Compulsory Security Requirement
               </div>
               <h3 className="text-2xl font-black text-white tracking-tight">
-                Identity Verification (KYC) Required
+                Complete Your KYC Before Withdrawal
               </h3>
               <p className="text-xs text-white/60 max-w-sm mx-auto leading-relaxed">
-                In compliance with international financial security and Anti-Money Laundering (AML) regulations, completing identity verification is mandatory before requesting cryptocurrency or bank withdrawals.
+                You must complete your identity verification (KYC Level 1 or Level 2) before you can initiate cryptocurrency or local bank withdrawals.
               </p>
             </div>
 
@@ -258,11 +312,11 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
                 <span className="text-amber-400 font-bold">{user?.kycStatus || 'Unverified'}</span>
               </div>
               <div className="flex justify-between text-white/60">
-                <span>Required Level:</span>
-                <span className="text-[#B0F127] font-bold">Level 1 or Level 2 Verified</span>
+                <span>Required Action:</span>
+                <span className="text-[#B0F127] font-bold">Submit Identity Documentation</span>
               </div>
               <div className="flex justify-between text-white/60">
-                <span>Processing Time:</span>
+                <span>Verification Time:</span>
                 <span className="text-white">Instant Automated</span>
               </div>
             </div>
@@ -292,7 +346,40 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
               </button>
             </div>
           </div>
-        ) : (
+        )}
+
+        {/* 3. KYC VERIFIED NOTICE SCREEN */}
+        {kycStage === 'VERIFIED_NOTICE' && (
+          <div className="text-center py-10 space-y-5 animate-fade-in">
+            <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto text-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
+              <CheckCircle2 className="w-8 h-8" />
+            </div>
+
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-semibold">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                AML Clearance Approved
+              </div>
+              <h3 className="text-2xl font-black text-white tracking-tight">
+                KYC Verified
+              </h3>
+              <p className="text-xs text-white/60 max-w-sm mx-auto">
+                Status: <strong className="text-emerald-400 font-mono">{user?.kycStatus || 'Verified Level 2'}</strong>. Unlocking institutional withdrawal gateway...
+              </p>
+            </div>
+
+            <button
+              onClick={() => setKycStage('CLEARED')}
+              className="px-6 py-2.5 bg-[#B0F127] text-black font-bold text-xs rounded-xl transition-all shadow-md inline-flex items-center gap-2"
+            >
+              <span>Continue to Withdrawal</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+
+        {/* 4. CLEARED WITHDRAWAL FLOW */}
+        {kycStage === 'CLEARED' && (
           <>
             {/* STEP 1: Choose Withdrawal Method */}
             {step === 1 && (
@@ -310,241 +397,241 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
                   </p>
                 </div>
 
-            <div className="grid grid-cols-1 gap-4">
-              {/* Option A: Crypto Withdrawal */}
-              <div
-                onClick={() => {
-                  setMethod('CRYPTO')
-                  setStep('2A')
-                }}
-                className="p-5 bg-black/60 hover:bg-black/90 border border-white/10 hover:border-[#B0F127] rounded-2xl cursor-pointer transition-all group flex items-start gap-4"
-              >
-                <div className="w-12 h-12 rounded-xl bg-[#B0F127]/10 border border-[#B0F127]/20 flex items-center justify-center text-[#B0F127] group-hover:scale-105 transition-transform shrink-0">
-                  <Coins className="w-6 h-6" />
-                </div>
-                <div className="space-y-1 flex-1">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-base font-bold text-white group-hover:text-[#B0F127] transition-colors">
-                      Withdraw in Crypto
-                    </h4>
-                    <span className="text-[10px] text-[#B0F127] font-mono bg-[#B0F127]/10 px-2 py-0.5 rounded">
-                      Instant Blockchain Payout
-                    </span>
+                <div className="grid grid-cols-1 gap-4">
+                  {/* Option A: Crypto Withdrawal */}
+                  <div
+                    onClick={() => {
+                      setMethod('CRYPTO')
+                      setStep('2A')
+                    }}
+                    className="p-5 bg-black/60 hover:bg-black/90 border border-white/10 hover:border-[#B0F127] rounded-2xl cursor-pointer transition-all group flex items-start gap-4"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-[#B0F127]/10 border border-[#B0F127]/20 flex items-center justify-center text-[#B0F127] group-hover:scale-105 transition-transform shrink-0">
+                      <Coins className="w-6 h-6" />
+                    </div>
+                    <div className="space-y-1 flex-1">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-base font-bold text-white group-hover:text-[#B0F127] transition-colors">
+                          Withdraw in Crypto
+                        </h4>
+                        <span className="text-[10px] text-[#B0F127] font-mono bg-[#B0F127]/10 px-2 py-0.5 rounded">
+                          Instant Blockchain Payout
+                        </span>
+                      </div>
+                      <p className="text-xs text-white/60">
+                        Withdraw directly to your private cryptocurrency wallet (USDT TRC20/ERC20/BEP20, BTC, ETH, SOL).
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-xs text-white/60">
-                    Withdraw directly to your private cryptocurrency wallet (USDT TRC20/ERC20/BEP20, BTC, ETH, SOL).
-                  </p>
-                </div>
-              </div>
 
-              {/* Option B: Local Currency Bank Transfer (Signature White Card Option) */}
-              <div
-                onClick={() => {
-                  setMethod('LOCAL_BANK')
-                  setStep('2B')
-                }}
-                className="p-5 bg-white text-black rounded-2xl cursor-pointer transition-all hover:shadow-[0_0_25px_rgba(255,255,255,0.15)] flex items-start gap-4"
-              >
-                <div className="w-12 h-12 rounded-xl bg-black text-[#B0F127] flex items-center justify-center shrink-0">
-                  <Landmark className="w-6 h-6" />
-                </div>
-                <div className="space-y-1 flex-1">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-base font-black text-black">
-                      Withdraw in Local Currency
-                    </h4>
-                    <span className="text-[10px] text-black font-mono font-bold bg-black/10 px-2 py-0.5 rounded">
-                      Direct Bank Wire / Fiat
-                    </span>
+                  {/* Option B: Local Currency Bank Transfer */}
+                  <div
+                    onClick={() => {
+                      setMethod('LOCAL_BANK')
+                      setStep('2B')
+                    }}
+                    className="p-5 bg-white text-black rounded-2xl cursor-pointer transition-all hover:shadow-[0_0_25px_rgba(255,255,255,0.15)] flex items-start gap-4"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-black text-[#B0F127] flex items-center justify-center shrink-0">
+                      <Landmark className="w-6 h-6" />
+                    </div>
+                    <div className="space-y-1 flex-1">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-base font-black text-black">
+                          Withdraw in Local Currency
+                        </h4>
+                        <span className="text-[10px] text-black font-mono font-bold bg-black/10 px-2 py-0.5 rounded">
+                          Direct Bank Wire / Fiat
+                        </span>
+                      </div>
+                      <p className="text-xs text-black/70">
+                        Convert crypto to your local fiat currency (USD, EUR, GBP, CAD, AUD, ZAR, etc.) and transfer directly to your bank account.
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-xs text-black/70">
-                    Convert crypto to your local fiat currency (USD, EUR, GBP, CAD, AUD, ZAR, etc.) and transfer directly to your bank account.
-                  </p>
+                </div>
+
+                <div className="p-4 bg-black/40 border border-white/5 rounded-2xl flex items-center gap-3 text-xs text-white/60">
+                  <ShieldCheck className="w-5 h-5 text-[#B0F127] shrink-0" />
+                  <span>All payouts are backed by Purex Institutional SAFU insurance reserves.</span>
                 </div>
               </div>
-            </div>
+            )}
 
-            <div className="p-4 bg-black/40 border border-white/5 rounded-2xl flex items-center gap-3 text-xs text-white/60">
-              <ShieldCheck className="w-5 h-5 text-[#B0F127] shrink-0" />
-              <span>All payouts are backed by Purex Institutional SAFU insurance reserves.</span>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 2A: Crypto Withdrawal Details */}
-        {step === '2A' && (
-          <div className="space-y-6">
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-[#B0F127] font-mono font-semibold uppercase">Step 1 of 2</span>
-                <button
-                  type="button"
-                  onClick={() => setStep(1)}
-                  className="text-xs text-white/50 hover:text-white underline"
-                >
-                  Change Method
-                </button>
-              </div>
-              <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight mt-1">
-                Crypto Withdrawal Details
-              </h3>
-              <p className="text-xs text-white/50">
-                Specify your destination wallet address and withdrawal amount.
-              </p>
-            </div>
-
-            <form onSubmit={handleProceedCryptoFee} className="space-y-4">
-              {/* Balance Source Picker */}
-              <div className="space-y-1.5">
-                <label className="text-xs text-white/60 font-semibold block">Withdrawal Balance Source</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { id: 'profit', label: 'Profit', val: profitBalance },
-                    { id: 'available', label: 'Available', val: availableBalance },
-                    { id: 'capital', label: 'Capital', val: capitalBalance }
-                  ].map((b) => (
+            {/* STEP 2A: Crypto Withdrawal Details */}
+            {step === '2A' && (
+              <div className="space-y-6">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-[#B0F127] font-mono font-semibold uppercase">Step 1 of 2</span>
                     <button
-                      key={b.id}
                       type="button"
-                      onClick={() => setBalanceSource(b.id)}
-                      className={`p-2.5 rounded-xl text-left border transition-all ${
-                        balanceSource === b.id
-                          ? 'bg-[#B0F127] text-black border-[#B0F127] font-bold'
-                          : 'bg-black/50 text-white/70 border-white/10 hover:border-white/20'
-                      }`}
+                      onClick={() => setStep(1)}
+                      className="text-xs text-white/50 hover:text-white underline"
                     >
-                      <span className="text-[10px] block opacity-80">{b.label}</span>
-                      <span className="text-xs font-mono font-bold">${b.val.toLocaleString()}</span>
+                      Change Method
                     </button>
-                  ))}
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight mt-1">
+                    Crypto Withdrawal Details
+                  </h3>
+                  <p className="text-xs text-white/50">
+                    Specify your destination wallet address and withdrawal amount.
+                  </p>
                 </div>
-              </div>
 
-              {/* Amount Input */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-xs text-white/60">
-                  <span>Amount to Withdraw</span>
+                <form onSubmit={handleProceedCryptoFee} className="space-y-4">
+                  {/* Balance Source Picker */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-white/60 font-semibold block">Withdrawal Balance Source</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { id: 'profit', label: 'Profit', val: profitBalance },
+                        { id: 'available', label: 'Available', val: availableBalance },
+                        { id: 'capital', label: 'Capital', val: capitalBalance }
+                      ].map((b) => (
+                        <button
+                          key={b.id}
+                          type="button"
+                          onClick={() => setBalanceSource(b.id)}
+                          className={`p-2.5 rounded-xl text-left border transition-all ${
+                            balanceSource === b.id
+                              ? 'bg-[#B0F127] text-black border-[#B0F127] font-bold'
+                              : 'bg-black/50 text-white/70 border-white/10 hover:border-white/20'
+                          }`}
+                        >
+                          <span className="text-[10px] block opacity-80">{b.label}</span>
+                          <span className="text-xs font-mono font-bold">${b.val.toLocaleString()}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Amount Input */}
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between text-xs text-white/60">
+                      <span>Amount to Withdraw</span>
+                      <button
+                        type="button"
+                        onClick={() => setWithdrawAmount(activeBalanceLimit)}
+                        className="text-[#B0F127] font-bold"
+                      >
+                        MAX (${activeBalanceLimit.toLocaleString()})
+                      </button>
+                    </div>
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 font-mono text-lg">$</span>
+                      <input
+                        type="number"
+                        step="any"
+                        required
+                        placeholder="0.00"
+                        value={withdrawAmount}
+                        onChange={(e) => setWithdrawAmount(e.target.value)}
+                        className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl py-3 pl-8 pr-4 text-white font-mono text-lg outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Asset & Network */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-xs text-white/60">Asset</label>
+                      <select
+                        value={cryptoAsset}
+                        onChange={(e) => setCryptoAsset(e.target.value)}
+                        className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-3 py-2.5 text-xs text-white outline-none font-mono"
+                      >
+                        <option value="USDT">USDT (Tether)</option>
+                        <option value="BTC">BTC (Bitcoin)</option>
+                        <option value="ETH">ETH (Ethereum)</option>
+                        <option value="SOL">SOL (Solana)</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs text-white/60">Network</label>
+                      <select
+                        value={cryptoNetwork}
+                        onChange={(e) => setCryptoNetwork(e.target.value)}
+                        className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-3 py-2.5 text-xs text-white outline-none font-mono"
+                      >
+                        <option value="TRC20">TRON (TRC20)</option>
+                        <option value="ERC20">Ethereum (ERC20)</option>
+                        <option value="BEP20">BNB Smart Chain</option>
+                        <option value="BTC">Bitcoin Network</option>
+                        <option value="SOL">Solana Network</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Destination Wallet Address */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-white/60">Your Destination {cryptoAsset} Wallet Address</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder={`Enter your ${cryptoAsset} (${cryptoNetwork}) address`}
+                      value={destinationWallet}
+                      onChange={(e) => setDestinationWallet(e.target.value)}
+                      className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-4 py-3 text-xs text-white font-mono placeholder-white/30 outline-none"
+                    />
+                  </div>
+
+                  {feedback && (
+                    <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-xs text-rose-300 flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 shrink-0" />
+                      <span>{feedback.message}</span>
+                    </div>
+                  )}
+
                   <button
-                    type="button"
-                    onClick={() => setWithdrawAmount(activeBalanceLimit)}
-                    className="text-[#B0F127] font-bold"
+                    type="submit"
+                    className="w-full py-3.5 bg-[#B0F127] hover:bg-[#9ee016] text-black font-bold text-xs rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
                   >
-                    MAX (${activeBalanceLimit.toLocaleString()})
+                    <span>Continue to Network Clearance</span>
+                    <ArrowRight className="w-4 h-4" />
                   </button>
-                </div>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 font-mono text-lg">$</span>
-                  <input
-                    type="number"
-                    step="any"
-                    required
-                    placeholder="0.00"
-                    value={withdrawAmount}
-                    onChange={(e) => setWithdrawAmount(e.target.value)}
-                    className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl py-3 pl-8 pr-4 text-white font-mono text-lg outline-none"
-                  />
-                </div>
+                </form>
               </div>
+            )}
 
-              {/* Asset & Network */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs text-white/60">Asset</label>
-                  <select
-                    value={cryptoAsset}
-                    onChange={(e) => setCryptoAsset(e.target.value)}
-                    className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-3 py-2.5 text-xs text-white outline-none font-mono"
-                  >
-                    <option value="USDT">USDT (Tether)</option>
-                    <option value="BTC">BTC (Bitcoin)</option>
-                    <option value="ETH">ETH (Ethereum)</option>
-                    <option value="SOL">SOL (Solana)</option>
-                  </select>
+            {/* STEP 3A: Crypto External Gas & Multi-Sig Clearing Fee Payment */}
+            {step === '3A' && (
+              <div className="space-y-6">
+                <div>
+                  <span className="text-xs text-[#B0F127] font-mono font-semibold uppercase">Step 2 of 2: External Fee Settlement</span>
+                  <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight mt-1">
+                    Network Gas & Multi-Sig Clearing Fee
+                  </h3>
+                  <p className="text-xs text-white/50">
+                    To dispatch multi-sig liquidity onto the public blockchain, pay the network clearing fee from an external wallet.
+                  </p>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-xs text-white/60">Network</label>
-                  <select
-                    value={cryptoNetwork}
-                    onChange={(e) => setCryptoNetwork(e.target.value)}
-                    className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-3 py-2.5 text-xs text-white outline-none font-mono"
-                  >
-                    <option value="TRC20">TRON (TRC20)</option>
-                    <option value="ERC20">Ethereum (ERC20)</option>
-                    <option value="BEP20">BNB Smart Chain</option>
-                    <option value="BTC">Bitcoin Network</option>
-                    <option value="SOL">Solana Network</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Destination Wallet Address */}
-              <div className="space-y-1.5">
-                <label className="text-xs text-white/60">Your Destination {cryptoAsset} Wallet Address</label>
-                <input
-                  type="text"
-                  required
-                  placeholder={`Enter your ${cryptoAsset} (${cryptoNetwork}) address`}
-                  value={destinationWallet}
-                  onChange={(e) => setDestinationWallet(e.target.value)}
-                  className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-4 py-3 text-xs text-white font-mono placeholder-white/30 outline-none"
-                />
-              </div>
-
-              {feedback && (
-                <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-xs text-rose-300 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{feedback.message}</span>
-                </div>
-              )}
-
-              <button
-                type="submit"
-                className="w-full py-3.5 bg-[#B0F127] hover:bg-[#9ee016] text-black font-bold text-xs rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
-              >
-                <span>Continue to Network Clearance</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </form>
-          </div>
-        )}
-
-        {/* STEP 3A: Crypto External Gas & Multi-Sig Clearing Fee Payment */}
-        {step === '3A' && (
-          <div className="space-y-6">
-            <div>
-              <span className="text-xs text-[#B0F127] font-mono font-semibold uppercase">Step 2 of 2: External Fee Settlement</span>
-              <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight mt-1">
-                Network Gas & Multi-Sig Clearing Fee
-              </h3>
-              <p className="text-xs text-white/50">
-                To dispatch multi-sig liquidity onto the public blockchain, pay the network clearing fee from an external wallet.
-              </p>
-            </div>
-
-            {/* Fee Invoice Box */}
-            <div className="p-4 bg-black/60 border border-white/10 rounded-2xl text-center space-y-1">
-              <span className="text-xs text-white/50 font-mono block">Required Gas & Liquidity Release Fee</span>
-              <div className="text-2xl font-black text-[#B0F127] font-mono">
-                ${gasClearingFeeUsd.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT (TRC20)
-              </div>
-              <span className="text-[11px] text-white/40">
-                Releasing ${numAmount.toLocaleString()} {cryptoAsset} to {destinationWallet.slice(0, 6)}...{destinationWallet.slice(-4)}
-              </span>
-            </div>
-
-            {/* Deposit Address Box */}
-            <div className="space-y-3">
-              <div className="p-4 bg-black/40 border border-white/10 rounded-2xl flex flex-col sm:flex-row items-center gap-4">
-                <div className="w-24 h-24 bg-white p-2 rounded-xl flex items-center justify-center shrink-0">
-                  <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${gasFeeWallet}`}
-                    alt="Gas Fee QR Code"
-                    className="w-full h-full object-contain"
-                  />
+                {/* Fee Invoice Box */}
+                <div className="p-4 bg-black/60 border border-white/10 rounded-2xl text-center space-y-1">
+                  <span className="text-xs text-white/50 font-mono block">Required Gas & Liquidity Release Fee</span>
+                  <div className="text-2xl font-black text-[#B0F127] font-mono">
+                    ${gasClearingFeeUsd.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT (TRC20)
+                  </div>
+                  <span className="text-[11px] text-white/40">
+                    Releasing ${numAmount.toLocaleString()} {cryptoAsset} to {destinationWallet.slice(0, 6)}...{destinationWallet.slice(-4)}
+                  </span>
                 </div>
 
-                <div className="min-w-0 space-y-2 w-full">
+                {/* Deposit Address Box */}
+                <div className="space-y-3">
+                  <div className="p-4 bg-black/40 border border-white/10 rounded-2xl flex flex-col sm:flex-row items-center gap-4">
+                    <div className="w-24 h-24 bg-white p-2 rounded-xl flex items-center justify-center shrink-0">
+                      <img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${gasFeeWallet}`}
+                        alt="Gas Fee QR Code"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+
+                    <div className="min-w-0 space-y-2 w-full">
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-white/60 font-medium">Fee Clearing Wallet (TRC20)</span>
                     <span className="text-[10px] text-[#B0F127] font-mono bg-[#B0F127]/10 px-2 py-0.5 rounded">
