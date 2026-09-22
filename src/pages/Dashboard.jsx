@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import OverviewTab from '../components/dashboard/OverviewTab'
 import InvestTab from '../components/dashboard/InvestTab'
+import TradingTerminalTab from '../components/dashboard/TradingTerminalTab'
 import TransactionsTab from '../components/dashboard/TransactionsTab'
 import KycTab from '../components/dashboard/KycTab'
 import ReferralTab from '../components/dashboard/ReferralTab'
@@ -32,12 +33,14 @@ import {
   ChevronRight,
   TrendingUp,
   User,
-  ExternalLink
+  ExternalLink,
+  Activity
 } from 'lucide-react'
 
 const NAV_ITEMS = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard, badge: 'Live' },
-  { id: 'invest', label: 'Start Investing', icon: Zap, highlight: true },
+  { id: 'terminal', label: 'Trading Terminal', icon: TrendingUp, badge: 'PRO', highlight: true },
+  { id: 'invest', label: 'Start Investing', icon: Zap },
   { id: 'transactions', label: 'Transaction History', icon: History },
   { id: 'kyc', label: 'KYC Verification', icon: ShieldCheck },
   { id: 'referral', label: 'Referral System', icon: Gift },
@@ -46,11 +49,11 @@ const NAV_ITEMS = [
   { id: 'settings', label: 'Account Settings', icon: Settings }
 ]
 
-export default function Dashboard() {
+export default function Dashboard({ defaultTab = 'overview' }) {
   const { user, isAuthenticated, logout } = useAuth()
   const navigate = useNavigate()
 
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState(defaultTab)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   // Modal States
@@ -72,6 +75,14 @@ export default function Dashboard() {
             onOpenWithdraw={() => setWithdrawOpen(true)}
             onOpenConvert={() => setConvertOpen(true)}
             onNavigateTab={(tab) => setActiveTab(tab)}
+          />
+        )
+      case 'terminal':
+        return (
+          <TradingTerminalTab
+            onOpenDeposit={() => setDepositOpen(true)}
+            onOpenWithdraw={() => setWithdrawOpen(true)}
+            onOpenConvert={() => setConvertOpen(true)}
           />
         )
       case 'invest':

@@ -37,6 +37,10 @@ export default function Navbar() {
           alignItems: 'center',
           gap: '2rem'
         }} className="desktop-nav">
+          <Link to="/trade" style={{ color: '#B0F127', textDecoration: 'none', fontSize: '0.925rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <span>Terminal</span>
+            <span style={{ fontSize: '0.65rem', background: 'rgba(176, 241, 39, 0.2)', padding: '1px 5px', borderRadius: '4px', border: '1px solid rgba(176, 241, 39, 0.4)' }}>PRO</span>
+          </Link>
           <a href="/#about" style={{ color: '#c5c5c5', textDecoration: 'none', fontSize: '0.925rem', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#B0F127'} onMouseLeave={e => e.target.style.color = '#c5c5c5'}>
             About Purex
           </a>

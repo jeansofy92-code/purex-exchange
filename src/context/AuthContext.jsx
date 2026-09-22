@@ -895,6 +895,49 @@ export function AuthProvider({ children }) {
     }
   }
 
+  const executeTrade = ({ pair, side, amount, price, type, profit = 0, status = 'Completed' }) => {
+    try {
+      if (!user) return { success: false, error: 'User not authenticated' }
+      const users = getAllRegisteredUsers()
+      const uIdx = users.findIndex(u => u.id === user.id)
+      if (uIdx === -1) return { success: false, error: 'User not found' }
+
+      const targetUser = users[uIdx]
+      const numAmount = Number(amount) || 0
+      const numProfit = Number(profit) || 0
+
+      // If arbitrage or profit trade, credit profit directly to profit and availableBalance
+      if (numProfit > 0) {
+        targetUser.profit = (targetUser.profit || 0) + numProfit
+        targetUser.totalBalance = (targetUser.totalBalance || 0) + numProfit
+        targetUser.availableBalance = (targetUser.availableBalance || 0) + numProfit
+      }
+
+      const newTx = {
+        id: `trade-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        type: numProfit > 0 ? 'PROFIT' : 'TRADE',
+        title: `${type === 'ARBITRAGE' ? 'Flash Arbitrage' : side.toUpperCase() + ' ' + pair} Execution`,
+        amount: numProfit > 0 ? numProfit : numAmount,
+        asset: pair.split('/')[0] || 'USDT',
+        status: status,
+        date: 'Today, Just Now',
+        hash: `0x${Math.random().toString(16).substring(2, 10)}...${Math.random().toString(16).substring(2, 6)}`,
+        details: { pair, side, amount: numAmount, price, profit: numProfit, type }
+      }
+
+      targetUser.transactions = [newTx, ...(targetUser.transactions || [])]
+
+      users[uIdx] = { ...targetUser }
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))
+      setUser(users[uIdx])
+      localStorage.setItem(SESSION_KEY, JSON.stringify(users[uIdx]))
+
+      return { success: true, user: users[uIdx], transaction: newTx }
+    } catch (e) {
+      return { success: false, error: e.message }
+    }
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -912,6 +955,7 @@ export function AuthProvider({ children }) {
         activateInvestmentPlan,
         submitKycDocuments,
         claimReferralCommission,
+        executeTrade,
         // Admin & Moderator Methods
         getAllRegisteredUsers,
         adminUpdateUserBalance,

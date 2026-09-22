@@ -34,6 +34,8 @@ function AppRoutes() {
 
       {/* User Dashboard Fullscreen App Shell */}
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/trade" element={<Dashboard defaultTab="terminal" />} />
+      <Route path="/terminal" element={<Dashboard defaultTab="terminal" />} />
 
       {/* Master Admin Management Console */}
       <Route path="/admin" element={<AdminDashboard />} />
