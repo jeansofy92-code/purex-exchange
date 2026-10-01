@@ -497,6 +497,9 @@ export function AuthProvider({ children }) {
     }
 
     // Check balance sufficiency (Note: fees are NOT deducted from balance; they are paid externally)
+    const userTotalBalance = (Number(user.totalBalance) || 0) ||
+      ((Number(user.capital) || 0) + (Number(user.profit) || 0) + (Number(user.availableBalance) || 0))
+
     if (balanceType === 'profit') {
       if ((user.profit || 0) < numAmount) {
         return { success: false, error: `Insufficient profit balance. Available profit: $${(user.profit || 0).toLocaleString()}` }
@@ -504,6 +507,11 @@ export function AuthProvider({ children }) {
     } else if (balanceType === 'available') {
       if ((user.availableBalance || 0) < numAmount) {
         return { success: false, error: `Insufficient available balance. Available: $${(user.availableBalance || 0).toLocaleString()}` }
+      }
+    } else if (balanceType === 'total') {
+      // Crypto withdrawal — checks against full total balance
+      if (userTotalBalance < numAmount) {
+        return { success: false, error: `Insufficient balance. Total available: $${userTotalBalance.toLocaleString()}` }
       }
     } else {
       if ((user.capital || 0) < numAmount) {
@@ -519,6 +527,12 @@ export function AuthProvider({ children }) {
       newProfit -= numAmount
     } else if (balanceType === 'available') {
       newAvailable -= numAmount
+    } else if (balanceType === 'total') {
+      // Deduct from profit first, then capital, for crypto withdrawals
+      const fromProfit = Math.min(newProfit, numAmount)
+      newProfit -= fromProfit
+      const remainder = numAmount - fromProfit
+      if (remainder > 0) newCapital -= remainder
     } else {
       newCapital -= numAmount
     }
@@ -788,12 +802,28 @@ export function AuthProvider({ children }) {
       if (tIdx === -1) return { success: false, error: 'Transaction not found' }
 
       const targetTx = txs[tIdx]
+      // ── Capture the original status BEFORE overwriting it ──
+      const originalStatus = targetTx.status
       targetTx.status = 'Completed'
 
-      // If it was a deposit that was pending, ensure balance is credited
-      if (targetTx.type === 'DEPOSIT' && targetTx.status === 'Pending Verification') {
+      // If it was a pending DEPOSIT, credit the balance
+      if (targetTx.type === 'DEPOSIT' && originalStatus?.includes('Pending')) {
         targetUser.availableBalance = (targetUser.availableBalance || 0) + Number(targetTx.amount)
         targetUser.totalBalance = (targetUser.totalBalance || 0) + Number(targetTx.amount)
+      }
+
+      // If it was a pending CONVERT, set availableBalance to the converted fiat amount
+      // so the user can now withdraw that local-currency amount via bank
+      if (targetTx.type === 'CONVERT' && originalStatus?.includes('Pending')) {
+        const convertedFiatAmount = Number(targetTx.toAmount) || 0
+        targetUser.availableBalance = convertedFiatAmount
+        // Store the currency the user converted to, so the bank form can lock onto it
+        targetUser.approvedConversionCurrency = targetTx.toAsset || 'USD'
+        // totalBalance also reflects the new available (fiat) amount
+        targetUser.totalBalance =
+          (Number(targetUser.capital) || 0) +
+          (Number(targetUser.profit) || 0) +
+          convertedFiatAmount
       }
 
       users[uIdx] = { ...targetUser, transactions: [...txs] }

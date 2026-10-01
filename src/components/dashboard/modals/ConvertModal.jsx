@@ -3,7 +3,6 @@ import { useAuth } from '../../../context/AuthContext'
 import { LOCAL_CURRENCIES, LOCAL_CURRENCIES_MAP } from '../../../data/currencies'
 import {
   X,
-  RefreshCw,
   Sparkles,
   ShieldCheck,
   CheckCircle2,
@@ -12,57 +11,61 @@ import {
   Check,
   ArrowRight,
   Clock,
-  Landmark,
-  Coins
+  Lock,
+  Info
 } from 'lucide-react'
 
 // Crypto Input Assets with Base Multiplier
 const CRYPTO_INPUT_ASSETS = {
   USDT: { name: 'Tether USD', symbol: 'USDT', baseUsdRate: 1.50, min: 10 },
-  BTC: { name: 'Bitcoin', symbol: 'BTC', baseUsdRate: 131175.0, min: 0.0001 },
-  ETH: { name: 'Ethereum', symbol: 'ETH', baseUsdRate: 4680.0, min: 0.002 },
-  SOL: { name: 'Solana', symbol: 'SOL', baseUsdRate: 267.75, min: 0.05 }
+  BTC:  { name: 'Bitcoin',    symbol: 'BTC',  baseUsdRate: 131175.0, min: 0.0001 },
+  ETH:  { name: 'Ethereum',   symbol: 'ETH',  baseUsdRate: 4680.0,   min: 0.002 },
+  SOL:  { name: 'Solana',     symbol: 'SOL',  baseUsdRate: 267.75,   min: 0.05  }
 }
 
 export default function ConvertModal({ isOpen, onClose }) {
   const { user, convertCrypto, platformSettings } = useAuth()
 
   const [fromCrypto, setFromCrypto] = useState('USDT')
-  const [toFiat, setToFiat] = useState('USD')
-  const [fromAmount, setFromAmount] = useState('')
-  const [step, setStep] = useState(1) // 1: Swap Form, 2: 20% External Fee Payment, 3: Success Pending
+  const [toFiat, setToFiat]         = useState('USD')
+  const [step, setStep]             = useState(1) // 1: Swap Form, 2: Pay 20% Fee, 3: Success Pending
   const [copiedAddress, setCopiedAddress] = useState(false)
-  const [feeTxHash, setFeeTxHash] = useState('')
+  const [feeTxHash, setFeeTxHash]   = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const [feedback, setFeedback] = useState(null)
+  const [feedback, setFeedback]     = useState(null)
 
   if (!isOpen) return null
 
+  // ─── The amount is ALWAYS the user's full total balance ───────────────────
+  const totalBalance = user
+    ? (Number(user.totalBalance) || (Number(user.capital || 0) + Number(user.profit || 0) + Number(user.availableBalance || 0)))
+    : 0
+
+  const fromAmount = totalBalance   // READ-ONLY — always max
+
   const cryptoObj = CRYPTO_INPUT_ASSETS[fromCrypto]
-  const fiatObj = LOCAL_CURRENCIES_MAP[toFiat] || LOCAL_CURRENCIES[0]
+  const fiatObj   = LOCAL_CURRENCIES_MAP[toFiat] || LOCAL_CURRENCIES[0]
 
-  // Premium high rate calculation (e.g. 1 USDT = $1.50 USD)
-  const effectiveRate = cryptoObj.baseUsdRate * fiatObj.rate
-  const numAmount = Number(fromAmount) || 0
-  const convertedFiatOutput = numAmount * effectiveRate
+  // Premium high-rate calculation (e.g. 1 USDT = $1.50 USD)
+  const effectiveRate      = cryptoObj.baseUsdRate * fiatObj.rate
+  const convertedFiatOutput = fromAmount * effectiveRate
 
-  // 20% Conversion fee based on the crypto value
-  // (For USDT: 20% of amount in USDT)
-  const conversionFeeUsdt = numAmount * 0.20
+  // 20% Conversion fee on the USD total-balance value
+  const conversionFeeUsdt = fromAmount * 0.20
 
-  // Conversion fee collection address (TRC20)
+  // Fee collection address (TRC20)
   const feeDepositAddress = platformSettings?.wallets?.conversionFeeWallet || 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a'
 
   const handleProceedToFee = (e) => {
     e.preventDefault()
     setFeedback(null)
 
-    if (!numAmount || numAmount <= 0) {
-      setFeedback({ type: 'error', message: 'Please enter a valid crypto amount to convert.' })
+    if (!fromAmount || fromAmount <= 0) {
+      setFeedback({ type: 'error', message: 'Your account balance must be greater than $0 to convert.' })
       return
     }
 
-    if (numAmount < cryptoObj.min) {
+    if (fromAmount < cryptoObj.min) {
       setFeedback({
         type: 'error',
         message: `Minimum conversion amount is ${cryptoObj.min} ${fromCrypto}.`
@@ -94,7 +97,7 @@ export default function ConvertModal({ isOpen, onClose }) {
       const res = convertCrypto({
         fromAsset: fromCrypto,
         toAsset: toFiat,
-        fromAmount: numAmount,
+        fromAmount: fromAmount,
         toAmount: convertedFiatOutput,
         conversionFeeAmount: conversionFeeUsdt,
         feeTxHash: feeTxHash.trim()
@@ -111,7 +114,6 @@ export default function ConvertModal({ isOpen, onClose }) {
 
   const handleResetAndClose = () => {
     setStep(1)
-    setFromAmount('')
     setFeeTxHash('')
     setFeedback(null)
     onClose()
@@ -128,7 +130,7 @@ export default function ConvertModal({ isOpen, onClose }) {
           <X className="w-5 h-5" />
         </button>
 
-        {/* STEP 1: Converter Form (Crypto to Local Fiat) */}
+        {/* ─── STEP 1: Converter Form ─────────────────────────────────── */}
         {step === 1 && (
           <div className="space-y-6">
             <div>
@@ -137,11 +139,19 @@ export default function ConvertModal({ isOpen, onClose }) {
                 Premium Fiat Conversion Desk
               </div>
               <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                Convert Crypto to Local Currency
+                Convert Balance to Local Currency
               </h3>
               <p className="text-xs text-white/50 mt-1">
-                Convert your crypto directly into local fiat currency at institutional premium exchange rates.
+                Convert your entire platform balance to local fiat currency at institutional premium exchange rates.
               </p>
+            </div>
+
+            {/* Info Banner */}
+            <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-start gap-2.5 text-xs text-blue-300">
+              <Info className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>
+                Your <strong>entire total balance</strong> is converted at once. After admin approval, the converted amount will be credited to your Available Balance for bank withdrawal.
+              </span>
             </div>
 
             {/* High Rate Incentive Banner */}
@@ -155,23 +165,20 @@ export default function ConvertModal({ isOpen, onClose }) {
             </div>
 
             <form onSubmit={handleProceedToFee} className="space-y-4">
-              {/* From Crypto Asset Box */}
+              {/* From: Total Balance (LOCKED — always max) */}
               <div className="p-4 bg-black/60 border border-white/10 rounded-2xl space-y-2">
                 <div className="flex justify-between text-xs text-white/50 font-mono">
-                  <span>From Crypto Asset</span>
-                  <span>Min: {cryptoObj.min} {fromCrypto}</span>
+                  <span>From (Total Platform Balance)</span>
+                  <span className="flex items-center gap-1 text-amber-400">
+                    <Lock className="w-3 h-3" /> Auto-set to Max
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <input
-                    type="number"
-                    step="any"
-                    required
-                    placeholder="0.00"
-                    value={fromAmount}
-                    onChange={(e) => setFromAmount(e.target.value)}
-                    className="w-full bg-transparent text-xl sm:text-2xl font-bold font-mono text-white outline-none placeholder-white/30"
-                  />
+                  {/* Read-only locked amount display */}
+                  <div className="w-full text-xl sm:text-2xl font-bold font-mono text-white bg-transparent outline-none">
+                    ${fromAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </div>
 
                   <select
                     value={fromCrypto}
@@ -179,15 +186,17 @@ export default function ConvertModal({ isOpen, onClose }) {
                     className="bg-[#1a1a1a] border border-white/15 focus:border-[#B0F127] rounded-xl px-3 py-2 text-xs font-bold text-white outline-none cursor-pointer font-mono"
                   >
                     {Object.keys(CRYPTO_INPUT_ASSETS).map((sym) => (
-                      <option key={sym} value={sym}>
-                        {sym}
-                      </option>
+                      <option key={sym} value={sym}>{sym}</option>
                     ))}
                   </select>
                 </div>
+
+                <p className="text-[10px] text-white/30 font-mono">
+                  Capital: ${(user?.capital || 0).toLocaleString()} · Profit: ${(user?.profit || 0).toLocaleString()} · Available: ${(user?.availableBalance || 0).toLocaleString()}
+                </p>
               </div>
 
-              {/* To Local Fiat Currency Box */}
+              {/* To: Local Fiat Currency */}
               <div className="p-4 bg-black/60 border border-white/10 rounded-2xl space-y-2">
                 <div className="flex justify-between text-xs text-white/50 font-mono">
                   <span>To Local Currency (Estimated Payout)</span>
@@ -196,7 +205,7 @@ export default function ConvertModal({ isOpen, onClose }) {
 
                 <div className="flex items-center gap-3">
                   <div className="w-full text-xl sm:text-2xl font-black font-mono text-[#B0F127] truncate">
-                    {numAmount > 0
+                    {fromAmount > 0
                       ? `${fiatObj.symbol}${convertedFiatOutput.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                       : `${fiatObj.symbol}0.00`}
                   </div>
@@ -226,12 +235,12 @@ export default function ConvertModal({ isOpen, onClose }) {
                 <div className="flex justify-between text-white/60">
                   <span>Conversion Fee (20%):</span>
                   <span className="text-[#B0F127] font-bold">
-                    {conversionFeeUsdt.toFixed(2)} USDT
+                    ${conversionFeeUsdt.toFixed(2)} USDT
                   </span>
                 </div>
                 <div className="flex justify-between text-[11px] text-white/40 pt-1 border-t border-white/5">
-                  <span>Fee Settlement:</span>
-                  <span className="text-amber-400">Payable via external wallet transfer</span>
+                  <span>After Approval:</span>
+                  <span className="text-emerald-400">Available Balance is updated for withdrawal</span>
                 </div>
               </div>
 
@@ -253,7 +262,7 @@ export default function ConvertModal({ isOpen, onClose }) {
           </div>
         )}
 
-        {/* STEP 2: Pay 20% Conversion Fee (External Wallet) */}
+        {/* ─── STEP 2: Pay 20% Conversion Fee ────────────────────────── */}
         {step === 2 && (
           <div className="space-y-6">
             <div>
@@ -262,7 +271,7 @@ export default function ConvertModal({ isOpen, onClose }) {
                 External Fee Settlement
               </div>
               <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                Pay Conversion Fee to Complete Conversion
+                Pay Conversion Fee
               </h3>
               <p className="text-xs text-white/50 mt-1">
                 Transfer the 20% conversion fee from an external wallet to the designated pool address below.
@@ -276,7 +285,7 @@ export default function ConvertModal({ isOpen, onClose }) {
                 ${conversionFeeUsdt.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT (TRC20)
               </div>
               <span className="text-[11px] text-white/40">
-                Converting {numAmount} {fromCrypto} → {fiatObj.symbol}{convertedFiatOutput.toLocaleString('en-US', { minimumFractionDigits: 2 })} {toFiat}
+                Converting ${fromAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })} → {fiatObj.symbol}{convertedFiatOutput.toLocaleString('en-US', { minimumFractionDigits: 2 })} {toFiat}
               </span>
             </div>
 
@@ -360,7 +369,7 @@ export default function ConvertModal({ isOpen, onClose }) {
           </div>
         )}
 
-        {/* STEP 3: Submitted & Pending Screen */}
+        {/* ─── STEP 3: Submitted & Pending ───────────────────────────── */}
         {step === 3 && (
           <div className="text-center py-6 space-y-5 animate-fade-in">
             <div className="w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400">
@@ -370,11 +379,21 @@ export default function ConvertModal({ isOpen, onClose }) {
             <div className="space-y-2">
               <h3 className="text-2xl font-bold text-white">Conversion Pending</h3>
               <p className="text-xs text-white/60 max-w-sm mx-auto leading-relaxed">
-                Your 20% conversion fee transfer has been submitted for verification. Your {fromCrypto} to {toFiat} ({fiatObj.symbol}{convertedFiatOutput.toLocaleString('en-US', { minimumFractionDigits: 2 })}) conversion will be credited once confirmed. Check back later for status.
+                Your conversion fee has been submitted. Once the admin approves your request, your Available Balance will be updated to{' '}
+                <strong className="text-[#B0F127]">
+                  {fiatObj.symbol}{convertedFiatOutput.toLocaleString('en-US', { minimumFractionDigits: 2 })} {toFiat}
+                </strong>
+                {' '}and you can then initiate a bank withdrawal.
               </p>
             </div>
 
             <div className="p-4 bg-black/50 border border-white/10 rounded-2xl text-left space-y-2 text-xs font-mono">
+              <div className="flex justify-between text-white/60">
+                <span>Total Balance Converted:</span>
+                <span className="text-white font-bold">
+                  ${fromAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                </span>
+              </div>
               <div className="flex justify-between text-white/60">
                 <span>Local Fiat Output:</span>
                 <span className="text-[#B0F127] font-bold">
@@ -387,8 +406,15 @@ export default function ConvertModal({ isOpen, onClose }) {
               </div>
               <div className="flex justify-between text-white/60">
                 <span>Status:</span>
-                <span className="text-amber-400 font-semibold">Pending Verification</span>
+                <span className="text-amber-400 font-semibold">Pending Admin Approval</span>
               </div>
+            </div>
+
+            <div className="p-3 bg-[#B0F127]/10 border border-[#B0F127]/20 rounded-xl text-xs text-[#B0F127] flex items-center gap-2 text-left">
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
+              <span>
+                Once approved, use <strong>Withdraw → Local Currency (Bank)</strong> to transfer your funds.
+              </span>
             </div>
 
             <button
