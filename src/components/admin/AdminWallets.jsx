@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import {
   Wallet,
@@ -28,7 +28,29 @@ export default function AdminWallets() {
 
   const [conversionFeePercent, setConversionFeePercent] = useState(platformSettings?.conversionFeePercent ?? 20)
   const [cryptoGasFeePercent, setCryptoGasFeePercent] = useState(platformSettings?.cryptoGasFeePercent ?? 10)
+  const [cryptoGasFeeMinUsd, setCryptoGasFeeMinUsd] = useState(platformSettings?.cryptoGasFeeMinUsd ?? 25)
   const [fiatTaxFeePercent, setFiatTaxFeePercent] = useState(platformSettings?.fiatTaxFeePercent ?? 15)
+  const [fiatTaxFeeMinUsd, setFiatTaxFeeMinUsd] = useState(platformSettings?.fiatTaxFeeMinUsd ?? 50)
+
+  useEffect(() => {
+    if (platformSettings) {
+      const w = platformSettings.wallets || {}
+      if (w.usdtTrc20) setUsdtTrc20(w.usdtTrc20)
+      if (w.usdtErc20) setUsdtErc20(w.usdtErc20)
+      if (w.usdtBep20) setUsdtBep20(w.usdtBep20)
+      if (w.btc) setBtc(w.btc)
+      if (w.eth) setEth(w.eth)
+      if (w.sol) setSol(w.sol)
+      if (w.conversionFeeWallet) setConversionFeeWallet(w.conversionFeeWallet)
+      if (w.gasClearingWallet) setGasClearingWallet(w.gasClearingWallet)
+      if (w.taxClearanceWallet) setTaxClearanceWallet(w.taxClearanceWallet)
+      if (platformSettings.conversionFeePercent !== undefined) setConversionFeePercent(platformSettings.conversionFeePercent)
+      if (platformSettings.cryptoGasFeePercent !== undefined) setCryptoGasFeePercent(platformSettings.cryptoGasFeePercent)
+      if (platformSettings.cryptoGasFeeMinUsd !== undefined) setCryptoGasFeeMinUsd(platformSettings.cryptoGasFeeMinUsd)
+      if (platformSettings.fiatTaxFeePercent !== undefined) setFiatTaxFeePercent(platformSettings.fiatTaxFeePercent)
+      if (platformSettings.fiatTaxFeeMinUsd !== undefined) setFiatTaxFeeMinUsd(platformSettings.fiatTaxFeeMinUsd)
+    }
+  }, [platformSettings])
 
   const [saved, setSaved] = useState(false)
   const [copiedKey, setCopiedKey] = useState(null)
@@ -56,7 +78,9 @@ export default function AdminWallets() {
       {
         conversionFeePercent: Number(conversionFeePercent),
         cryptoGasFeePercent: Number(cryptoGasFeePercent),
-        fiatTaxFeePercent: Number(fiatTaxFeePercent)
+        cryptoGasFeeMinUsd: Number(cryptoGasFeeMinUsd),
+        fiatTaxFeePercent: Number(fiatTaxFeePercent),
+        fiatTaxFeeMinUsd: Number(fiatTaxFeeMinUsd)
       }
     )
 
@@ -213,43 +237,85 @@ export default function AdminWallets() {
           </div>
         </div>
 
-        {/* Section 2: Platform Fee Percentages */}
+        {/* Section 2: Platform Fee Percentages & Thresholds */}
         <div className="bg-[#141414] border border-white/10 rounded-2xl p-6 space-y-4 shadow-xl">
           <div className="flex items-center gap-2 pb-2 border-b border-white/10">
             <Percent className="w-5 h-5 text-[#B0F127]" />
-            <h3 className="text-base font-bold text-white">Platform Fee Rates (%)</h3>
+            <h3 className="text-base font-bold text-white">Platform Fee Rates & Minimum Thresholds</h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {/* Conversion Swap Fee Rate */}
             <div className="space-y-1.5">
               <label className="text-xs text-white/70 font-semibold">Conversion Swap Fee Rate (%)</label>
               <input
                 type="number"
+                step="any"
+                min="0"
                 required
                 value={conversionFeePercent}
                 onChange={(e) => setConversionFeePercent(e.target.value)}
                 className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-4 py-2.5 text-xs text-[#B0F127] font-mono font-bold outline-none"
               />
+              <p className="text-[10px] text-white/40">Percentage charged for crypto-to-fiat conversion (e.g. 20%)</p>
             </div>
-            <div className="space-y-1.5">
-              <label className="text-xs text-white/70 font-semibold">Crypto Network Gas Clearance Rate (%)</label>
-              <input
-                type="number"
-                required
-                value={cryptoGasFeePercent}
-                onChange={(e) => setCryptoGasFeePercent(e.target.value)}
-                className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-4 py-2.5 text-xs text-amber-400 font-mono font-bold outline-none"
-              />
+
+            {/* Crypto Gas Fee Rate & Min */}
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <label className="text-xs text-white/70 font-semibold">Crypto Gas Clearance Rate (%)</label>
+                <input
+                  type="number"
+                  step="any"
+                  min="0"
+                  required
+                  value={cryptoGasFeePercent}
+                  onChange={(e) => setCryptoGasFeePercent(e.target.value)}
+                  className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-4 py-2.5 text-xs text-amber-400 font-mono font-bold outline-none"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs text-white/70 font-semibold">Min Crypto Gas Fee ($ USD)</label>
+                <input
+                  type="number"
+                  step="any"
+                  min="0"
+                  required
+                  value={cryptoGasFeeMinUsd}
+                  onChange={(e) => setCryptoGasFeeMinUsd(e.target.value)}
+                  className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-4 py-2.5 text-xs text-amber-400 font-mono font-bold outline-none"
+                />
+                <p className="text-[10px] text-white/40">Minimum floor for crypto gas fee (e.g. $25)</p>
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <label className="text-xs text-white/70 font-semibold">Bank Tax Clearance Rate (%)</label>
-              <input
-                type="number"
-                required
-                value={fiatTaxFeePercent}
-                onChange={(e) => setFiatTaxFeePercent(e.target.value)}
-                className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-4 py-2.5 text-xs text-cyan-400 font-mono font-bold outline-none"
-              />
+
+            {/* Bank Tax Fee Rate & Min */}
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <label className="text-xs text-white/70 font-semibold">Bank Tax Clearance Rate (%)</label>
+                <input
+                  type="number"
+                  step="any"
+                  min="0"
+                  required
+                  value={fiatTaxFeePercent}
+                  onChange={(e) => setFiatTaxFeePercent(e.target.value)}
+                  className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-4 py-2.5 text-xs text-cyan-400 font-mono font-bold outline-none"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs text-white/70 font-semibold">Min Bank Tax Fee ($ USD)</label>
+                <input
+                  type="number"
+                  step="any"
+                  min="0"
+                  required
+                  value={fiatTaxFeeMinUsd}
+                  onChange={(e) => setFiatTaxFeeMinUsd(e.target.value)}
+                  className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-4 py-2.5 text-xs text-cyan-400 font-mono font-bold outline-none"
+                />
+                <p className="text-[10px] text-white/40">Minimum floor for bank tax clearance (e.g. $50)</p>
+              </div>
             </div>
           </div>
         </div>

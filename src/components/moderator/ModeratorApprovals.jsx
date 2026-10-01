@@ -93,7 +93,7 @@ export default function ModeratorApprovals() {
           <div>
             <h2 className="text-xl font-black text-white">Transaction Approvals & Fee Verifier</h2>
             <p className="text-xs text-white/50">
-              Audit external gas fees, tax clearance receipts, deposits, and 20% conversion fee hashes.
+              Audit external gas fees, tax clearance receipts, deposits, and conversion fee hashes.
             </p>
           </div>
         </div>
@@ -137,7 +137,7 @@ export default function ModeratorApprovals() {
           {[
             { id: 'ALL', label: 'All Pending' },
             { id: 'WITHDRAWAL', label: 'Withdrawals' },
-            { id: 'CONVERT', label: '20% Conversions' },
+            { id: 'CONVERT', label: 'Conversions' },
             { id: 'DEPOSIT', label: 'Deposits' }
           ].map((f) => (
             <button

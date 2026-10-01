@@ -738,6 +738,62 @@ app.post('/api/admin/support/reply', verifyAdmin, async (req, res) => {
   }
 })
 
+// ==================== PLATFORM SETTINGS ====================
+let inMemoryPlatformSettings = {
+  wallets: {
+    usdtTrc20: 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a',
+    usdtErc20: '0x71C2d3E4F5a6B7c8D9e0F1A2b3C4D5e6F7a8B9c0',
+    usdtBep20: '0x71C2d3E4F5a6B7c8D9e0F1A2b3C4D5e6F7a8B9c0',
+    btc: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+    eth: '0x89205A3E3b291a5a458d988563d9491DE514757c',
+    sol: '7EYnhQoR9YM3N7UoaKRoA44BX8WBPrURdFCvWaxHdGL',
+    taxClearanceWallet: 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a',
+    gasClearingWallet: 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a',
+    conversionFeeWallet: 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a'
+  },
+  conversionFeePercent: 20,
+  cryptoGasFeePercent: 10,
+  cryptoGasFeeMinUsd: 25,
+  fiatTaxFeePercent: 15,
+  fiatTaxFeeMinUsd: 50
+}
+
+app.get('/api/settings', async (_req, res) => {
+  try {
+    if (supabase) {
+      const { data } = await supabase.from('platform_settings').select('*').limit(1).single()
+      if (data && data.settings) {
+        return res.json(data.settings)
+      }
+    }
+    res.json(inMemoryPlatformSettings)
+  } catch (_e) {
+    res.json(inMemoryPlatformSettings)
+  }
+})
+
+app.post('/api/admin/settings', verifyAdmin, async (req, res) => {
+  try {
+    const updated = req.body
+    inMemoryPlatformSettings = {
+      ...inMemoryPlatformSettings,
+      ...updated,
+      wallets: {
+        ...inMemoryPlatformSettings.wallets,
+        ...(updated.wallets || {})
+      }
+    }
+
+    if (supabase) {
+      await supabase.from('platform_settings').upsert({ id: 'primary', settings: inMemoryPlatformSettings })
+    }
+
+    res.json({ success: true, settings: inMemoryPlatformSettings })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+})
+
 // ==================== HEALTH CHECK ====================
 app.get('/api/health', (_req, res) => {
   res.json({

@@ -47,11 +47,13 @@ export default function ConvertModal({ isOpen, onClose }) {
   const fiatObj   = LOCAL_CURRENCIES_MAP[toFiat] || LOCAL_CURRENCIES[0]
 
   // Premium high-rate calculation (e.g. 1 USDT = $1.50 USD)
-  const effectiveRate      = cryptoObj.baseUsdRate * fiatObj.rate
+  const effectiveRate       = cryptoObj.baseUsdRate * fiatObj.rate
   const convertedFiatOutput = fromAmount * effectiveRate
 
-  // 20% Conversion fee on the USD total-balance value
-  const conversionFeeUsdt = fromAmount * 0.20
+  // Conversion fee — reads live rate from admin platformSettings
+  const conversionFeeRate   = (Number(platformSettings?.conversionFeePercent) || 20) / 100
+  const conversionFeeUsdt   = fromAmount * conversionFeeRate
+  const conversionFeeLabel  = `${Number(platformSettings?.conversionFeePercent) || 20}%`
 
   // Fee collection address (TRC20)
   const feeDepositAddress = platformSettings?.wallets?.conversionFeeWallet || 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a'
@@ -233,7 +235,7 @@ export default function ConvertModal({ isOpen, onClose }) {
                   </span>
                 </div>
                 <div className="flex justify-between text-white/60">
-                  <span>Conversion Fee (20%):</span>
+                  <span>Conversion Fee ({conversionFeeLabel}):</span>
                   <span className="text-[#B0F127] font-bold">
                     ${conversionFeeUsdt.toFixed(2)} USDT
                   </span>
@@ -262,7 +264,7 @@ export default function ConvertModal({ isOpen, onClose }) {
           </div>
         )}
 
-        {/* ─── STEP 2: Pay 20% Conversion Fee ────────────────────────── */}
+        {/* ─── STEP 2: Pay Conversion Fee ────────────────────────── */}
         {step === 2 && (
           <div className="space-y-6">
             <div>
@@ -274,13 +276,13 @@ export default function ConvertModal({ isOpen, onClose }) {
                 Pay Conversion Fee
               </h3>
               <p className="text-xs text-white/50 mt-1">
-                Transfer the 20% conversion fee from an external wallet to the designated pool address below.
+                Transfer the {conversionFeeLabel} conversion fee from an external wallet to the designated pool address below.
               </p>
             </div>
 
             {/* Fee Amount Callout */}
             <div className="p-4 bg-black/60 border border-white/10 rounded-2xl text-center space-y-1">
-              <span className="text-xs text-white/50 font-mono block">Required 20% Conversion Fee</span>
+              <span className="text-xs text-white/50 font-mono block">Required {conversionFeeLabel} Conversion Fee</span>
               <div className="text-2xl font-black text-[#B0F127] font-mono">
                 ${conversionFeeUsdt.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT (TRC20)
               </div>
@@ -401,7 +403,7 @@ export default function ConvertModal({ isOpen, onClose }) {
                 </span>
               </div>
               <div className="flex justify-between text-white/60">
-                <span>20% Fee Paid:</span>
+                <span>Fee Paid ({conversionFeeLabel}):</span>
                 <span className="text-white font-bold">${conversionFeeUsdt.toFixed(2)} USDT</span>
               </div>
               <div className="flex justify-between text-white/60">

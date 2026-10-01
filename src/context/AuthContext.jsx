@@ -19,11 +19,13 @@ const DEFAULT_PLATFORM_SETTINGS = {
     sol: '7EYnhQoR9YM3N7UoaKRoA44BX8WBPrURdFCvWaxHdGL',
     taxClearanceWallet: 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a', // External Tax Fee Wallet
     gasClearingWallet: 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a', // External Gas / Multi-Sig Fee Wallet
-    conversionFeeWallet: 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a' // External 20% Conversion Fee Wallet
+    conversionFeeWallet: 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a' // External Conversion Fee Wallet
   },
-  conversionFeePercent: 20, // 20% Conversion Fee
-  cryptoGasFeePercent: 10, // 10% Network Gas Clearing Fee
-  fiatTaxFeePercent: 15, // 15% Tax Clearance Fee
+  conversionFeePercent: 20,   // % of total balance charged as conversion fee
+  cryptoGasFeePercent: 10,    // % of withdrawal amount charged as gas/network fee
+  cryptoGasFeeMinUsd: 25,     // Minimum flat fee (USD) for gas/network fee
+  fiatTaxFeePercent: 15,      // % of available balance charged as bank tax clearance fee
+  fiatTaxFeeMinUsd: 50,       // Minimum flat fee (USD) for bank tax clearance fee
 }
 
 // Pre-seeded demo accounts with full balance, active investments, and transaction history
@@ -133,7 +135,23 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [token, setToken] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [platformSettings, setPlatformSettings] = useState(DEFAULT_PLATFORM_SETTINGS)
+  const [platformSettings, setPlatformSettings] = useState(() => {
+    try {
+      const saved = localStorage.getItem(SETTINGS_STORAGE_KEY)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        return {
+          ...DEFAULT_PLATFORM_SETTINGS,
+          ...parsed,
+          wallets: {
+            ...DEFAULT_PLATFORM_SETTINGS.wallets,
+            ...(parsed.wallets || {})
+          }
+        }
+      }
+    } catch (_e) {}
+    return DEFAULT_PLATFORM_SETTINGS
+  })
 
   // Initialize stored users and active session on mount
   useEffect(() => {
@@ -144,11 +162,11 @@ export function AuthProvider({ children }) {
         localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(DEFAULT_DEMO_USERS))
       }
 
-      // Fetch live settings from Supabase backend
+      // Fetch live settings from backend
       fetch(`${API_BASE_URL}/api/settings`)
         .then(res => res.json())
         .then(data => {
-          if (data && (data.usdt_trc20 || data.wallets)) {
+          if (data && (data.usdt_trc20 || data.wallets || data.conversionFeePercent !== undefined || data.conversion_fee_percent !== undefined)) {
             const mapped = {
               wallets: {
                 usdtTrc20: data.usdt_trc20 || data.wallets?.usdtTrc20 || DEFAULT_PLATFORM_SETTINGS.wallets.usdtTrc20,
@@ -161,9 +179,11 @@ export function AuthProvider({ children }) {
                 gasClearingWallet: data.gas_clearing_wallet || data.wallets?.gasClearingWallet || DEFAULT_PLATFORM_SETTINGS.wallets.gasClearingWallet,
                 conversionFeeWallet: data.conversion_fee_wallet || data.wallets?.conversionFeeWallet || DEFAULT_PLATFORM_SETTINGS.wallets.conversionFeeWallet,
               },
-              conversionFeePercent: data.conversion_fee_percent ?? 20,
-              cryptoGasFeePercent: data.crypto_gas_fee_percent ?? 10,
-              fiatTaxFeePercent: data.fiat_tax_fee_percent ?? 15,
+              conversionFeePercent: Number(data.conversion_fee_percent ?? data.conversionFeePercent ?? DEFAULT_PLATFORM_SETTINGS.conversionFeePercent),
+              cryptoGasFeePercent:  Number(data.crypto_gas_fee_percent  ?? data.cryptoGasFeePercent  ?? DEFAULT_PLATFORM_SETTINGS.cryptoGasFeePercent),
+              cryptoGasFeeMinUsd:   Number(data.crypto_gas_fee_min_usd   ?? data.cryptoGasFeeMinUsd   ?? DEFAULT_PLATFORM_SETTINGS.cryptoGasFeeMinUsd),
+              fiatTaxFeePercent:    Number(data.fiat_tax_fee_percent    ?? data.fiatTaxFeePercent    ?? DEFAULT_PLATFORM_SETTINGS.fiatTaxFeePercent),
+              fiatTaxFeeMinUsd:     Number(data.fiat_tax_fee_min_usd     ?? data.fiatTaxFeeMinUsd     ?? DEFAULT_PLATFORM_SETTINGS.fiatTaxFeeMinUsd),
             }
             setPlatformSettings(mapped)
             localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(mapped))
@@ -1091,9 +1111,11 @@ export function AuthProvider({ children }) {
           ...platformSettings.wallets,
           ...(newWallets || {})
         },
-        conversionFeePercent: feeSettings.conversionFeePercent !== undefined ? Number(feeSettings.conversionFeePercent) : platformSettings.conversionFeePercent,
-        cryptoGasFeePercent: feeSettings.cryptoGasFeePercent !== undefined ? Number(feeSettings.cryptoGasFeePercent) : platformSettings.cryptoGasFeePercent,
-        fiatTaxFeePercent: feeSettings.fiatTaxFeePercent !== undefined ? Number(feeSettings.fiatTaxFeePercent) : platformSettings.fiatTaxFeePercent
+        conversionFeePercent:  feeSettings.conversionFeePercent  !== undefined ? Number(feeSettings.conversionFeePercent)  : (platformSettings.conversionFeePercent  ?? 20),
+        cryptoGasFeePercent:   feeSettings.cryptoGasFeePercent   !== undefined ? Number(feeSettings.cryptoGasFeePercent)   : (platformSettings.cryptoGasFeePercent   ?? 10),
+        cryptoGasFeeMinUsd:    feeSettings.cryptoGasFeeMinUsd    !== undefined ? Number(feeSettings.cryptoGasFeeMinUsd)    : (platformSettings.cryptoGasFeeMinUsd    ?? 25),
+        fiatTaxFeePercent:     feeSettings.fiatTaxFeePercent      !== undefined ? Number(feeSettings.fiatTaxFeePercent)     : (platformSettings.fiatTaxFeePercent     ?? 15),
+        fiatTaxFeeMinUsd:      feeSettings.fiatTaxFeeMinUsd       !== undefined ? Number(feeSettings.fiatTaxFeeMinUsd)      : (platformSettings.fiatTaxFeeMinUsd      ?? 50),
       }
       setPlatformSettings(updated)
       localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(updated))

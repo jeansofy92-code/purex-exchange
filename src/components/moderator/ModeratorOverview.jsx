@@ -174,7 +174,7 @@ export default function ModeratorOverview({ onNavigateTab }) {
               <span className="text-xs text-[#B0F127] font-mono font-medium">Requests</span>
             </div>
             <p className="text-[11px] text-white/40">
-              Deposits, withdrawals & 20% conversion fees
+              Deposits, withdrawals & conversion fees
             </p>
           </div>
         </div>

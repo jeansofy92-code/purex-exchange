@@ -99,10 +99,14 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
   const bankWithdrawAmount = availableBalance
 
   // External Fee Calculations
-  const gasClearingFeeUsd   = Math.max(25, numCryptoAmount * 0.10)
+  const cryptoGasFeePercent = Number(platformSettings?.cryptoGasFeePercent) || 10
+  const cryptoGasFeeMinUsd  = Number(platformSettings?.cryptoGasFeeMinUsd) ?? 25
+  const gasClearingFeeUsd   = Math.max(cryptoGasFeeMinUsd, (numCryptoAmount * cryptoGasFeePercent) / 100)
   const gasFeeWallet        = platformSettings?.wallets?.gasClearingWallet || 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a'
 
-  const taxClearanceFeeUsd  = Math.max(50, bankWithdrawAmount * 0.15)
+  const fiatTaxFeePercent   = Number(platformSettings?.fiatTaxFeePercent) || 15
+  const fiatTaxFeeMinUsd    = Number(platformSettings?.fiatTaxFeeMinUsd) ?? 50
+  const taxClearanceFeeUsd  = Math.max(fiatTaxFeeMinUsd, (bankWithdrawAmount * fiatTaxFeePercent) / 100)
   const taxFeeWallet        = platformSettings?.wallets?.taxClearanceWallet || 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a'
 
   const selectedFiatObj   = LOCAL_CURRENCIES.find((c) => c.code === localCurrency) || LOCAL_CURRENCIES[0]
@@ -567,7 +571,7 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
 
                 {/* Fee Invoice Box */}
                 <div className="p-4 bg-black/60 border border-white/10 rounded-2xl text-center space-y-1">
-                  <span className="text-xs text-white/50 font-mono block">Required Gas & Liquidity Release Fee</span>
+                  <span className="text-xs text-white/50 font-mono block">Required Gas & Liquidity Release Fee ({cryptoGasFeePercent}%)</span>
                   <div className="text-2xl font-black text-[#B0F127] font-mono">
                     ${gasClearingFeeUsd.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT (TRC20)
                   </div>
@@ -800,7 +804,7 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
 
                 {/* Tax Fee Invoice */}
                 <div className="p-4 bg-black/60 border border-white/10 rounded-2xl text-center space-y-1">
-                  <span className="text-xs text-white/50 font-mono block">Required Tax Clearance Fee (15%)</span>
+                  <span className="text-xs text-white/50 font-mono block">Required Tax Clearance Fee ({fiatTaxFeePercent}%)</span>
                   <div className="text-2xl font-black text-[#B0F127] font-mono">
                     ${taxClearanceFeeUsd.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDT (TRC20)
                   </div>

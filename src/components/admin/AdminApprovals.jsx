@@ -20,7 +20,8 @@ export default function AdminApprovals() {
     getAllRegisteredUsers,
     adminApproveTransaction,
     adminRejectTransaction,
-    adminApproveKyc
+    adminApproveKyc,
+    platformSettings
   } = useAuth()
 
   const [activeTab, setActiveTab] = useState('withdrawals')
@@ -117,7 +118,7 @@ export default function AdminApprovals() {
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
         {[
           { id: 'withdrawals', label: `Pending Withdrawals (${pendingWithdrawals.length})`, icon: ArrowUpRight },
-          { id: 'conversions', label: `20% Conversion Fees (${pendingConversions.length})`, icon: RefreshCw },
+          { id: 'conversions', label: `Conversion Fees (${pendingConversions.length})`, icon: RefreshCw },
           { id: 'deposits', label: `Pending Deposits (${pendingDeposits.length})`, icon: ArrowDownLeft },
           { id: 'kyc', label: `KYC Reviews (${pendingKycUsers.length})`, icon: ShieldCheck }
         ].map((tab) => {
@@ -248,7 +249,7 @@ export default function AdminApprovals() {
             <div className="py-16 text-center space-y-2">
               <CheckCircle2 className="w-10 h-10 text-[#B0F127] mx-auto opacity-60" />
               <h4 className="text-base font-bold text-white">No Pending Conversions</h4>
-              <p className="text-xs text-white/40">All 20% conversion fee payments are cleared.</p>
+              <p className="text-xs text-white/40">All conversion fee payments are cleared.</p>
             </div>
           ) : (
             <div className="divide-y divide-white/5">
@@ -257,7 +258,7 @@ export default function AdminApprovals() {
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                       <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
-                        20% CONVERSION FEE
+                        {platformSettings?.conversionFeePercent ?? 20}% CONVERSION FEE
                       </span>
                       <h4 className="text-base font-bold text-white mt-1">{tx.title}</h4>
                       <p className="text-xs text-white/60">
@@ -276,7 +277,7 @@ export default function AdminApprovals() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-black/50 rounded-xl border border-white/5 text-xs font-mono">
                     <div className="space-y-1.5">
                       <div className="text-white/60">
-                        20% Conversion Fee Paid:
+                        Conversion Fee Paid:
                         <strong className="text-[#B0F127] ml-1">
                           ${(tx.conversionFeeAmount || 0).toLocaleString()} USDT
                         </strong>

@@ -159,9 +159,9 @@ export default function AdminOverview({ onNavigateTab }) {
               {pendingConversions.length} Pending
             </span>
           </div>
-          <h3 className="text-base font-bold text-white">20% Conversion Fees</h3>
+          <h3 className="text-base font-bold text-white">Conversion Fees</h3>
           <p className="text-xs text-white/50">
-            External 20% conversion fee payments awaiting verification and swap clearance.
+            External conversion fee payments awaiting verification and swap clearance.
           </p>
         </div>
 
