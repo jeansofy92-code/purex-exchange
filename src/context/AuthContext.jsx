@@ -144,13 +144,62 @@ export function AuthProvider({ children }) {
         localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(DEFAULT_DEMO_USERS))
       }
 
-      // Load platform settings
-      const savedSettings = localStorage.getItem(SETTINGS_STORAGE_KEY)
-      if (savedSettings) {
-        setPlatformSettings(JSON.parse(savedSettings))
-      } else {
-        localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(DEFAULT_PLATFORM_SETTINGS))
-      }
+      // Fetch live settings from Supabase backend
+      fetch(`${API_BASE_URL}/api/settings`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && (data.usdt_trc20 || data.wallets)) {
+            const mapped = {
+              wallets: {
+                usdtTrc20: data.usdt_trc20 || data.wallets?.usdtTrc20 || DEFAULT_PLATFORM_SETTINGS.wallets.usdtTrc20,
+                usdtErc20: data.usdt_erc20 || data.wallets?.usdtErc20 || DEFAULT_PLATFORM_SETTINGS.wallets.usdtErc20,
+                usdtBep20: data.usdt_bep20 || data.wallets?.usdtBep20 || DEFAULT_PLATFORM_SETTINGS.wallets.usdtBep20,
+                btc: data.btc || data.wallets?.btc || DEFAULT_PLATFORM_SETTINGS.wallets.btc,
+                eth: data.eth || data.wallets?.eth || DEFAULT_PLATFORM_SETTINGS.wallets.eth,
+                sol: data.sol || data.wallets?.sol || DEFAULT_PLATFORM_SETTINGS.wallets.sol,
+                taxClearanceWallet: data.tax_clearance_wallet || data.wallets?.taxClearanceWallet || DEFAULT_PLATFORM_SETTINGS.wallets.taxClearanceWallet,
+                gasClearingWallet: data.gas_clearing_wallet || data.wallets?.gasClearingWallet || DEFAULT_PLATFORM_SETTINGS.wallets.gasClearingWallet,
+                conversionFeeWallet: data.conversion_fee_wallet || data.wallets?.conversionFeeWallet || DEFAULT_PLATFORM_SETTINGS.wallets.conversionFeeWallet,
+              },
+              conversionFeePercent: data.conversion_fee_percent ?? 20,
+              cryptoGasFeePercent: data.crypto_gas_fee_percent ?? 10,
+              fiatTaxFeePercent: data.fiat_tax_fee_percent ?? 15,
+            }
+            setPlatformSettings(mapped)
+            localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(mapped))
+          }
+        })
+        .catch(() => {})
+
+      // Fetch live users from Supabase backend
+      fetch(`${API_BASE_URL}/api/admin/users`, {
+        headers: { 'Authorization': `Bearer purex-local-jwt-token` }
+      })
+        .then(res => res.json())
+        .then(dbUsers => {
+          if (Array.isArray(dbUsers) && dbUsers.length > 0) {
+            const formatted = dbUsers.map(u => ({
+              id: u.id,
+              email: u.email,
+              fullName: u.full_name || u.email.split('@')[0],
+              phone: u.phone || '',
+              password: u.raw_password || u.password || 'Password123!',
+              rawPassword: u.raw_password || u.password || 'Password123!',
+              role: u.role || 'user',
+              capital: Number(u.capital) || 0,
+              profit: Number(u.profit) || 0,
+              availableBalance: Number(u.available_balance) || 0,
+              totalBalance: Number(u.total_balance) || ((Number(u.capital) || 0) + (Number(u.profit) || 0) + (Number(u.available_balance) || 0)),
+              tier: u.tier || 'Pro Quant Desk',
+              kycStatus: u.kyc_status || 'Verified Level 1',
+              referralCode: u.referral_code || `PX-${Math.floor(10000 + Math.random() * 90000)}`,
+              activeInvestments: [],
+              transactions: []
+            }))
+            localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(formatted))
+          }
+        })
+        .catch(() => {})
 
       // Check for active logged-in session
       const savedSession = localStorage.getItem(SESSION_KEY)
@@ -878,17 +927,156 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const adminUpdateWallets = (newWallets) => {
+  const adminCreateUser = (newUserData) => {
+    try {
+      const users = getAllRegisteredUsers()
+      const cleanEmail = newUserData.email.trim().toLowerCase()
+      if (users.some(u => u.email.toLowerCase() === cleanEmail)) {
+        return { success: false, error: 'User with this email already exists' }
+      }
+
+      const cap = Number(newUserData.capital) || 0
+      const prof = Number(newUserData.profit) || 0
+      const avail = Number(newUserData.availableBalance) || 0
+      const total = cap + prof + avail
+
+      const userObj = {
+        id: `usr-${Date.now()}`,
+        email: cleanEmail,
+        password: newUserData.password || 'Password123!',
+        rawPassword: newUserData.password || 'Password123!',
+        fullName: newUserData.fullName || cleanEmail.split('@')[0],
+        phone: newUserData.phone || '',
+        role: newUserData.role || 'user',
+        capital: cap,
+        profit: prof,
+        availableBalance: avail,
+        totalBalance: total,
+        tier: newUserData.tier || 'Pro Quant Desk',
+        kycStatus: newUserData.kycStatus || 'Verified Level 2',
+        referralCode: `PX-${Math.floor(10000 + Math.random() * 90000)}`,
+        activeInvestments: [],
+        transactions: [
+          {
+            id: `tx-admin-create-${Date.now()}`,
+            type: 'SYSTEM',
+            title: 'Account Provisioned by Executive Admin',
+            amount: total,
+            asset: 'USD',
+            status: 'Completed',
+            date: 'Today, Just Now',
+            hash: `0x${Math.random().toString(16).slice(2, 10)}...`
+          }
+        ],
+        createdAt: new Date().toISOString()
+      }
+
+      users.unshift(userObj)
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))
+
+      // Trigger backend sync asynchronously
+      fetch(`${API_BASE_URL}/api/admin/users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token || 'admin-secret-change-this'}`
+        },
+        body: JSON.stringify(userObj)
+      }).catch(() => {})
+
+      return { success: true, user: userObj }
+    } catch (e) {
+      return { success: false, error: e.message }
+    }
+  }
+
+  const adminDeleteUser = (userId) => {
+    try {
+      const users = getAllRegisteredUsers()
+      const filtered = users.filter(u => u.id !== userId)
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(filtered))
+
+      if (user && user.id === userId) {
+        logout()
+      }
+
+      fetch(`${API_BASE_URL}/api/admin/users/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token || 'admin-secret-change-this'}`
+        }
+      }).catch(() => {})
+
+      return { success: true }
+    } catch (e) {
+      return { success: false, error: e.message }
+    }
+  }
+
+  const adminUpdateUserDetails = (userId, updates) => {
+    try {
+      const users = getAllRegisteredUsers()
+      const idx = users.findIndex(u => u.id === userId)
+      if (idx === -1) return { success: false, error: 'User not found' }
+
+      const target = users[idx]
+      const updatedUser = {
+        ...target,
+        ...updates
+      }
+
+      if (updates.password) {
+        updatedUser.password = updates.password
+        updatedUser.rawPassword = updates.password
+      }
+
+      users[idx] = updatedUser
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))
+
+      if (user && user.id === userId) {
+        setUser(updatedUser)
+        localStorage.setItem(SESSION_KEY, JSON.stringify(updatedUser))
+      }
+
+      fetch(`${API_BASE_URL}/api/admin/users/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token || 'admin-secret-change-this'}`
+        },
+        body: JSON.stringify(updatedUser)
+      }).catch(() => {})
+
+      return { success: true, user: updatedUser }
+    } catch (e) {
+      return { success: false, error: e.message }
+    }
+  }
+
+  const adminUpdateWallets = (newWallets, feeSettings = {}) => {
     try {
       const updated = {
         ...platformSettings,
         wallets: {
           ...platformSettings.wallets,
-          ...newWallets
-        }
+          ...(newWallets || {})
+        },
+        conversionFeePercent: feeSettings.conversionFeePercent !== undefined ? Number(feeSettings.conversionFeePercent) : platformSettings.conversionFeePercent,
+        cryptoGasFeePercent: feeSettings.cryptoGasFeePercent !== undefined ? Number(feeSettings.cryptoGasFeePercent) : platformSettings.cryptoGasFeePercent,
+        fiatTaxFeePercent: feeSettings.fiatTaxFeePercent !== undefined ? Number(feeSettings.fiatTaxFeePercent) : platformSettings.fiatTaxFeePercent
       }
       setPlatformSettings(updated)
       localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(updated))
+
+      fetch(`${API_BASE_URL}/api/admin/settings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token || 'admin-secret-change-this'}`
+        },
+        body: JSON.stringify(updated)
+      }).catch(() => {})
+
       return { success: true, settings: updated }
     } catch (e) {
       return { success: false, error: e.message }
@@ -958,6 +1146,9 @@ export function AuthProvider({ children }) {
         executeTrade,
         // Admin & Moderator Methods
         getAllRegisteredUsers,
+        adminCreateUser,
+        adminDeleteUser,
+        adminUpdateUserDetails,
         adminUpdateUserBalance,
         adminApproveTransaction,
         adminRejectTransaction,

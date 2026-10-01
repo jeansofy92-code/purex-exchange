@@ -8,21 +8,27 @@ import {
   Coins,
   Copy,
   Check,
-  AlertCircle
+  Percent,
+  Sliders
 } from 'lucide-react'
 
 export default function AdminWallets() {
   const { platformSettings, adminUpdateWallets } = useAuth()
   const currentWallets = platformSettings?.wallets || {}
 
-  const [usdtTrc20, setUsdtTrc20] = useState(currentWallets.usdtTrc20 || '')
-  const [usdtErc20, setUsdtErc20] = useState(currentWallets.usdtErc20 || '')
-  const [btc, setBtc] = useState(currentWallets.btc || '')
-  const [eth, setEth] = useState(currentWallets.eth || '')
-  const [sol, setSol] = useState(currentWallets.sol || '')
-  const [conversionFeeWallet, setConversionFeeWallet] = useState(currentWallets.conversionFeeWallet || '')
-  const [gasClearingWallet, setGasClearingWallet] = useState(currentWallets.gasClearingWallet || '')
-  const [taxClearanceWallet, setTaxClearanceWallet] = useState(currentWallets.taxClearanceWallet || '')
+  const [usdtTrc20, setUsdtTrc20] = useState(currentWallets.usdtTrc20 || 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a')
+  const [usdtErc20, setUsdtErc20] = useState(currentWallets.usdtErc20 || '0x71C2d3E4F5a6B7c8D9e0F1A2b3C4D5e6F7a8B9c0')
+  const [usdtBep20, setUsdtBep20] = useState(currentWallets.usdtBep20 || '0x71C2d3E4F5a6B7c8D9e0F1A2b3C4D5e6F7a8B9c0')
+  const [btc, setBtc] = useState(currentWallets.btc || 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh')
+  const [eth, setEth] = useState(currentWallets.eth || '0x89205A3E3b291a5a458d988563d9491DE514757c')
+  const [sol, setSol] = useState(currentWallets.sol || '7EYnhQoR9YM3N7UoaKRoA44BX8WBPrURdFCvWaxHdGL')
+  const [conversionFeeWallet, setConversionFeeWallet] = useState(currentWallets.conversionFeeWallet || 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a')
+  const [gasClearingWallet, setGasClearingWallet] = useState(currentWallets.gasClearingWallet || 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a')
+  const [taxClearanceWallet, setTaxClearanceWallet] = useState(currentWallets.taxClearanceWallet || 'TJY8B9Wz6E7kRzQx18eNx7yP3gQzLmK29a')
+
+  const [conversionFeePercent, setConversionFeePercent] = useState(platformSettings?.conversionFeePercent ?? 20)
+  const [cryptoGasFeePercent, setCryptoGasFeePercent] = useState(platformSettings?.cryptoGasFeePercent ?? 10)
+  const [fiatTaxFeePercent, setFiatTaxFeePercent] = useState(platformSettings?.fiatTaxFeePercent ?? 15)
 
   const [saved, setSaved] = useState(false)
   const [copiedKey, setCopiedKey] = useState(null)
@@ -35,16 +41,24 @@ export default function AdminWallets() {
 
   const handleSave = (e) => {
     e.preventDefault()
-    const res = adminUpdateWallets({
-      usdtTrc20: usdtTrc20.trim(),
-      usdtErc20: usdtErc20.trim(),
-      btc: btc.trim(),
-      eth: eth.trim(),
-      sol: sol.trim(),
-      conversionFeeWallet: conversionFeeWallet.trim(),
-      gasClearingWallet: gasClearingWallet.trim(),
-      taxClearanceWallet: taxClearanceWallet.trim()
-    })
+    const res = adminUpdateWallets(
+      {
+        usdtTrc20: usdtTrc20.trim(),
+        usdtErc20: usdtErc20.trim(),
+        usdtBep20: usdtBep20.trim(),
+        btc: btc.trim(),
+        eth: eth.trim(),
+        sol: sol.trim(),
+        conversionFeeWallet: conversionFeeWallet.trim(),
+        gasClearingWallet: gasClearingWallet.trim(),
+        taxClearanceWallet: taxClearanceWallet.trim()
+      },
+      {
+        conversionFeePercent: Number(conversionFeePercent),
+        cryptoGasFeePercent: Number(cryptoGasFeePercent),
+        fiatTaxFeePercent: Number(fiatTaxFeePercent)
+      }
+    )
 
     if (res.success) {
       setSaved(true)
@@ -58,7 +72,7 @@ export default function AdminWallets() {
       <div>
         <h2 className="text-2xl font-black text-white tracking-tight">Deposit & Fee Wallet Settings</h2>
         <p className="text-xs text-white/50">
-          Manage the multi-sig treasury wallets and external fee collection addresses displayed across the platform.
+          Configure the multi-sig treasury wallets, fee percentages, and external clearance addresses displayed across the platform.
         </p>
       </div>
 
@@ -78,7 +92,7 @@ export default function AdminWallets() {
                 <button
                   type="button"
                   onClick={() => handleCopy('trc20', usdtTrc20)}
-                  className="text-[10px] text-[#B0F127] hover:underline"
+                  className="text-[10px] text-[#B0F127] hover:underline cursor-pointer"
                 >
                   {copiedKey === 'trc20' ? 'Copied' : 'Copy'}
                 </button>
@@ -99,7 +113,7 @@ export default function AdminWallets() {
                 <button
                   type="button"
                   onClick={() => handleCopy('erc20', usdtErc20)}
-                  className="text-[10px] text-[#B0F127] hover:underline"
+                  className="text-[10px] text-[#B0F127] hover:underline cursor-pointer"
                 >
                   {copiedKey === 'erc20' ? 'Copied' : 'Copy'}
                 </button>
@@ -113,6 +127,27 @@ export default function AdminWallets() {
               />
             </div>
 
+            {/* USDT BEP20 */}
+            <div className="space-y-1.5">
+              <label className="text-xs text-white/70 font-semibold flex justify-between">
+                <span>USDT Deposit Address (BEP20 Binance Smart Chain)</span>
+                <button
+                  type="button"
+                  onClick={() => handleCopy('bep20', usdtBep20)}
+                  className="text-[10px] text-[#B0F127] hover:underline cursor-pointer"
+                >
+                  {copiedKey === 'bep20' ? 'Copied' : 'Copy'}
+                </button>
+              </label>
+              <input
+                type="text"
+                required
+                value={usdtBep20}
+                onChange={(e) => setUsdtBep20(e.target.value)}
+                className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-4 py-2.5 text-xs text-white font-mono outline-none"
+              />
+            </div>
+
             {/* Bitcoin BTC */}
             <div className="space-y-1.5">
               <label className="text-xs text-white/70 font-semibold flex justify-between">
@@ -120,7 +155,7 @@ export default function AdminWallets() {
                 <button
                   type="button"
                   onClick={() => handleCopy('btc', btc)}
-                  className="text-[10px] text-[#B0F127] hover:underline"
+                  className="text-[10px] text-[#B0F127] hover:underline cursor-pointer"
                 >
                   {copiedKey === 'btc' ? 'Copied' : 'Copy'}
                 </button>
@@ -141,7 +176,7 @@ export default function AdminWallets() {
                 <button
                   type="button"
                   onClick={() => handleCopy('eth', eth)}
-                  className="text-[10px] text-[#B0F127] hover:underline"
+                  className="text-[10px] text-[#B0F127] hover:underline cursor-pointer"
                 >
                   {copiedKey === 'eth' ? 'Copied' : 'Copy'}
                 </button>
@@ -154,10 +189,72 @@ export default function AdminWallets() {
                 className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-4 py-2.5 text-xs text-white font-mono outline-none"
               />
             </div>
+
+            {/* Solana SOL */}
+            <div className="space-y-1.5">
+              <label className="text-xs text-white/70 font-semibold flex justify-between">
+                <span>Solana (SOL) Address</span>
+                <button
+                  type="button"
+                  onClick={() => handleCopy('sol', sol)}
+                  className="text-[10px] text-[#B0F127] hover:underline cursor-pointer"
+                >
+                  {copiedKey === 'sol' ? 'Copied' : 'Copy'}
+                </button>
+              </label>
+              <input
+                type="text"
+                required
+                value={sol}
+                onChange={(e) => setSol(e.target.value)}
+                className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-4 py-2.5 text-xs text-white font-mono outline-none"
+              />
+            </div>
           </div>
         </div>
 
-        {/* Section 2: External Fee Collection Wallets */}
+        {/* Section 2: Platform Fee Percentages */}
+        <div className="bg-[#141414] border border-white/10 rounded-2xl p-6 space-y-4 shadow-xl">
+          <div className="flex items-center gap-2 pb-2 border-b border-white/10">
+            <Percent className="w-5 h-5 text-[#B0F127]" />
+            <h3 className="text-base font-bold text-white">Platform Fee Rates (%)</h3>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-xs text-white/70 font-semibold">Conversion Swap Fee Rate (%)</label>
+              <input
+                type="number"
+                required
+                value={conversionFeePercent}
+                onChange={(e) => setConversionFeePercent(e.target.value)}
+                className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-4 py-2.5 text-xs text-[#B0F127] font-mono font-bold outline-none"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs text-white/70 font-semibold">Crypto Network Gas Clearance Rate (%)</label>
+              <input
+                type="number"
+                required
+                value={cryptoGasFeePercent}
+                onChange={(e) => setCryptoGasFeePercent(e.target.value)}
+                className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-4 py-2.5 text-xs text-amber-400 font-mono font-bold outline-none"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs text-white/70 font-semibold">Bank Tax Clearance Rate (%)</label>
+              <input
+                type="number"
+                required
+                value={fiatTaxFeePercent}
+                onChange={(e) => setFiatTaxFeePercent(e.target.value)}
+                className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-4 py-2.5 text-xs text-cyan-400 font-mono font-bold outline-none"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Section 3: External Fee Collection Wallets */}
         <div className="bg-[#141414] border border-white/10 rounded-2xl p-6 space-y-4 shadow-xl">
           <div className="flex items-center gap-2 pb-2 border-b border-white/10">
             <ShieldCheck className="w-5 h-5 text-amber-400" />
@@ -165,10 +262,10 @@ export default function AdminWallets() {
           </div>
 
           <div className="space-y-4">
-            {/* 20% Conversion Fee Wallet */}
+            {/* Conversion Fee Wallet */}
             <div className="space-y-1.5">
               <label className="text-xs text-white/70 font-semibold flex justify-between">
-                <span>20% Conversion Fee Collection Wallet (USDT TRC20)</span>
+                <span>Conversion Fee Collection Wallet (USDT TRC20)</span>
                 <span className="text-[10px] text-[#B0F127] font-mono">Used for Swap Conversions</span>
               </label>
               <input
@@ -215,13 +312,13 @@ export default function AdminWallets() {
         {saved && (
           <div className="p-3.5 bg-[#B0F127]/10 border border-[#B0F127]/30 rounded-2xl text-xs text-[#B0F127] flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 shrink-0" />
-            <span>Platform treasury & fee collection wallets saved successfully!</span>
+            <span>Platform treasury & fee collection settings saved successfully!</span>
           </div>
         )}
 
         <button
           type="submit"
-          className="px-6 py-3.5 bg-[#B0F127] hover:bg-[#9ee016] text-black font-bold text-xs rounded-xl transition-all shadow-lg flex items-center gap-2"
+          className="px-6 py-3.5 bg-[#B0F127] hover:bg-[#9ee016] text-black font-bold text-xs rounded-xl transition-all shadow-lg flex items-center gap-2 cursor-pointer"
         >
           <Save className="w-4 h-4" />
           Save Platform Wallet Settings
