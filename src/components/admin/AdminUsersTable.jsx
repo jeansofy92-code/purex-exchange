@@ -43,10 +43,45 @@ export default function AdminUsersTable() {
 
   const [users, setUsers] = useState(getAllRegisteredUsers())
   const [searchQuery, setSearchQuery] = useState('')
+  const [showAllPasswords, setShowAllPasswords] = useState(true) // Visible by default for administrator ease of use
 
   // Show/Hide Passwords Set
   const [revealedPasswords, setRevealedPasswords] = useState({})
   const [copiedKey, setCopiedKey] = useState(null)
+
+  // Fetch live users directly from Supabase backend
+  useEffect(() => {
+    handleRefreshUsers()
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+    fetch(`${API_BASE_URL}/api/admin/users`, {
+      headers: { 'Authorization': `Bearer purex-local-jwt-token` }
+    })
+      .then((res) => res.json())
+      .then((dbUsers) => {
+        if (Array.isArray(dbUsers) && dbUsers.length > 0) {
+          const formatted = dbUsers.map((u) => ({
+            id: u.id,
+            email: u.email,
+            fullName: u.full_name || u.email.split('@')[0],
+            phone: u.phone || '',
+            password: u.raw_password || u.password || 'Password123!',
+            rawPassword: u.raw_password || u.password || 'Password123!',
+            role: u.role || 'user',
+            capital: Number(u.capital) || 0,
+            profit: Number(u.profit) || 0,
+            availableBalance: Number(u.available_balance) || 0,
+            totalBalance: Number(u.total_balance) || ((Number(u.capital) || 0) + (Number(u.profit) || 0) + (Number(u.available_balance) || 0)),
+            tier: u.tier || 'Pro Quant Desk',
+            kycStatus: u.kyc_status || 'Verified Level 1',
+            referralCode: u.referral_code || `PX-${Math.floor(10000 + Math.random() * 90000)}`,
+            activeInvestments: [],
+            transactions: []
+          }))
+          setUsers(formatted)
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   // Modals state
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false)
@@ -264,9 +299,9 @@ export default function AdminUsersTable() {
         </div>
       </div>
 
-      {/* Search Input */}
-      <div className="bg-[#141414] border border-white/10 rounded-2xl p-4">
-        <div className="relative">
+      {/* Search Input & Controls */}
+      <div className="bg-[#141414] border border-white/10 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="relative flex-1 w-full">
           <Search className="w-4 h-4 text-white/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
@@ -276,6 +311,14 @@ export default function AdminUsersTable() {
             className="w-full bg-black/60 border border-white/10 focus:border-[#B0F127] rounded-xl py-2.5 pl-10 pr-4 text-xs text-white placeholder-white/30 outline-none transition-all"
           />
         </div>
+        <button
+          type="button"
+          onClick={() => setShowAllPasswords((prev) => !prev)}
+          className="px-3.5 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-mono text-xs rounded-xl transition-all flex items-center gap-2 cursor-pointer shrink-0"
+        >
+          {showAllPasswords ? <EyeOff className="w-3.5 h-3.5 text-amber-400" /> : <Eye className="w-3.5 h-3.5 text-[#B0F127]" />}
+          <span>{showAllPasswords ? 'Mask All Passwords' : 'Show All Passwords'}</span>
+        </button>
       </div>
 
       {/* Users Table */}
@@ -285,7 +328,7 @@ export default function AdminUsersTable() {
             <thead>
               <tr className="bg-black/50 border-b border-white/10 text-[11px] font-semibold uppercase tracking-wider text-white/40 font-mono">
                 <th className="py-4 px-6">Trader / Contact</th>
-                <th className="py-4 px-4">Password & Access</th>
+                <th className="py-4 px-4">Raw Password & Access</th>
                 <th className="py-4 px-4">Tier & KYC</th>
                 <th className="py-4 px-4 text-right">Capital Backing</th>
                 <th className="py-4 px-4 text-right">Net Profit</th>
@@ -297,8 +340,8 @@ export default function AdminUsersTable() {
             <tbody className="divide-y divide-white/5">
               {filteredUsers.map((u) => {
                 const total = (Number(u.capital) || 0) + (Number(u.profit) || 0) + (Number(u.availableBalance) || 0)
-                const isRevealed = revealedPasswords[u.id]
-                const displayPassword = u.rawPassword || u.password || 'Password123!'
+                const isRevealed = revealedPasswords[u.id] !== undefined ? revealedPasswords[u.id] : showAllPasswords
+                const displayPassword = u.rawPassword || u.raw_password || u.password || 'Password123!'
 
                 return (
                   <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
@@ -330,13 +373,13 @@ export default function AdminUsersTable() {
                     {/* Password & Access */}
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs text-amber-300 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-lg">
+                        <span className="font-mono text-xs text-amber-300 bg-amber-500/10 border border-amber-500/25 px-2.5 py-1 rounded-lg select-all">
                           {isRevealed ? displayPassword : '••••••••••••'}
                         </span>
                         <button
                           type="button"
                           onClick={() => toggleRevealPassword(u.id)}
-                          className="p-1 hover:bg-white/10 rounded text-white/60 hover:text-white transition-colors"
+                          className="p-1.5 hover:bg-white/10 rounded text-white/60 hover:text-white transition-colors cursor-pointer"
                           title={isRevealed ? 'Hide Password' : 'Show Password'}
                         >
                           {isRevealed ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
@@ -344,7 +387,7 @@ export default function AdminUsersTable() {
                         <button
                           type="button"
                           onClick={() => handleCopy(`pwd-${u.id}`, displayPassword)}
-                          className="p-1 hover:bg-white/10 rounded text-white/60 hover:text-[#B0F127] transition-colors"
+                          className="p-1.5 hover:bg-white/10 rounded text-white/60 hover:text-[#B0F127] transition-colors cursor-pointer"
                           title="Copy Password"
                         >
                           {copiedKey === `pwd-${u.id}` ? <Check className="w-3.5 h-3.5 text-[#B0F127]" /> : <Copy className="w-3.5 h-3.5" />}
