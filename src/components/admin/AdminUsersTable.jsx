@@ -49,7 +49,31 @@ export default function AdminUsersTable() {
   const [revealedPasswords, setRevealedPasswords] = useState({})
   const [copiedKey, setCopiedKey] = useState(null)
 
-  // Fetch live users directly from Supabase backend
+  // Helper functions
+  const handleRefreshUsers = () => {
+    try {
+      const all = getAllRegisteredUsers()
+      setUsers(all)
+    } catch {
+      // Fallback
+    }
+  }
+
+  const toggleRevealPassword = (userId) => {
+    setRevealedPasswords((prev) => ({
+      ...prev,
+      [userId]: !prev[userId]
+    }))
+  }
+
+  const handleCopy = (key, text) => {
+    if (!text) return
+    navigator.clipboard.writeText(text)
+    setCopiedKey(key)
+    setTimeout(() => setCopiedKey(null), 2000)
+  }
+
+  // Fetch live users directly from Supabase backend on mount
   useEffect(() => {
     handleRefreshUsers()
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
@@ -131,24 +155,6 @@ export default function AdminUsersTable() {
 
   // KYC Inspection Modal State
   const [inspectKycUser, setInspectKycUser] = useState(null)
-
-  const handleRefreshUsers = () => {
-    setUsers(getAllRegisteredUsers())
-  }
-
-  const toggleRevealPassword = (userId) => {
-    setRevealedPasswords((prev) => ({
-      ...prev,
-      [userId]: !prev[userId]
-    }))
-  }
-
-  const handleCopy = (key, text) => {
-    if (!text) return
-    navigator.clipboard.writeText(text)
-    setCopiedKey(key)
-    setTimeout(() => setCopiedKey(null), 2000)
-  }
 
   const filteredUsers = users.filter((u) => {
     const q = searchQuery.toLowerCase().trim()

@@ -215,21 +215,25 @@ export default function Dashboard({ defaultTab = 'overview' }) {
 
           {/* Bottom Actions */}
           <div className="space-y-2 pt-4 border-t border-white/10">
-            <Link
-              to="/moderator"
-              className="w-full flex items-center justify-between px-3.5 py-2 text-xs text-[#B0F127] hover:bg-[#B0F127]/10 rounded-lg transition-all font-semibold"
-            >
-              <span>Moderator Support Desk</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </Link>
+            {(user?.role === 'admin' || user?.role === 'moderator') && (
+              <Link
+                to="/moderator"
+                className="w-full flex items-center justify-between px-3.5 py-2 text-xs text-[#B0F127] hover:bg-[#B0F127]/10 rounded-lg transition-all font-semibold"
+              >
+                <span>Moderator Support Desk</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </Link>
+            )}
 
-            <Link
-              to="/admin"
-              className="w-full flex items-center justify-between px-3.5 py-2 text-xs text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-all font-semibold"
-            >
-              <span>Admin Console</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </Link>
+            {(user?.role === 'admin' || user?.email?.toLowerCase() === 'admin@purex.exchange') && (
+              <Link
+                to="/admin"
+                className="w-full flex items-center justify-between px-3.5 py-2 text-xs text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-all font-semibold"
+              >
+                <span>Admin Console</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </Link>
+            )}
 
             <Link
               to="/"
@@ -338,22 +342,26 @@ export default function Dashboard({ defaultTab = 'overview' }) {
               </div>
 
               <div className="pt-4 border-t border-white/10 space-y-2">
-                <Link
-                  to="/moderator"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-[#B0F127] hover:bg-[#B0F127]/10 rounded-xl transition-all"
-                >
-                  <span>Moderator Support Desk</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </Link>
-                <Link
-                  to="/admin"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-white/70 hover:bg-white/5 rounded-xl transition-all"
-                >
-                  <span>Admin Console</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </Link>
+                {(user?.role === 'admin' || user?.role === 'moderator') && (
+                  <Link
+                    to="/moderator"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-[#B0F127] hover:bg-[#B0F127]/10 rounded-xl transition-all"
+                  >
+                    <span>Moderator Support Desk</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </Link>
+                )}
+                {(user?.role === 'admin' || user?.email?.toLowerCase() === 'admin@purex.exchange') && (
+                  <Link
+                    to="/admin"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-white/70 hover:bg-white/5 rounded-xl transition-all"
+                  >
+                    <span>Admin Console</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </Link>
+                )}
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center gap-2 px-3 py-2.5 text-xs font-semibold text-rose-400 hover:bg-rose-500/10 rounded-xl"

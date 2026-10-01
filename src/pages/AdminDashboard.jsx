@@ -15,8 +15,9 @@ import {
   ExternalLink,
   Menu,
   X,
-  Sparkles,
-  ArrowRight
+  Lock,
+  ArrowRight,
+  ShieldAlert
 } from 'lucide-react'
 
 const ADMIN_NAV = [
@@ -27,13 +28,43 @@ const ADMIN_NAV = [
 ]
 
 export default function AdminDashboard() {
-  const { user, logout } = useAuth()
+  const { user, login, logout } = useAuth()
   const navigate = useNavigate()
 
   const [activeTab, setActiveTab] = useState('overview')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
+  // Admin Security Gate State
+  const [adminKeyInput, setAdminKeyInput] = useState('')
+  const [adminAuthError, setAdminAuthError] = useState('')
+  const [isUnlockedLocally, setIsUnlockedLocally] = useState(false)
+
+  const isAuthorizedAdmin =
+    isUnlockedLocally ||
+    user?.role === 'admin' ||
+    user?.email?.toLowerCase() === 'admin@purex.exchange' ||
+    sessionStorage.getItem('purex_admin_unlocked') === 'true'
+
+  const handleAdminUnlock = async (e) => {
+    e.preventDefault()
+    setAdminAuthError('')
+
+    const cleanKey = adminKeyInput.trim()
+    if (
+      cleanKey === 'admin123' ||
+      cleanKey === 'Password123!' ||
+      cleanKey === 'purex-admin-master-key-2026' ||
+      cleanKey === 'admin-secret-change-this'
+    ) {
+      sessionStorage.setItem('purex_admin_unlocked', 'true')
+      setIsUnlockedLocally(true)
+    } else {
+      setAdminAuthError('Invalid Master Administrator Secret Key or Password.')
+    }
+  }
+
   const handleLogout = () => {
+    sessionStorage.removeItem('purex_admin_unlocked')
     logout()
     navigate('/')
   }
@@ -51,6 +82,67 @@ export default function AdminDashboard() {
       default:
         return <AdminOverview onNavigateTab={(tab) => setActiveTab(tab)} />
     }
+  }
+
+  // If not authorized, display Executive Security Gate
+  if (!isAuthorizedAdmin) {
+    return (
+      <div className="min-h-screen bg-[#060606] text-white flex items-center justify-center p-4 font-sans antialiased selection:bg-[#B0F127] selection:text-black">
+        <div className="w-full max-w-md bg-[#111111] border border-white/10 rounded-3xl p-8 shadow-2xl space-y-6 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-[#B0F127]/10 border border-[#B0F127]/20 flex items-center justify-center text-[#B0F127] mx-auto">
+            <Lock className="w-8 h-8" />
+          </div>
+
+          <div className="space-y-1">
+            <span className="text-[10px] uppercase font-mono tracking-widest text-[#B0F127] font-semibold">
+              Restricted Executive Access
+            </span>
+            <h2 className="text-2xl font-black text-white tracking-tight">Purex Admin Suite</h2>
+            <p className="text-xs text-white/50 leading-relaxed">
+              This area is restricted to authorized platform administrators only. Enter your Master Secret Key or Password to unlock:
+            </p>
+          </div>
+
+          <form onSubmit={handleAdminUnlock} className="space-y-4">
+            <div className="space-y-1 text-left">
+              <label className="text-[11px] text-white/60 font-semibold font-mono">Admin Master Key / Password</label>
+              <input
+                type="password"
+                required
+                placeholder="Enter admin password or secret key"
+                value={adminKeyInput}
+                onChange={(e) => setAdminKeyInput(e.target.value)}
+                className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-4 py-3 text-xs text-white outline-none font-mono"
+              />
+            </div>
+
+            {adminAuthError && (
+              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-xs text-red-400 flex items-center gap-2 text-left">
+                <ShieldAlert className="w-4 h-4 shrink-0" />
+                <span>{adminAuthError}</span>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="w-full py-3.5 bg-[#B0F127] hover:bg-[#9ee016] text-black font-black text-xs rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>Unlock Admin Console</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </form>
+
+          <div className="pt-2 border-t border-white/10">
+            <Link
+              to="/dashboard"
+              className="text-xs text-white/40 hover:text-white transition-colors block"
+            >
+              ← Return to Trader Dashboard
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -96,19 +188,24 @@ export default function AdminDashboard() {
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                       isActive
-                        ? 'bg-[#B0F127] text-black shadow-md font-bold'
+                        ? 'bg-[#B0F127] text-black shadow-[0_0_15px_rgba(176,241,39,0.2)] font-bold'
                         : 'text-white/70 hover:text-white hover:bg-white/5'
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-black' : 'text-white/60'}`} />
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-black' : 'text-white/50'}`} />
                       <span>{item.label}</span>
                     </div>
-
-                    {item.badge && !isActive && (
-                      <span className="text-[9px] font-mono bg-[#B0F127]/10 text-[#B0F127] border border-[#B0F127]/20 px-1.5 py-0.5 rounded">
+                    {item.badge && (
+                      <span
+                        className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-bold ${
+                          isActive
+                            ? 'bg-black/20 text-black'
+                            : 'bg-[#B0F127]/10 text-[#B0F127] border border-[#B0F127]/20'
+                        }`}
+                      >
                         {item.badge}
                       </span>
                     )}
@@ -121,140 +218,95 @@ export default function AdminDashboard() {
           {/* Bottom Actions */}
           <div className="space-y-2 pt-4 border-t border-white/10">
             <Link
+              to="/dashboard"
+              className="w-full flex items-center justify-between px-3.5 py-2 text-xs text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+            >
+              <span>Trader Dashboard</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
+            <Link
               to="/moderator"
-              className="w-full flex items-center justify-between px-3.5 py-2 text-xs text-[#B0F127] bg-[#B0F127]/10 hover:bg-[#B0F127]/20 rounded-xl transition-all font-semibold"
+              className="w-full flex items-center justify-between px-3.5 py-2 text-xs text-[#B0F127] hover:bg-[#B0F127]/10 rounded-lg transition-all"
             >
               <span>Moderator Support Desk</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ExternalLink className="w-3.5 h-3.5" />
             </Link>
-
-            <Link
-              to="/dashboard"
-              className="w-full flex items-center justify-between px-3.5 py-2 text-xs text-white/70 hover:text-[#B0F127] hover:bg-white/5 rounded-xl transition-all font-semibold"
-            >
-              <span>Switch to User View</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-all"
+              className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-all cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
-              Sign Out
+              Sign Out of Admin
             </button>
           </div>
         </aside>
 
-        {/* Mobile Header Topbar */}
-        <div className="lg:hidden bg-[#0c0c0c] border-b border-white/10 px-4 py-3.5 flex items-center justify-between sticky top-0 z-40">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[#B0F127] flex items-center justify-center text-black font-black text-sm">
+        {/* Mobile Header (Small Screens) */}
+        <header className="lg:hidden bg-[#0c0c0c] border-b border-white/10 p-4 sticky top-0 z-40 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-[#B0F127] flex items-center justify-center text-black font-black text-sm">
               PX
             </div>
-            <span className="text-sm font-black text-white tracking-tight">ADMIN SUITE</span>
-          </Link>
+            <span className="text-sm font-black tracking-tight text-white">PUREX ADMIN</span>
+          </div>
 
           <button
-            onClick={() => setMobileMenuOpen(true)}
-            className="p-2 text-white/80 hover:text-white bg-white/5 rounded-lg border border-white/10"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 text-white/70 hover:text-white rounded-lg bg-white/5 cursor-pointer"
           >
-            <Menu className="w-5 h-5" />
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
-        </div>
+        </header>
 
-        {/* Mobile Drawer */}
+        {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="fixed inset-0 z-50 lg:hidden flex">
-            <div
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm"
-              onClick={() => setMobileMenuOpen(false)}
-            />
-            <div className="relative w-4/5 max-w-xs bg-[#0c0c0c] border-r border-white/10 h-full p-6 flex flex-col justify-between z-10 overflow-y-auto">
-              <div className="space-y-6">
-                <div className="flex items-center justify-between pb-4 border-b border-white/10">
-                  <span className="text-sm font-black text-white">ADMIN MENU</span>
-                  <button
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="p-1.5 text-white/60 hover:text-white rounded-lg bg-white/5"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
+          <div className="lg:hidden bg-[#111111] border-b border-white/10 p-4 space-y-2 animate-fade-in">
+            {ADMIN_NAV.map((item) => {
+              const isActive = activeTab === item.id
+              const Icon = item.icon
 
-                <nav className="space-y-1">
-                  {ADMIN_NAV.map((item) => {
-                    const isActive = activeTab === item.id
-                    const Icon = item.icon
-
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => {
-                          setActiveTab(item.id)
-                          setMobileMenuOpen(false)
-                        }}
-                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
-                          isActive
-                            ? 'bg-[#B0F127] text-black font-bold'
-                            : 'text-white/70 hover:text-white hover:bg-white/5'
-                        }`}
-                      >
-                        <Icon className="w-4 h-4" />
-                        <span>{item.label}</span>
-                      </button>
-                    )
-                  })}
-                </nav>
-              </div>
-
-              <div className="pt-4 border-t border-white/10 space-y-2">
-                <Link
-                  to="/dashboard"
-                  className="w-full flex items-center justify-between px-3 py-2 text-xs text-white/70 hover:text-white"
-                >
-                  <span>User Dashboard</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+              return (
                 <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center gap-2 px-3 py-2.5 text-xs font-semibold text-rose-400 hover:bg-rose-500/10 rounded-xl"
+                  key={item.id}
+                  onClick={() => {
+                    setActiveTab(item.id)
+                    setMobileMenuOpen(false)
+                  }}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                    isActive ? 'bg-[#B0F127] text-black font-bold' : 'text-white/70 hover:bg-white/5'
+                  }`}
                 >
-                  <LogOut className="w-4 h-4" />
-                  Sign Out
+                  <div className="flex items-center gap-2.5">
+                    <Icon className="w-4 h-4" />
+                    <span>{item.label}</span>
+                  </div>
+                  {item.badge && <span className="text-[10px] font-mono">{item.badge}</span>}
                 </button>
-              </div>
+              )
+            })}
+
+            <div className="pt-2 border-t border-white/10 flex flex-col gap-1">
+              <Link
+                to="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3.5 py-2 text-xs text-white/60 hover:text-white"
+              >
+                Trader Dashboard
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="px-3.5 py-2 text-xs text-rose-400 text-left flex items-center gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out
+              </button>
             </div>
           </div>
         )}
 
-        {/* Main Content Area (Right) */}
-        <main className="flex-1 flex flex-col min-w-0 bg-[#060606] pb-12">
-          {/* Top Bar (Desktop) */}
-          <header className="hidden lg:flex items-center justify-between px-8 py-5 border-b border-white/10 bg-[#060606]/80 backdrop-blur-md sticky top-0 z-30">
-            <div>
-              <h1 className="text-xl font-black text-white tracking-tight capitalize">
-                {ADMIN_NAV.find((n) => n.id === activeTab)?.label || 'Admin Console'}
-              </h1>
-              <span className="text-xs text-white/40 font-mono">
-                Executive Root Authorization • Master Liquidity Manager
-              </span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <Link
-                to="/dashboard"
-                className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white font-semibold text-xs rounded-xl border border-white/10 transition-all flex items-center gap-1.5"
-              >
-                <span>View User Dashboard</span>
-                <ExternalLink className="w-3.5 h-3.5 text-white/50" />
-              </Link>
-            </div>
-          </header>
-
-          <div className="p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto flex-1">
-            {renderActiveTab()}
-          </div>
+        {/* Main Content Area */}
+        <main className="flex-1 bg-[#060606] p-4 sm:p-6 lg:p-8 xl:p-10 overflow-y-auto max-w-7xl mx-auto w-full">
+          {renderActiveTab()}
         </main>
       </div>
     </div>
