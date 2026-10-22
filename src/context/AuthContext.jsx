@@ -41,7 +41,7 @@ const DEFAULT_DEMO_USERS = [
     availableBalance: 42350.00,
     totalBalance: 148520.50,
     tier: 'Pro Quant Desk',
-    kycStatus: 'Verified Level 2',
+    kycStatus: 'Unverified',
     referralCode: 'PX-88492',
     referralStats: {
       totalInvited: 14,
@@ -160,6 +160,22 @@ export function AuthProvider({ children }) {
       const storedUsers = localStorage.getItem(USERS_STORAGE_KEY)
       if (!storedUsers) {
         localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(DEFAULT_DEMO_USERS))
+      } else {
+        // Upgrade legacy stored demo user to Unverified if not submitted
+        try {
+          const parsed = JSON.parse(storedUsers)
+          let changed = false
+          const sanitized = parsed.map((u) => {
+            if (u.id === 'usr-demo-01' && u.kycStatus === 'Verified Level 2' && !u.kycDocNumber) {
+              changed = true
+              return { ...u, kycStatus: 'Unverified' }
+            }
+            return u
+          })
+          if (changed) {
+            localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(sanitized))
+          }
+        } catch (_e) {}
       }
 
       // Fetch live settings from backend
@@ -211,7 +227,7 @@ export function AuthProvider({ children }) {
               availableBalance: Number(u.available_balance) || 0,
               totalBalance: Number(u.total_balance) || ((Number(u.capital) || 0) + (Number(u.profit) || 0) + (Number(u.available_balance) || 0)),
               tier: u.tier || 'Pro Quant Desk',
-              kycStatus: u.kyc_status || 'Verified Level 1',
+              kycStatus: u.kyc_status || u.kycStatus || 'Unverified',
               referralCode: u.referral_code || `PX-${Math.floor(10000 + Math.random() * 90000)}`,
               activeInvestments: [],
               transactions: []
@@ -226,6 +242,10 @@ export function AuthProvider({ children }) {
       const savedToken = localStorage.getItem(TOKEN_KEY)
       if (savedSession) {
         const parsed = JSON.parse(savedSession)
+        if (parsed.id === 'usr-demo-01' && parsed.kycStatus === 'Verified Level 2' && !parsed.kycDocNumber) {
+          parsed.kycStatus = 'Unverified'
+          localStorage.setItem(SESSION_KEY, JSON.stringify(parsed))
+        }
         setUser(parsed)
       }
       if (savedToken) {
@@ -237,6 +257,42 @@ export function AuthProvider({ children }) {
       setIsLoading(false)
     }
   }, [])
+
+  // Live storage event listener to synchronize admin updates across tabs in real-time
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === SESSION_KEY || e.key === USERS_STORAGE_KEY) {
+        try {
+          const savedSession = localStorage.getItem(SESSION_KEY)
+          if (savedSession) {
+            const parsed = JSON.parse(savedSession)
+            const allUsers = JSON.parse(localStorage.getItem(USERS_STORAGE_KEY) || '[]')
+            const matched = allUsers.find(u => u.id === parsed.id) || parsed
+            setUser(matched)
+          }
+        } catch (_err) {}
+      }
+    }
+    window.addEventListener('storage', handleStorageChange)
+    return () => window.removeEventListener('storage', handleStorageChange)
+  }, [])
+
+  // Manual or programmatic refresh of current user's profile
+  const refreshUser = () => {
+    try {
+      const savedSession = localStorage.getItem(SESSION_KEY)
+      if (!savedSession) return null
+      const parsed = JSON.parse(savedSession)
+      const allUsers = getAllRegisteredUsers()
+      const matched = allUsers.find(u => u.id === parsed.id) || parsed
+      setUser(matched)
+      localStorage.setItem(SESSION_KEY, JSON.stringify(matched))
+      return matched
+    } catch (e) {
+      console.error('Error refreshing user:', e)
+      return user
+    }
+  }
 
   // Helper to persist auth session
   const persistSession = (userData, authToken) => {
@@ -323,7 +379,7 @@ export function AuthProvider({ children }) {
         availableBalance: matched.availableBalance ?? 5000,
         totalBalance: matched.totalBalance ?? (matched.capital ?? 10000) + (matched.profit ?? 2450) + (matched.availableBalance ?? 5000),
         tier: matched.tier || 'Pro Quant Desk',
-        kycStatus: matched.kycStatus || 'Verified Level 1',
+        kycStatus: matched.kycStatus || 'Unverified',
         referralCode: matched.referralCode || `PX-${Math.floor(10000 + Math.random() * 90000)}`,
         referralStats: matched.referralStats || { totalInvited: 5, activeInvestors: 3, totalEarned: 640.00, tier1Count: 3, tier2Count: 2 },
         activeInvestments: matched.activeInvestments || [
@@ -503,8 +559,23 @@ export function AuthProvider({ children }) {
     if (!user) return { success: false, error: 'User not logged in' }
     
     // Compulsory KYC Check
-    const isKycApproved = user.kycStatus && user.kycStatus.toLowerCase().includes('verified')
+    const statusLower = (user.kycStatus || 'Unverified').toLowerCase()
+    const isPending = statusLower.includes('pending')
+    const isRejected = statusLower.includes('reject') || statusLower.includes('failed')
+    const isKycApproved = !isPending && !isRejected && (statusLower.includes('verified') || statusLower.includes('approved'))
     if (!isKycApproved) {
+      if (isPending) {
+        return {
+          success: false,
+          error: 'Your KYC verification is currently pending review by administrators. Withdrawals remain locked until approval.'
+        }
+      }
+      if (isRejected) {
+        return {
+          success: false,
+          error: `Your KYC verification was rejected (${user.kycRejectionReason || 'Compliance rejection'}). Please re-submit valid documents.`
+        }
+      }
       return {
         success: false,
         error: 'Identity Verification (KYC) is compulsory before requesting withdrawals. Please complete KYC verification first.'
@@ -703,12 +774,17 @@ export function AuthProvider({ children }) {
   }
 
   // 5. Submit KYC Verification
-  const submitKycDocuments = (tierLevel, docType, docNumber) => {
+  const submitKycDocuments = (tierLevel, docType, docNumber, fileName = '') => {
     if (!user) return { success: false, error: 'User not logged in' }
 
     const updatedUser = {
       ...user,
-      kycStatus: `Pending Level ${tierLevel} Verification`
+      kycStatus: `Pending Level ${tierLevel} Verification`,
+      kycDocType: docType,
+      kycDocNumber: docNumber,
+      kycDocFileName: fileName,
+      kycSubmittedAt: new Date().toISOString(),
+      kycRejectionReason: null
     }
 
     const newTx = {
@@ -895,11 +971,25 @@ export function AuthProvider({ children }) {
   }
 
   const adminApproveKyc = (userId, level = 2) => {
-    return adminUpdateUserBalance(userId, { kycStatus: `Verified Level ${level}` })
+    return adminUpdateUserBalance(userId, { 
+      kycStatus: `Verified Level ${level}`,
+      kycApprovedAt: new Date().toISOString(),
+      kycRejectionReason: null
+    })
   }
 
-  const adminUpdateKyc = (userId, status) => {
-    return adminUpdateUserBalance(userId, { kycStatus: status })
+  const adminRejectKyc = (userId, reason = 'Document verification failed') => {
+    return adminUpdateUserBalance(userId, { 
+      kycStatus: `Rejected: ${reason}`,
+      kycRejectionReason: reason
+    })
+  }
+
+  const adminUpdateKyc = (userId, status, reason = '') => {
+    return adminUpdateUserBalance(userId, { 
+      kycStatus: status,
+      kycRejectionReason: reason || (status.startsWith('Rejected') ? status.replace(/^Rejected:?\s*/i, '') : null)
+    })
   }
 
   const adminCreditYield = (userId, amount, note = 'Daily Arbitrage Credit') => {
@@ -1003,7 +1093,7 @@ export function AuthProvider({ children }) {
         availableBalance: avail,
         totalBalance: total,
         tier: newUserData.tier || 'Pro Quant Desk',
-        kycStatus: newUserData.kycStatus || 'Verified Level 2',
+        kycStatus: newUserData.kycStatus || 'Unverified',
         referralCode: `PX-${Math.floor(10000 + Math.random() * 90000)}`,
         activeInvestments: [],
         transactions: [
@@ -1205,10 +1295,12 @@ export function AuthProvider({ children }) {
         adminApproveTransaction,
         adminRejectTransaction,
         adminApproveKyc,
+        adminRejectKyc,
         adminUpdateKyc,
         adminCreditYield,
         adminCreateInvestment,
-        adminUpdateWallets
+        adminUpdateWallets,
+        refreshUser
       }}
     >
       {children}

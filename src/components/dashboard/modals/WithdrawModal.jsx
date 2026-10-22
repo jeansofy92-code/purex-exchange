@@ -24,13 +24,11 @@ import {
 } from 'lucide-react'
 
 export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
-  const { user, requestWithdrawal, platformSettings } = useAuth()
+  const { user, requestWithdrawal, platformSettings, refreshUser } = useAuth()
 
-  // Compulsory KYC Verification Check
-  const isKycVerified = user?.kycStatus && user.kycStatus.toLowerCase().includes('verified')
-
-  // KYC Stages
+  // KYC Stages: 'CHECKING' | 'UNVERIFIED' | 'PENDING' | 'REJECTED' | 'VERIFIED_NOTICE' | 'CLEARED'
   const [kycStage, setKycStage] = useState('CHECKING')
+  const [liveUser, setLiveUser] = useState(user)
 
   // Steps:
   // 1: Choose Method (Crypto vs Local Currency)
@@ -68,18 +66,61 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
       setStep(1)
       setFeedback(null)
 
+      const currentUser = (refreshUser ? refreshUser() : null) || user
+      setLiveUser(currentUser)
+
       const timer = setTimeout(() => {
-        if (!isKycVerified) {
-          setKycStage('UNVERIFIED')
-        } else {
+        const latest = (refreshUser ? refreshUser() : null) || currentUser || user
+        setLiveUser(latest)
+        const status = (latest?.kycStatus || 'Unverified').trim()
+        const statusLower = status.toLowerCase()
+
+        const isPending = statusLower.includes('pending')
+        const isRejected = statusLower.includes('reject') || statusLower.includes('failed')
+        const isVerified = !isPending && !isRejected && (statusLower.includes('verified') || statusLower.includes('approved'))
+
+        if (isVerified) {
           setKycStage('VERIFIED_NOTICE')
-          setTimeout(() => setKycStage('CLEARED'), 1200)
+          setTimeout(() => {
+            setKycStage('CLEARED')
+          }, 1400)
+        } else if (isPending) {
+          setKycStage('PENDING')
+        } else if (isRejected) {
+          setKycStage('REJECTED')
+        } else {
+          setKycStage('UNVERIFIED')
         }
       }, 1200)
 
       return () => clearTimeout(timer)
     }
-  }, [isOpen, isKycVerified])
+  }, [isOpen])
+
+  const handleRecheckKyc = () => {
+    setKycStage('CHECKING')
+    setTimeout(() => {
+      const latest = (refreshUser ? refreshUser() : null) || user
+      setLiveUser(latest)
+      const status = (latest?.kycStatus || 'Unverified').trim()
+      const statusLower = status.toLowerCase()
+
+      const isPending = statusLower.includes('pending')
+      const isRejected = statusLower.includes('reject') || statusLower.includes('failed')
+      const isVerified = !isPending && !isRejected && (statusLower.includes('verified') || statusLower.includes('approved'))
+
+      if (isVerified) {
+        setKycStage('VERIFIED_NOTICE')
+        setTimeout(() => setKycStage('CLEARED'), 1400)
+      } else if (isPending) {
+        setKycStage('PENDING')
+      } else if (isRejected) {
+        setKycStage('REJECTED')
+      } else {
+        setKycStage('UNVERIFIED')
+      }
+    }, 1000)
+  }
 
   if (!isOpen) return null
 
@@ -266,15 +307,15 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
               <span className="text-xs font-mono text-[#B0F127] font-semibold uppercase tracking-wider">
                 Automated Compliance Scan
               </span>
-              <h3 className="text-2xl font-black text-white tracking-tight">Checking KYC Status...</h3>
+              <h3 className="text-2xl font-black text-white tracking-tight">Verifying KYC Status...</h3>
               <p className="text-xs text-white/50 max-w-sm mx-auto">
-                Verifying identity documentation and AML clearance before unlocking withdrawal gateway.
+                Running real-time compliance check and verifying administrator approval status before unlocking the withdrawal gateway.
               </p>
             </div>
           </div>
         )}
 
-        {/* ── UNVERIFIED KYC ───────────────────────────────────────────── */}
+        {/* ── UNVERIFIED KYC (NO SUBMISSION) ───────────────────────────── */}
         {kycStage === 'UNVERIFIED' && (
           <div className="text-center py-6 space-y-6 animate-fade-in">
             <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400">
@@ -289,13 +330,13 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
                 Complete Your KYC Before Withdrawal
               </h3>
               <p className="text-xs text-white/60 max-w-sm mx-auto leading-relaxed">
-                You must complete identity verification (KYC) before initiating any withdrawals.
+                You have not submitted identity verification (KYC). In compliance with AML regulations, withdrawals are strictly disabled until you submit your identification documents.
               </p>
             </div>
             <div className="p-4 bg-black/50 border border-white/10 rounded-2xl text-left space-y-2.5 text-xs font-mono">
               <div className="flex justify-between text-white/60">
                 <span>Current KYC Status:</span>
-                <span className="text-amber-400 font-bold">{user?.kycStatus || 'Unverified'}</span>
+                <span className="text-amber-400 font-bold">Unverified (No Documents Submitted)</span>
               </div>
               <div className="flex justify-between text-white/60">
                 <span>Required Action:</span>
@@ -305,14 +346,19 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
             <div className="space-y-3 pt-2">
               <button
                 type="button"
-                onClick={() => { if (onNavigateKyc) { onNavigateKyc() } else { handleResetAndClose() } }}
-                className="w-full py-3.5 bg-[#B0F127] hover:bg-[#9ee016] text-black font-bold text-xs rounded-xl transition-all shadow-lg flex items-center justify-center gap-2"
+                onClick={() => {
+                  handleResetAndClose()
+                  if (onNavigateKyc) onNavigateKyc()
+                }}
+                className="w-full py-3.5 bg-[#B0F127] hover:bg-[#9ee016] text-black font-bold text-xs rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
               >
                 <ShieldCheck className="w-4 h-4" />
                 Complete KYC Verification Now
               </button>
-              <button type="button" onClick={handleResetAndClose}
-                className="w-full py-2.5 text-xs text-white/50 hover:text-white transition-all font-semibold"
+              <button
+                type="button"
+                onClick={handleResetAndClose}
+                className="w-full py-2.5 text-xs text-white/50 hover:text-white transition-all font-semibold cursor-pointer"
               >
                 Cancel & Return
               </button>
@@ -320,7 +366,118 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
           </div>
         )}
 
-        {/* ── KYC VERIFIED NOTICE ──────────────────────────────────────── */}
+        {/* ── PENDING ADMIN APPROVAL ───────────────────────────────────── */}
+        {kycStage === 'PENDING' && (
+          <div className="text-center py-6 space-y-6 animate-fade-in">
+            <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400">
+              <Clock className="w-8 h-8 animate-pulse" />
+            </div>
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-semibold">
+                <Clock className="w-3.5 h-3.5" />
+                Under Administrator Review
+              </div>
+              <h3 className="text-2xl font-black text-white tracking-tight">
+                KYC Verification Pending Review
+              </h3>
+              <p className="text-xs text-white/60 max-w-sm mx-auto leading-relaxed">
+                Your identity verification documents have been received and are currently under review by our compliance team. Withdrawals remain locked until an administrator confirms and approves your KYC.
+              </p>
+            </div>
+            <div className="p-4 bg-black/50 border border-white/10 rounded-2xl text-left space-y-2.5 text-xs font-mono">
+              <div className="flex justify-between text-white/60">
+                <span>Current KYC Status:</span>
+                <span className="text-amber-400 font-bold">{liveUser?.kycStatus || 'Pending Admin Review'}</span>
+              </div>
+              <div className="flex justify-between text-white/60">
+                <span>Compliance Desk:</span>
+                <span className="text-white/80">Pending Administrator Approval</span>
+              </div>
+            </div>
+            <div className="space-y-3 pt-2">
+              <button
+                type="button"
+                onClick={handleRecheckKyc}
+                className="w-full py-3.5 bg-white/10 hover:bg-white/15 text-white font-bold text-xs rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Loader2 className="w-4 h-4" />
+                Check Approval Status Again
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleResetAndClose()
+                  if (onNavigateKyc) onNavigateKyc()
+                }}
+                className="w-full py-2.5 text-xs text-[#B0F127] hover:underline transition-all font-semibold cursor-pointer"
+              >
+                View KYC Submission Details
+              </button>
+              <button
+                type="button"
+                onClick={handleResetAndClose}
+                className="w-full py-1 text-xs text-white/40 hover:text-white transition-all cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── KYC REJECTED ─────────────────────────────────────────────── */}
+        {kycStage === 'REJECTED' && (
+          <div className="text-center py-6 space-y-6 animate-fade-in">
+            <div className="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center mx-auto text-rose-400">
+              <AlertCircle className="w-8 h-8" />
+            </div>
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-semibold">
+                <AlertCircle className="w-3.5 h-3.5" />
+                Verification Rejected
+              </div>
+              <h3 className="text-2xl font-black text-white tracking-tight">
+                KYC Verification Rejected
+              </h3>
+              <p className="text-xs text-white/60 max-w-sm mx-auto leading-relaxed">
+                Your submitted identity verification was rejected by our compliance department. In order to initiate withdrawals, you must review the rejection reason and re-submit valid documentation.
+              </p>
+            </div>
+            <div className="p-4 bg-black/50 border border-rose-500/20 rounded-2xl text-left space-y-2.5 text-xs font-mono">
+              <div className="flex justify-between text-white/60">
+                <span>Status:</span>
+                <span className="text-rose-400 font-bold">Verification Failed</span>
+              </div>
+              <div className="flex justify-between text-white/60">
+                <span>Reason:</span>
+                <span className="text-rose-300 font-semibold">
+                  {liveUser?.kycRejectionReason || liveUser?.kycStatus?.replace(/^Rejected:?\s*/i, '') || 'Document failed compliance verification'}
+                </span>
+              </div>
+            </div>
+            <div className="space-y-3 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  handleResetAndClose()
+                  if (onNavigateKyc) onNavigateKyc()
+                }}
+                className="w-full py-3.5 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <ShieldCheck className="w-4 h-4" />
+                Re-submit KYC Verification
+              </button>
+              <button
+                type="button"
+                onClick={handleResetAndClose}
+                className="w-full py-2.5 text-xs text-white/50 hover:text-white transition-all font-semibold cursor-pointer"
+              >
+                Close & Return
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── KYC VERIFIED & APPROVED NOTICE ───────────────────────────── */}
         {kycStage === 'VERIFIED_NOTICE' && (
           <div className="text-center py-10 space-y-5 animate-fade-in">
             <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto text-emerald-400">
@@ -331,13 +488,14 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
                 <ShieldCheck className="w-3.5 h-3.5" />
                 AML Clearance Approved
               </div>
-              <h3 className="text-2xl font-black text-white tracking-tight">KYC Verified</h3>
+              <h3 className="text-2xl font-black text-white tracking-tight">KYC Verified & Approved</h3>
               <p className="text-xs text-white/60 max-w-sm mx-auto">
-                Status: <strong className="text-emerald-400 font-mono">{user?.kycStatus || 'Verified Level 2'}</strong>. Unlocking withdrawal gateway...
+                Status: <strong className="text-emerald-400 font-mono">{liveUser?.kycStatus || 'Verified Level 2'}</strong>. Unlocking withdrawal gateway...
               </p>
             </div>
-            <button onClick={() => setKycStage('CLEARED')}
-              className="px-6 py-2.5 bg-[#B0F127] text-black font-bold text-xs rounded-xl transition-all shadow-md inline-flex items-center gap-2"
+            <button
+              onClick={() => setKycStage('CLEARED')}
+              className="px-6 py-2.5 bg-[#B0F127] hover:bg-[#9ee016] text-black font-bold text-xs rounded-xl transition-all shadow-md inline-flex items-center gap-2 cursor-pointer"
             >
               <span>Continue to Withdrawal</span>
               <ArrowRight className="w-3.5 h-3.5" />

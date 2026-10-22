@@ -169,7 +169,17 @@ export default function Dashboard({ defaultTab = 'overview' }) {
 
               <div className="flex items-center justify-between text-[10px] pt-1 border-t border-white/5 font-mono">
                 <span className="text-white/40">Status:</span>
-                <span className="text-emerald-400 font-semibold">{user?.kycStatus || 'Verified Level 1'}</span>
+                <span className={`font-semibold ${
+                  (user?.kycStatus || '').toLowerCase().includes('verified')
+                    ? 'text-emerald-400'
+                    : (user?.kycStatus || '').toLowerCase().includes('pending')
+                    ? 'text-amber-400'
+                    : (user?.kycStatus || '').toLowerCase().includes('reject')
+                    ? 'text-rose-400'
+                    : 'text-white/60'
+                }`}>
+                  {user?.kycStatus || 'Unverified'}
+                </span>
               </div>
             </div>
 

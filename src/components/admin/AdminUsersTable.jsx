@@ -97,7 +97,7 @@ export default function AdminUsersTable() {
             availableBalance: Number(u.available_balance) || 0,
             totalBalance: Number(u.total_balance) || ((Number(u.capital) || 0) + (Number(u.profit) || 0) + (Number(u.available_balance) || 0)),
             tier: u.tier || 'Pro Quant Desk',
-            kycStatus: u.kyc_status || 'Verified Level 1',
+            kycStatus: u.kyc_status || u.kycStatus || 'Unverified',
             referralCode: u.referral_code || `PX-${Math.floor(10000 + Math.random() * 90000)}`,
             activeInvestments: [],
             transactions: []
@@ -120,7 +120,7 @@ export default function AdminUsersTable() {
     profit: 2500,
     availableBalance: 5000,
     tier: 'Pro Quant Desk',
-    kycStatus: 'Verified Level 2'
+    kycStatus: 'Unverified'
   })
 
   // Edit User Modal State
@@ -183,7 +183,7 @@ export default function AdminUsersTable() {
     setProfitInput(user.profit ?? 0)
     setAvailableInput(user.availableBalance ?? 0)
     setTierInput(user.tier || 'Pro Quant Desk')
-    setKycInput(user.kycStatus || 'Verified Level 2')
+    setKycInput(user.kycStatus || 'Unverified')
     setEditSuccess(false)
   }
 
@@ -231,7 +231,7 @@ export default function AdminUsersTable() {
         profit: 2500,
         availableBalance: 5000,
         tier: 'Pro Quant Desk',
-        kycStatus: 'Verified Level 2'
+        kycStatus: 'Unverified'
       })
     } else {
       alert(res.error || 'Failed to create user')
@@ -607,9 +607,11 @@ export default function AdminUsersTable() {
                     onChange={(e) => setNewUserForm({ ...newUserForm, kycStatus: e.target.value })}
                     className="w-full bg-black/60 border border-white/15 focus:border-[#B0F127] rounded-xl px-3 py-2 text-xs text-white outline-none"
                   >
-                    <option value="Verified Level 2">Verified Level 2 (Full)</option>
+                    <option value="Unverified">Unverified (Standard)</option>
+                    <option value="Pending Level 2 Verification">Pending Review</option>
                     <option value="Verified Level 1">Verified Level 1</option>
-                    <option value="Unverified">Unverified</option>
+                    <option value="Verified Level 2">Verified Level 2 (Full)</option>
+                    <option value="Rejected: Document Failed Verification">Rejected</option>
                   </select>
                 </div>
               </div>
@@ -749,8 +751,9 @@ export default function AdminUsersTable() {
                   >
                     <option value="Verified Level 2">Verified Level 2 (Full)</option>
                     <option value="Verified Level 1">Verified Level 1</option>
-                    <option value="Pending Review">Pending Review</option>
+                    <option value="Pending Level 2 Verification">Pending Review</option>
                     <option value="Unverified">Unverified</option>
+                    <option value="Rejected: Document Failed Verification">Rejected: Verification Failed</option>
                   </select>
                 </div>
               </div>

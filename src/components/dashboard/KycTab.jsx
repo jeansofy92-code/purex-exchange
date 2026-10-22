@@ -24,8 +24,11 @@ export default function KycTab() {
   const [uploading, setUploading] = useState(false)
   const [feedback, setFeedback] = useState(null)
 
-  const isTier1Verified = user?.kycStatus?.includes('Level 1') || user?.kycStatus?.includes('Level 2')
-  const isTier2Verified = user?.kycStatus?.includes('Level 2')
+  const statusLower = (user?.kycStatus || 'Unverified').toLowerCase()
+  const isKycPending = statusLower.includes('pending')
+  const isKycRejected = statusLower.includes('reject') || statusLower.includes('failed')
+  const isTier1Verified = !isKycPending && !isKycRejected && statusLower.includes('verified') && (statusLower.includes('level 1') || statusLower.includes('level 2'))
+  const isTier2Verified = !isKycPending && !isKycRejected && statusLower.includes('verified') && statusLower.includes('level 2')
 
   const handleSimulateUpload = (e) => {
     const file = e.target.files?.[0]
@@ -45,15 +48,15 @@ export default function KycTab() {
 
     setUploading(true)
     setTimeout(() => {
-      const res = submitKycDocuments(activeTier, docType, docNumber)
+      const res = submitKycDocuments(activeTier, docType, docNumber, fileName)
       setUploading(false)
       if (res.success) {
         setFeedback({
           type: 'success',
-          message: `KYC Level ${activeTier} verification submitted and approved! Your withdrawal and arbitrage limits are now unlocked.`
+          message: `KYC Level ${activeTier} documents submitted successfully! Your submission is now pending administrator compliance review.`
         })
       } else {
-        setFeedback({ type: 'error', message: 'Failed to verify documents. Please retry.' })
+        setFeedback({ type: 'error', message: res.error || 'Failed to submit documents. Please retry.' })
       }
     }, 1200)
   }
@@ -78,17 +81,56 @@ export default function KycTab() {
         </div>
 
         <div className="bg-black/50 border border-white/10 rounded-xl p-4 flex items-center gap-3 min-w-[220px]">
-          <div className="w-12 h-12 rounded-xl bg-[#B0F127]/10 border border-[#B0F127]/20 flex items-center justify-center text-[#B0F127]">
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center border ${
+            isTier1Verified || isTier2Verified
+              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+              : isKycPending
+              ? 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+              : isKycRejected
+              ? 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+              : 'bg-white/5 border-white/10 text-white/40'
+          }`}>
             <Award className="w-6 h-6" />
           </div>
           <div>
             <span className="text-[10px] text-white/40 uppercase tracking-wider font-mono block">Current Status</span>
-            <span className="text-sm font-bold text-[#B0F127]">
-              {user?.kycStatus || 'Verified Level 1'}
+            <span className={`text-sm font-bold ${
+              isTier1Verified || isTier2Verified
+                ? 'text-emerald-400'
+                : isKycPending
+                ? 'text-amber-400'
+                : isKycRejected
+                ? 'text-rose-400'
+                : 'text-white/60'
+            }`}>
+              {user?.kycStatus || 'Unverified'}
             </span>
           </div>
         </div>
       </div>
+
+      {/* Pending / Rejected Notice Banner */}
+      {isKycPending && (
+        <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex items-center gap-3 text-amber-300 text-xs">
+          <Clock className="w-5 h-5 shrink-0 text-amber-400" />
+          <div>
+            <p className="font-bold">KYC Submission Pending Administrator Review</p>
+            <p className="text-white/60 text-[11px]">Your documents have been submitted and are awaiting approval from the compliance desk before withdrawals can be unlocked.</p>
+          </div>
+        </div>
+      )}
+
+      {isKycRejected && (
+        <div className="p-4 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center gap-3 text-rose-300 text-xs">
+          <AlertCircle className="w-5 h-5 shrink-0 text-rose-400" />
+          <div>
+            <p className="font-bold">Previous KYC Submission Rejected</p>
+            <p className="text-white/70 text-[11px]">
+              Reason: <span className="font-semibold text-rose-200">{user?.kycRejectionReason || user?.kycStatus?.replace(/^Rejected:?\s*/i, '') || 'Document failed compliance verification'}</span>. Please re-submit valid documentation below.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Tier Comparison Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -21,6 +21,7 @@ export default function AdminApprovals() {
     adminApproveTransaction,
     adminRejectTransaction,
     adminApproveKyc,
+    adminRejectKyc,
     platformSettings
   } = useAuth()
 
@@ -80,6 +81,17 @@ export default function AdminApprovals() {
     const res = adminApproveKyc(userId, 2)
     if (res.success) {
       setActionNotice({ type: 'success', message: `KYC Level 2 approved for ${userName}!` })
+      handleRefresh()
+      setTimeout(() => setActionNotice(null), 3000)
+    }
+  }
+
+  const handleRejectUserKyc = (userId, userName) => {
+    const reason = window.prompt(`Enter rejection reason for ${userName}:`, 'Document unclear or verification failed')
+    if (reason === null) return
+    const res = adminRejectKyc(userId, reason.trim() || 'Document failed compliance verification')
+    if (res.success) {
+      setActionNotice({ type: 'error', message: `KYC rejected for ${userName}.` })
       handleRefresh()
       setTimeout(() => setActionNotice(null), 3000)
     }
@@ -407,15 +419,27 @@ export default function AdminApprovals() {
                     </div>
                     <h4 className="text-base font-bold text-white">{u.fullName}</h4>
                     <p className="text-xs text-white/60">{u.email} • {u.phone}</p>
+                    {u.kycDocType && (
+                      <p className="text-xs text-white/40 font-mono">
+                        Document: <span className="text-[#B0F127] font-semibold">{u.kycDocType}</span> (ID: {u.kycDocNumber || 'N/A'})
+                      </p>
+                    )}
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2.5">
                     <button
                       onClick={() => handleApproveUserKyc(u.id, u.fullName)}
-                      className="px-5 py-2.5 bg-[#B0F127] hover:bg-[#9ee016] text-black font-bold text-xs rounded-xl shadow-md flex items-center gap-1.5"
+                      className="px-5 py-2.5 bg-[#B0F127] hover:bg-[#9ee016] text-black font-bold text-xs rounded-xl shadow-md flex items-center gap-1.5 cursor-pointer transition-all"
                     >
                       <ShieldCheck className="w-4 h-4" />
-                      Approve Level 2 KYC
+                      Approve KYC
+                    </button>
+                    <button
+                      onClick={() => handleRejectUserKyc(u.id, u.fullName)}
+                      className="px-4 py-2.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 font-bold text-xs rounded-xl shadow-md flex items-center gap-1.5 cursor-pointer transition-all"
+                    >
+                      <X className="w-4 h-4" />
+                      Reject KYC
                     </button>
                   </div>
                 </div>

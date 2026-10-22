@@ -362,7 +362,7 @@ app.post('/api/auth/login', async (req, res) => {
               capital: user.capital || 0,
               profit: user.profit || 0,
               tier: user.tier || 'Pro Quant Desk',
-              kycStatus: user.kyc_status || 'Verified Level 1'
+              kycStatus: user.kyc_status || 'Unverified'
             }
           })
         }
@@ -502,7 +502,7 @@ app.post('/api/admin/users', verifyAdmin, async (req, res) => {
       available_balance: avail,
       total_balance: total,
       tier: tier || 'Pro Quant Desk',
-      kyc_status: kycStatus || 'Verified Level 2',
+      kyc_status: kycStatus || 'Unverified',
       created_at: new Date().toISOString()
     }
 
@@ -521,7 +521,7 @@ app.post('/api/admin/users', verifyAdmin, async (req, res) => {
           available_balance: avail,
           total_balance: total,
           tier: tier || 'Pro Quant Desk',
-          kyc_status: kycStatus || 'Verified Level 2',
+          kyc_status: kycStatus || 'Unverified',
           email_verified: true
         })
         .select()
