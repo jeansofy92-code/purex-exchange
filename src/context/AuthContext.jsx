@@ -99,7 +99,7 @@ const DEFAULT_DEMO_USERS = [
     availableBalance: 101800.00,
     totalBalance: 875000.00,
     tier: 'VIP Syndicate Master',
-    kycStatus: 'Verified Level 2',
+    kycStatus: 'Unverified',
     referralCode: 'PX-90142',
     referralStats: {
       totalInvited: 28,
@@ -131,6 +131,68 @@ const DEFAULT_DEMO_USERS = [
   }
 ]
 
+// Strict KYC verification sanitizer:
+// A user CANNOT be marked Verified unless:
+// 1. They have submitted KYC documents (kycSubmitted || kycSubmittedAt || kycDocNumber), AND
+// 2. An admin or moderator has explicitly confirmed their clearance (kycApprovedByAdmin === true || kycApprovedAt)
+export const sanitizeUserKyc = (u) => {
+  if (!u) return u
+
+  const hasSubmitted = Boolean(
+    u.kycSubmitted ||
+    u.kycSubmittedAt ||
+    u.kycDocNumber ||
+    u.kycFrontUrl
+  )
+
+  const isApproved = Boolean(
+    hasSubmitted &&
+    (u.kycApprovedByAdmin === true || u.kycApprovedAt) &&
+    !u.kycStatus?.toLowerCase().includes('pending') &&
+    !u.kycStatus?.toLowerCase().includes('reject') &&
+    !u.kycStatus?.toLowerCase().includes('unverified')
+  )
+
+  if (isApproved) {
+    return {
+      ...u,
+      kycSubmitted: true,
+      kycApprovedByAdmin: true,
+      kycStatus: u.kycStatus?.toLowerCase().includes('verified') ? u.kycStatus : 'Verified Level 2',
+      kycRejectionReason: null
+    }
+  }
+
+  // If documents were submitted:
+  if (hasSubmitted) {
+    if (u.kycStatus?.toLowerCase().includes('reject') || u.kycStatus?.toLowerCase().includes('failed')) {
+      return {
+        ...u,
+        kycSubmitted: true,
+        kycApprovedByAdmin: false,
+        kycApprovedAt: null,
+        kycStatus: u.kycStatus
+      }
+    }
+    return {
+      ...u,
+      kycSubmitted: true,
+      kycApprovedByAdmin: false,
+      kycApprovedAt: null,
+      kycStatus: u.kycStatus?.toLowerCase().includes('pending') ? u.kycStatus : 'Pending Level 2 Verification'
+    }
+  }
+
+  // NOT submitted: MUST BE UNVERIFIED
+  return {
+    ...u,
+    kycSubmitted: false,
+    kycApprovedByAdmin: false,
+    kycApprovedAt: null,
+    kycStatus: 'Unverified'
+  }
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [token, setToken] = useState(null)
@@ -159,22 +221,13 @@ export function AuthProvider({ children }) {
       // Seed default demo users if not present
       const storedUsers = localStorage.getItem(USERS_STORAGE_KEY)
       if (!storedUsers) {
-        localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(DEFAULT_DEMO_USERS))
+        localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(DEFAULT_DEMO_USERS.map(sanitizeUserKyc)))
       } else {
-        // Upgrade legacy stored demo user to Unverified if not submitted
+        // Enforce strict KYC sanitization on all stored accounts
         try {
           const parsed = JSON.parse(storedUsers)
-          let changed = false
-          const sanitized = parsed.map((u) => {
-            if (u.id === 'usr-demo-01' && u.kycStatus === 'Verified Level 2' && !u.kycDocNumber) {
-              changed = true
-              return { ...u, kycStatus: 'Unverified' }
-            }
-            return u
-          })
-          if (changed) {
-            localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(sanitized))
-          }
+          const sanitized = parsed.map(sanitizeUserKyc)
+          localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(sanitized))
         } catch (_e) {}
       }
 
@@ -242,11 +295,9 @@ export function AuthProvider({ children }) {
       const savedToken = localStorage.getItem(TOKEN_KEY)
       if (savedSession) {
         const parsed = JSON.parse(savedSession)
-        if (parsed.id === 'usr-demo-01' && parsed.kycStatus === 'Verified Level 2' && !parsed.kycDocNumber) {
-          parsed.kycStatus = 'Unverified'
-          localStorage.setItem(SESSION_KEY, JSON.stringify(parsed))
-        }
-        setUser(parsed)
+        const cleanSession = sanitizeUserKyc(parsed)
+        localStorage.setItem(SESSION_KEY, JSON.stringify(cleanSession))
+        setUser(cleanSession)
       }
       if (savedToken) {
         setToken(savedToken)
@@ -268,7 +319,8 @@ export function AuthProvider({ children }) {
             const parsed = JSON.parse(savedSession)
             const allUsers = JSON.parse(localStorage.getItem(USERS_STORAGE_KEY) || '[]')
             const matched = allUsers.find(u => u.id === parsed.id) || parsed
-            setUser(matched)
+            const cleanUser = sanitizeUserKyc(matched)
+            setUser(cleanUser)
           }
         } catch (_err) {}
       }
@@ -285,30 +337,32 @@ export function AuthProvider({ children }) {
       const parsed = JSON.parse(savedSession)
       const allUsers = getAllRegisteredUsers()
       const matched = allUsers.find(u => u.id === parsed.id) || parsed
-      setUser(matched)
-      localStorage.setItem(SESSION_KEY, JSON.stringify(matched))
-      return matched
+      const cleanUser = sanitizeUserKyc(matched)
+      setUser(cleanUser)
+      localStorage.setItem(SESSION_KEY, JSON.stringify(cleanUser))
+      return cleanUser
     } catch (e) {
       console.error('Error refreshing user:', e)
-      return user
+      return user ? sanitizeUserKyc(user) : null
     }
   }
 
   // Helper to persist auth session
   const persistSession = (userData, authToken) => {
-    setUser(userData)
+    const cleanUser = sanitizeUserKyc(userData)
+    setUser(cleanUser)
     if (authToken) setToken(authToken)
     try {
-      localStorage.setItem(SESSION_KEY, JSON.stringify(userData))
+      localStorage.setItem(SESSION_KEY, JSON.stringify(cleanUser))
       if (authToken) {
         localStorage.setItem(TOKEN_KEY, authToken)
       }
       // Also update in registered users list
       const storedUsersRaw = localStorage.getItem(USERS_STORAGE_KEY)
       const users = storedUsersRaw ? JSON.parse(storedUsersRaw) : [...DEFAULT_DEMO_USERS]
-      const idx = users.findIndex(u => u.id === userData.id || u.email === userData.email)
+      const idx = users.findIndex(u => u.id === cleanUser.id || u.email === cleanUser.email)
       if (idx >= 0) {
-        users[idx] = { ...users[idx], ...userData }
+        users[idx] = { ...users[idx], ...cleanUser }
         localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))
       }
     } catch (e) {
@@ -380,6 +434,14 @@ export function AuthProvider({ children }) {
         totalBalance: matched.totalBalance ?? (matched.capital ?? 10000) + (matched.profit ?? 2450) + (matched.availableBalance ?? 5000),
         tier: matched.tier || 'Pro Quant Desk',
         kycStatus: matched.kycStatus || 'Unverified',
+        kycSubmitted: matched.kycSubmitted ?? false,
+        kycApprovedByAdmin: matched.kycApprovedByAdmin ?? false,
+        kycApprovedAt: matched.kycApprovedAt ?? null,
+        kycSubmittedAt: matched.kycSubmittedAt ?? null,
+        kycDocType: matched.kycDocType ?? null,
+        kycDocNumber: matched.kycDocNumber ?? null,
+        kycDocFileName: matched.kycDocFileName ?? null,
+        kycRejectionReason: matched.kycRejectionReason ?? null,
         referralCode: matched.referralCode || `PX-${Math.floor(10000 + Math.random() * 90000)}`,
         referralStats: matched.referralStats || { totalInvited: 5, activeInvestors: 3, totalEarned: 640.00, tier1Count: 3, tier2Count: 2 },
         activeInvestments: matched.activeInvestments || [
@@ -402,7 +464,7 @@ export function AuthProvider({ children }) {
           { id: 'tx-2', type: 'DEPOSIT', title: 'USDT Capital Inflow', amount: 10000.00, asset: 'USDT', status: 'Completed', date: 'Mar 01, 2026', hash: '0x3c1d...44e2' }
         ]
       }
-      return { success: true, user: userObj }
+      return { success: true, user: sanitizeUserKyc(userObj) }
     } catch {
       return { success: false, error: 'Authentication service error. Please try again.' }
     }
@@ -558,27 +620,38 @@ export function AuthProvider({ children }) {
   }) => {
     if (!user) return { success: false, error: 'User not logged in' }
     
-    // Compulsory KYC Check
-    const statusLower = (user.kycStatus || 'Unverified').toLowerCase()
-    const isPending = statusLower.includes('pending')
-    const isRejected = statusLower.includes('reject') || statusLower.includes('failed')
-    const isKycApproved = !isPending && !isRejected && (statusLower.includes('verified') || statusLower.includes('approved'))
-    if (!isKycApproved) {
-      if (isPending) {
-        return {
-          success: false,
-          error: 'Your KYC verification is currently pending review by administrators. Withdrawals remain locked until approval.'
-        }
+    // Compulsory KYC Check - Requires both submission and moderator/admin approval
+    const hasSubmittedKyc = Boolean(
+      user.kycSubmitted ||
+      user.kycSubmittedAt ||
+      user.kycDocNumber ||
+      user.kycFrontUrl
+    )
+    const isApprovedByAdmin = Boolean(
+      hasSubmittedKyc &&
+      (user.kycApprovedByAdmin === true || user.kycApprovedAt) &&
+      !user.kycStatus?.toLowerCase().includes('pending') &&
+      !user.kycStatus?.toLowerCase().includes('reject') &&
+      !user.kycStatus?.toLowerCase().includes('unverified')
+    )
+
+    if (!hasSubmittedKyc) {
+      return {
+        success: false,
+        error: 'KYC Verification Failed: You have not submitted identity verification (KYC). Withdrawals are locked.'
       }
-      if (isRejected) {
+    }
+
+    if (!isApprovedByAdmin) {
+      if (user.kycStatus?.toLowerCase().includes('reject')) {
         return {
           success: false,
-          error: `Your KYC verification was rejected (${user.kycRejectionReason || 'Compliance rejection'}). Please re-submit valid documents.`
+          error: `KYC Verification Failed: Your submission was rejected (${user.kycRejectionReason || 'Compliance rejection'}). Please re-submit.`
         }
       }
       return {
         success: false,
-        error: 'Identity Verification (KYC) is compulsory before requesting withdrawals. Please complete KYC verification first.'
+        error: 'KYC Verification Failed: Awaiting administrator/moderator approval. Withdrawals remain locked until an admin approves your KYC report.'
       }
     }
 
@@ -779,6 +852,9 @@ export function AuthProvider({ children }) {
 
     const updatedUser = {
       ...user,
+      kycSubmitted: true,
+      kycApprovedByAdmin: false,
+      kycApprovedAt: null,
       kycStatus: `Pending Level ${tierLevel} Verification`,
       kycDocType: docType,
       kycDocNumber: docNumber,
@@ -844,9 +920,10 @@ export function AuthProvider({ children }) {
   const getAllRegisteredUsers = () => {
     try {
       const stored = localStorage.getItem(USERS_STORAGE_KEY)
-      return stored ? JSON.parse(stored) : [...DEFAULT_DEMO_USERS]
+      const list = stored ? JSON.parse(stored) : [...DEFAULT_DEMO_USERS]
+      return list.map(sanitizeUserKyc)
     } catch {
-      return [...DEFAULT_DEMO_USERS]
+      return DEFAULT_DEMO_USERS.map(sanitizeUserKyc)
     }
   }
 
@@ -973,7 +1050,10 @@ export function AuthProvider({ children }) {
   const adminApproveKyc = (userId, level = 2) => {
     return adminUpdateUserBalance(userId, { 
       kycStatus: `Verified Level ${level}`,
+      kycSubmitted: true,
+      kycApprovedByAdmin: true,
       kycApprovedAt: new Date().toISOString(),
+      kycApprovedBy: 'Administrator / Moderator Compliance',
       kycRejectionReason: null
     })
   }
@@ -981,13 +1061,24 @@ export function AuthProvider({ children }) {
   const adminRejectKyc = (userId, reason = 'Document verification failed') => {
     return adminUpdateUserBalance(userId, { 
       kycStatus: `Rejected: ${reason}`,
+      kycSubmitted: true,
+      kycApprovedByAdmin: false,
+      kycApprovedAt: null,
       kycRejectionReason: reason
     })
   }
 
   const adminUpdateKyc = (userId, status, reason = '') => {
+    const kLower = String(status || '').toLowerCase()
+    const isApproved = kLower.includes('verified')
+    const isRejected = kLower.includes('reject') || kLower.includes('failed')
+    const isPending = kLower.includes('pending')
     return adminUpdateUserBalance(userId, { 
       kycStatus: status,
+      kycSubmitted: isApproved || isRejected || isPending,
+      kycApprovedByAdmin: isApproved,
+      kycApprovedAt: isApproved ? new Date().toISOString() : null,
+      kycApprovedBy: isApproved ? 'Administrator / Moderator Compliance' : null,
       kycRejectionReason: reason || (status.startsWith('Rejected') ? status.replace(/^Rejected:?\s*/i, '') : null)
     })
   }
@@ -1160,15 +1251,43 @@ export function AuthProvider({ children }) {
       if (idx === -1) return { success: false, error: 'User not found' }
 
       const target = users[idx]
-      const updatedUser = {
+      let merged = {
         ...target,
         ...updates
       }
 
-      if (updates.password) {
-        updatedUser.password = updates.password
-        updatedUser.rawPassword = updates.password
+      if (updates.kycStatus !== undefined) {
+        const kLower = String(updates.kycStatus).toLowerCase()
+        if (kLower.includes('verified')) {
+          merged.kycSubmitted = true
+          merged.kycApprovedByAdmin = true
+          merged.kycApprovedAt = target.kycApprovedAt || new Date().toISOString()
+          merged.kycApprovedBy = 'Administrator / Moderator Desk'
+          merged.kycRejectionReason = null
+        } else if (kLower.includes('pending')) {
+          merged.kycSubmitted = true
+          merged.kycApprovedByAdmin = false
+          merged.kycApprovedAt = null
+        } else if (kLower.includes('reject') || kLower.includes('failed')) {
+          merged.kycSubmitted = true
+          merged.kycApprovedByAdmin = false
+          merged.kycApprovedAt = null
+          merged.kycRejectionReason = target.kycRejectionReason || updates.kycStatus.replace(/^Rejected:?\s*/i, '') || 'Document rejected'
+        } else {
+          // Unverified / Reset
+          merged.kycSubmitted = false
+          merged.kycApprovedByAdmin = false
+          merged.kycApprovedAt = null
+          merged.kycRejectionReason = null
+        }
       }
+
+      if (updates.password) {
+        merged.password = updates.password
+        merged.rawPassword = updates.password
+      }
+
+      const updatedUser = sanitizeUserKyc(merged)
 
       users[idx] = updatedUser
       localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))

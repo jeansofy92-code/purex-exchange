@@ -20,15 +20,18 @@ import {
   Landmark,
   Wallet,
   Sparkles,
-  Loader2
+  Loader2,
+  FileText,
+  XCircle
 } from 'lucide-react'
 
 export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
   const { user, requestWithdrawal, platformSettings, refreshUser } = useAuth()
 
-  // KYC Stages: 'CHECKING' | 'UNVERIFIED' | 'PENDING' | 'REJECTED' | 'VERIFIED_NOTICE' | 'CLEARED'
+  // KYC Stages: 'CHECKING' | 'FAILED_UNSUBMITTED' | 'FAILED_PENDING' | 'FAILED_REJECTED' | 'VERIFIED_NOTICE' | 'CLEARED'
   const [kycStage, setKycStage] = useState('CHECKING')
   const [liveUser, setLiveUser] = useState(user)
+  const [moderatorReport, setModeratorReport] = useState(null)
 
   // Steps:
   // 1: Choose Method (Crypto vs Local Currency)
@@ -59,6 +62,140 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
   const [submitting, setSubmitting]           = useState(false)
   const [feedback, setFeedback]               = useState(null)
 
+  // Explicit Evaluator against Moderator / Admin Compliance Records
+  const evaluateModeratorCompliance = (activeUser) => {
+    if (!activeUser) {
+      return {
+        stage: 'FAILED_UNSUBMITTED',
+        hasSubmitted: false,
+        isApproved: false,
+        isPending: false,
+        isRejected: false,
+        user: null,
+        report: {
+          moderatorStatus: 'FAILED (Not Submitted)',
+          documentStatus: 'No Documents Submitted',
+          adminApproval: 'Not Granted',
+          moderatorNote: 'No KYC documents found on record. Submitting government identity documentation is compulsory before any withdrawal can be unlocked.'
+        }
+      }
+    }
+
+    // Always fetch latest authoritative record from registered users in localStorage
+    let registryUser = null
+    try {
+      const storedUsersRaw = localStorage.getItem('purex_users')
+      if (storedUsersRaw) {
+        const allUsers = JSON.parse(storedUsersRaw)
+        registryUser = allUsers.find(u => u.id === activeUser.id || u.email === activeUser.email)
+      }
+    } catch (_e) {}
+
+    // Merge latest user state with registry record
+    const subject = { ...activeUser, ...(registryUser || {}) }
+
+    const hasSubmitted = Boolean(
+      subject.kycSubmitted === true ||
+      subject.kycSubmittedAt ||
+      subject.kycDocNumber ||
+      subject.kycFrontUrl
+    )
+
+    const statusStr = String(subject.kycStatus || 'Unverified').trim()
+    const statusLower = statusStr.toLowerCase()
+
+    const isRejected = Boolean(
+      statusLower.includes('reject') ||
+      statusLower.includes('failed') ||
+      Boolean(subject.kycRejectionReason)
+    )
+
+    // MUST satisfy both: user actually submitted documents AND admin/moderator explicitly approved
+    const isApproved = Boolean(
+      hasSubmitted &&
+      (subject.kycApprovedByAdmin === true || Boolean(subject.kycApprovedAt)) &&
+      !isRejected &&
+      !statusLower.includes('pending') &&
+      !statusLower.includes('unverified')
+    )
+
+    const isPending = Boolean(
+      hasSubmitted &&
+      !isApproved &&
+      !isRejected
+    )
+
+    if (isApproved) {
+      return {
+        stage: 'VERIFIED_NOTICE',
+        hasSubmitted: true,
+        isApproved: true,
+        isPending: false,
+        isRejected: false,
+        user: subject,
+        report: {
+          moderatorStatus: 'PASSED & APPROVED',
+          clearanceLevel: statusStr.includes('Level') ? statusStr : 'Verified Level 2',
+          approvedBy: subject.kycApprovedBy || 'Administrator / Moderator Desk',
+          approvedAt: subject.kycApprovedAt ? new Date(subject.kycApprovedAt).toLocaleString() : 'Confirmed by Moderator',
+          documentType: subject.kycDocType || 'Government ID / Passport',
+          documentNumber: subject.kycDocNumber || 'Verified'
+        }
+      }
+    }
+
+    if (isRejected) {
+      return {
+        stage: 'FAILED_REJECTED',
+        hasSubmitted: true,
+        isApproved: false,
+        isPending: false,
+        isRejected: true,
+        user: subject,
+        report: {
+          moderatorStatus: 'FAILED (Rejected by Moderator)',
+          documentStatus: `${subject.kycDocType || 'ID Document'} (${subject.kycDocNumber || 'Submitted'})`,
+          adminApproval: 'Declined by Moderator Desk',
+          moderatorNote: subject.kycRejectionReason || statusStr.replace(/^Rejected:?\s*/i, '') || 'Document failed compliance verification.'
+        }
+      }
+    }
+
+    if (isPending) {
+      return {
+        stage: 'FAILED_PENDING',
+        hasSubmitted: true,
+        isApproved: false,
+        isPending: true,
+        isRejected: false,
+        user: subject,
+        report: {
+          moderatorStatus: 'FAILED (Awaiting Moderator Approval)',
+          documentStatus: `${subject.kycDocType || 'Identification'} (${subject.kycDocNumber || 'Under Review'})`,
+          submittedAt: subject.kycSubmittedAt ? new Date(subject.kycSubmittedAt).toLocaleString() : 'Recently Submitted',
+          adminApproval: 'Pending Moderator Confirmation',
+          moderatorNote: 'Your KYC documents have been submitted and are in the compliance review queue. Withdrawals remain locked until an administrator or moderator confirms and approves your KYC.'
+        }
+      }
+    }
+
+    // Default: Not submitted at all
+    return {
+      stage: 'FAILED_UNSUBMITTED',
+      hasSubmitted: false,
+      isApproved: false,
+      isPending: false,
+      isRejected: false,
+      user: subject,
+      report: {
+        moderatorStatus: 'FAILED (Not Submitted)',
+        documentStatus: 'No Documents Submitted',
+        adminApproval: 'Not Granted',
+        moderatorNote: 'No KYC documents found on record. Submitting government identity documentation is compulsory before any withdrawal can be processed.'
+      }
+    }
+  }
+
   // Trigger KYC check whenever modal opens
   useEffect(() => {
     if (isOpen) {
@@ -71,27 +208,11 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
 
       const timer = setTimeout(() => {
         const latest = (refreshUser ? refreshUser() : null) || currentUser || user
-        setLiveUser(latest)
-        const status = (latest?.kycStatus || 'Unverified').trim()
-        const statusLower = status.toLowerCase()
-
-        const isPending = statusLower.includes('pending')
-        const isRejected = statusLower.includes('reject') || statusLower.includes('failed')
-        const isVerified = !isPending && !isRejected && (statusLower.includes('verified') || statusLower.includes('approved'))
-
-        if (isVerified) {
-          setKycStage('VERIFIED_NOTICE')
-          setTimeout(() => {
-            setKycStage('CLEARED')
-          }, 1400)
-        } else if (isPending) {
-          setKycStage('PENDING')
-        } else if (isRejected) {
-          setKycStage('REJECTED')
-        } else {
-          setKycStage('UNVERIFIED')
-        }
-      }, 1200)
+        const compliance = evaluateModeratorCompliance(latest)
+        setLiveUser(compliance.user)
+        setModeratorReport(compliance.report)
+        setKycStage(compliance.stage)
+      }, 1100)
 
       return () => clearTimeout(timer)
     }
@@ -101,24 +222,10 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
     setKycStage('CHECKING')
     setTimeout(() => {
       const latest = (refreshUser ? refreshUser() : null) || user
-      setLiveUser(latest)
-      const status = (latest?.kycStatus || 'Unverified').trim()
-      const statusLower = status.toLowerCase()
-
-      const isPending = statusLower.includes('pending')
-      const isRejected = statusLower.includes('reject') || statusLower.includes('failed')
-      const isVerified = !isPending && !isRejected && (statusLower.includes('verified') || statusLower.includes('approved'))
-
-      if (isVerified) {
-        setKycStage('VERIFIED_NOTICE')
-        setTimeout(() => setKycStage('CLEARED'), 1400)
-      } else if (isPending) {
-        setKycStage('PENDING')
-      } else if (isRejected) {
-        setKycStage('REJECTED')
-      } else {
-        setKycStage('UNVERIFIED')
-      }
+      const compliance = evaluateModeratorCompliance(latest)
+      setLiveUser(compliance.user)
+      setModeratorReport(compliance.report)
+      setKycStage(compliance.stage)
     }, 1000)
   }
 
@@ -305,44 +412,63 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
             </div>
             <div className="space-y-2">
               <span className="text-xs font-mono text-[#B0F127] font-semibold uppercase tracking-wider">
-                Automated Compliance Scan
+                Auditing Moderator Compliance Registry
               </span>
               <h3 className="text-2xl font-black text-white tracking-tight">Verifying KYC Status...</h3>
               <p className="text-xs text-white/50 max-w-sm mx-auto">
-                Running real-time compliance check and verifying administrator approval status before unlocking the withdrawal gateway.
+                Running real-time compliance check and verifying moderator report approval before unlocking the withdrawal gateway.
               </p>
             </div>
           </div>
         )}
 
-        {/* ── UNVERIFIED KYC (NO SUBMISSION) ───────────────────────────── */}
-        {kycStage === 'UNVERIFIED' && (
+        {/* ── FAILED: NO SUBMISSION FOUND ───────────────────────────── */}
+        {(kycStage === 'FAILED_UNSUBMITTED' || kycStage === 'UNVERIFIED') && (
           <div className="text-center py-6 space-y-6 animate-fade-in">
-            <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400">
+            <div className="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center mx-auto text-rose-400">
               <ShieldAlert className="w-8 h-8" />
             </div>
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-semibold">
-                <Lock className="w-3.5 h-3.5" />
-                Compulsory Security Requirement
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-semibold">
+                <XCircle className="w-3.5 h-3.5" />
+                KYC Verification Failed
               </div>
               <h3 className="text-2xl font-black text-white tracking-tight">
-                Complete Your KYC Before Withdrawal
+                KYC Verification Failed: Not Submitted
               </h3>
               <p className="text-xs text-white/60 max-w-sm mx-auto leading-relaxed">
-                You have not submitted identity verification (KYC). In compliance with AML regulations, withdrawals are strictly disabled until you submit your identification documents.
+                You have not submitted identity verification (KYC). Withdrawals are strictly locked until you submit identification documents and an administrator or moderator approves your clearance.
               </p>
             </div>
-            <div className="p-4 bg-black/50 border border-white/10 rounded-2xl text-left space-y-2.5 text-xs font-mono">
-              <div className="flex justify-between text-white/60">
-                <span>Current KYC Status:</span>
-                <span className="text-amber-400 font-bold">Unverified (No Documents Submitted)</span>
+
+            {/* Moderator Compliance Report Card */}
+            <div className="p-4 bg-black/60 border border-rose-500/20 rounded-2xl text-left space-y-2.5 text-xs font-mono">
+              <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-white/80 flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5 text-rose-400" />
+                  Moderator Compliance Report
+                </span>
+                <span className="px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 font-bold border border-rose-500/20 text-[10px]">
+                  AUDIT FAILED
+                </span>
               </div>
               <div className="flex justify-between text-white/60">
-                <span>Required Action:</span>
-                <span className="text-[#B0F127] font-bold">Submit Identity Documentation</span>
+                <span>Moderator Status:</span>
+                <span className="text-rose-400 font-bold">Failed (No Documents Submitted)</span>
+              </div>
+              <div className="flex justify-between text-white/60">
+                <span>Document Status:</span>
+                <span className="text-white/80">0 Documents on Record</span>
+              </div>
+              <div className="flex justify-between text-white/60">
+                <span>Administrator Approval:</span>
+                <span className="text-rose-400 font-bold">Not Approved</span>
+              </div>
+              <div className="pt-1 text-[11px] text-white/50 leading-relaxed border-t border-white/5">
+                Note: In compliance with international anti-money laundering regulations, withdrawals require verified identity documents confirmed by a moderator.
               </div>
             </div>
+
             <div className="space-y-3 pt-2">
               <button
                 type="button"
@@ -353,7 +479,7 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
                 className="w-full py-3.5 bg-[#B0F127] hover:bg-[#9ee016] text-black font-bold text-xs rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
               >
                 <ShieldCheck className="w-4 h-4" />
-                Complete KYC Verification Now
+                Submit KYC Verification Documents Now
               </button>
               <button
                 type="button"
@@ -366,34 +492,57 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
           </div>
         )}
 
-        {/* ── PENDING ADMIN APPROVAL ───────────────────────────────────── */}
-        {kycStage === 'PENDING' && (
+        {/* ── FAILED: AWAITING MODERATOR APPROVAL ───────────────────────────── */}
+        {(kycStage === 'FAILED_PENDING' || kycStage === 'PENDING') && (
           <div className="text-center py-6 space-y-6 animate-fade-in">
             <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-400">
               <Clock className="w-8 h-8 animate-pulse" />
             </div>
             <div className="space-y-2">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-semibold">
-                <Clock className="w-3.5 h-3.5" />
-                Under Administrator Review
+                <AlertCircle className="w-3.5 h-3.5" />
+                KYC Verification Failed: Awaiting Approval
               </div>
               <h3 className="text-2xl font-black text-white tracking-tight">
-                KYC Verification Pending Review
+                KYC Verification Failed: Awaiting Moderator Approval
               </h3>
               <p className="text-xs text-white/60 max-w-sm mx-auto leading-relaxed">
-                Your identity verification documents have been received and are currently under review by our compliance team. Withdrawals remain locked until an administrator confirms and approves your KYC.
+                Your identity verification documents have been received but have not yet been approved. Withdrawals remain locked until an administrator or moderator reviews and approves your KYC report.
               </p>
             </div>
-            <div className="p-4 bg-black/50 border border-white/10 rounded-2xl text-left space-y-2.5 text-xs font-mono">
-              <div className="flex justify-between text-white/60">
-                <span>Current KYC Status:</span>
-                <span className="text-amber-400 font-bold">{liveUser?.kycStatus || 'Pending Admin Review'}</span>
+
+            {/* Moderator Compliance Report Card */}
+            <div className="p-4 bg-black/60 border border-amber-500/20 rounded-2xl text-left space-y-2.5 text-xs font-mono">
+              <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-white/80 flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5 text-amber-400" />
+                  Moderator Compliance Report
+                </span>
+                <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 font-bold border border-amber-500/20 text-[10px]">
+                  PENDING CONFIRMATION
+                </span>
               </div>
               <div className="flex justify-between text-white/60">
-                <span>Compliance Desk:</span>
-                <span className="text-white/80">Pending Administrator Approval</span>
+                <span>Moderator Status:</span>
+                <span className="text-amber-400 font-bold">Failed (Awaiting Moderator Review)</span>
+              </div>
+              <div className="flex justify-between text-white/60">
+                <span>Submitted Document:</span>
+                <span className="text-white/90 font-semibold">{moderatorReport?.documentStatus || 'Identity Document Under Review'}</span>
+              </div>
+              <div className="flex justify-between text-white/60">
+                <span>Submission Date:</span>
+                <span className="text-white/80">{moderatorReport?.submittedAt || 'Recently Received'}</span>
+              </div>
+              <div className="flex justify-between text-white/60">
+                <span>Admin / Moderator Approval:</span>
+                <span className="text-amber-300 font-bold">Pending Confirmation</span>
+              </div>
+              <div className="pt-1 text-[11px] text-white/50 leading-relaxed border-t border-white/5">
+                Note: An administrator or moderator must approve your identity submission before withdrawal rights are activated.
               </div>
             </div>
+
             <div className="space-y-3 pt-2">
               <button
                 type="button"
@@ -401,7 +550,7 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
                 className="w-full py-3.5 bg-white/10 hover:bg-white/15 text-white font-bold text-xs rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Loader2 className="w-4 h-4" />
-                Check Approval Status Again
+                Re-Check Moderator Confirmation
               </button>
               <button
                 type="button"
@@ -424,8 +573,8 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
           </div>
         )}
 
-        {/* ── KYC REJECTED ─────────────────────────────────────────────── */}
-        {kycStage === 'REJECTED' && (
+        {/* ── FAILED: REJECTED BY MODERATOR ───────────────────────────── */}
+        {(kycStage === 'FAILED_REJECTED' || kycStage === 'REJECTED') && (
           <div className="text-center py-6 space-y-6 animate-fade-in">
             <div className="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center mx-auto text-rose-400">
               <AlertCircle className="w-8 h-8" />
@@ -433,27 +582,43 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
             <div className="space-y-2">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-semibold">
                 <AlertCircle className="w-3.5 h-3.5" />
-                Verification Rejected
+                KYC Verification Failed: Rejected
               </div>
               <h3 className="text-2xl font-black text-white tracking-tight">
-                KYC Verification Rejected
+                KYC Verification Failed: Rejected by Moderator
               </h3>
               <p className="text-xs text-white/60 max-w-sm mx-auto leading-relaxed">
-                Your submitted identity verification was rejected by our compliance department. In order to initiate withdrawals, you must review the rejection reason and re-submit valid documentation.
+                Your submitted identity verification was rejected during compliance audit. In order to initiate withdrawals, you must review the moderator's note and re-submit valid documentation.
               </p>
             </div>
-            <div className="p-4 bg-black/50 border border-rose-500/20 rounded-2xl text-left space-y-2.5 text-xs font-mono">
-              <div className="flex justify-between text-white/60">
-                <span>Status:</span>
-                <span className="text-rose-400 font-bold">Verification Failed</span>
-              </div>
-              <div className="flex justify-between text-white/60">
-                <span>Reason:</span>
-                <span className="text-rose-300 font-semibold">
-                  {liveUser?.kycRejectionReason || liveUser?.kycStatus?.replace(/^Rejected:?\s*/i, '') || 'Document failed compliance verification'}
+
+            {/* Moderator Compliance Report Card */}
+            <div className="p-4 bg-black/60 border border-rose-500/20 rounded-2xl text-left space-y-2.5 text-xs font-mono">
+              <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-white/80 flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5 text-rose-400" />
+                  Moderator Compliance Report
+                </span>
+                <span className="px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 font-bold border border-rose-500/20 text-[10px]">
+                  REJECTED
                 </span>
               </div>
+              <div className="flex justify-between text-white/60">
+                <span>Moderator Status:</span>
+                <span className="text-rose-400 font-bold">Failed (Rejected)</span>
+              </div>
+              <div className="flex justify-between text-white/60">
+                <span>Moderator Note / Reason:</span>
+                <span className="text-rose-300 font-semibold">
+                  {moderatorReport?.moderatorNote || liveUser?.kycRejectionReason || 'Document failed compliance verification'}
+                </span>
+              </div>
+              <div className="flex justify-between text-white/60">
+                <span>Administrator Approval:</span>
+                <span className="text-rose-400 font-bold">Declined by Moderator Desk</span>
+              </div>
             </div>
+
             <div className="space-y-3 pt-2">
               <button
                 type="button"
@@ -477,28 +642,62 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
           </div>
         )}
 
-        {/* ── KYC VERIFIED & APPROVED NOTICE ───────────────────────────── */}
+        {/* ── KYC VERIFIED & APPROVED BY MODERATOR ───────────────────────────── */}
         {kycStage === 'VERIFIED_NOTICE' && (
-          <div className="text-center py-10 space-y-5 animate-fade-in">
+          <div className="text-center py-8 space-y-6 animate-fade-in">
             <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto text-emerald-400">
               <CheckCircle2 className="w-8 h-8" />
             </div>
             <div className="space-y-2">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-semibold">
                 <ShieldCheck className="w-3.5 h-3.5" />
-                AML Clearance Approved
+                Moderator Confirmation Approved
               </div>
-              <h3 className="text-2xl font-black text-white tracking-tight">KYC Verified & Approved</h3>
-              <p className="text-xs text-white/60 max-w-sm mx-auto">
-                Status: <strong className="text-emerald-400 font-mono">{liveUser?.kycStatus || 'Verified Level 2'}</strong>. Unlocking withdrawal gateway...
+              <h3 className="text-2xl font-black text-white tracking-tight">
+                KYC Verified & Approved by Moderator
+              </h3>
+              <p className="text-xs text-white/60 max-w-sm mx-auto leading-relaxed">
+                Your identity verification has been reviewed and officially approved by the compliance administration desk. Your withdrawal gateway is unlocked.
               </p>
             </div>
+
+            {/* Moderator Compliance Report Card */}
+            <div className="p-4 bg-black/60 border border-emerald-500/20 rounded-2xl text-left space-y-2.5 text-xs font-mono">
+              <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-white/80 flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5 text-emerald-400" />
+                  Moderator Compliance Report
+                </span>
+                <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 text-[10px]">
+                  OFFICIALLY APPROVED
+                </span>
+              </div>
+              <div className="flex justify-between text-white/60">
+                <span>Moderator Status:</span>
+                <span className="text-emerald-400 font-bold">Passed & Approved</span>
+              </div>
+              <div className="flex justify-between text-white/60">
+                <span>Clearance Level:</span>
+                <span className="text-emerald-400 font-mono font-bold">
+                  {moderatorReport?.clearanceLevel || liveUser?.kycStatus || 'Verified Level 2'}
+                </span>
+              </div>
+              <div className="flex justify-between text-white/60">
+                <span>Approved By:</span>
+                <span className="text-white/90">{moderatorReport?.approvedBy || 'Admin / Moderator Compliance'}</span>
+              </div>
+              <div className="flex justify-between text-white/60">
+                <span>Confirmation Date:</span>
+                <span className="text-white/80">{moderatorReport?.approvedAt || 'Active'}</span>
+              </div>
+            </div>
+
             <button
               onClick={() => setKycStage('CLEARED')}
-              className="px-6 py-2.5 bg-[#B0F127] hover:bg-[#9ee016] text-black font-bold text-xs rounded-xl transition-all shadow-md inline-flex items-center gap-2 cursor-pointer"
+              className="w-full py-3.5 bg-[#B0F127] hover:bg-[#9ee016] text-black font-bold text-xs rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>Continue to Withdrawal</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <span>Continue to Withdrawal Gateway</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         )}

@@ -21,7 +21,7 @@ import {
 } from 'lucide-react'
 
 export default function ModeratorKycVerifier() {
-  const { getAllRegisteredUsers, adminUpdateKyc } = useAuth()
+  const { getAllRegisteredUsers, adminApproveKyc, adminRejectKyc } = useAuth()
   const users = getAllRegisteredUsers()
 
   const [searchTerm, setSearchTerm] = useState('')
@@ -48,34 +48,53 @@ export default function ModeratorKycVerifier() {
   })
 
   const handleApproveLevel1 = (userId) => {
-    const res = adminUpdateKyc(userId, 'Verified Level 1')
+    const res = adminApproveKyc(userId, 1)
     if (res.success) {
       setFeedback({ type: 'success', message: 'User approved for KYC Level 1 (Basic Identity Clearance).' })
       if (selectedUser?.id === userId) {
-        setSelectedUser((prev) => ({ ...prev, kycStatus: 'Verified Level 1' }))
+        setSelectedUser((prev) => ({
+          ...prev,
+          kycStatus: 'Verified Level 1',
+          kycSubmitted: true,
+          kycApprovedByAdmin: true,
+          kycApprovedAt: new Date().toISOString()
+        }))
       }
       setTimeout(() => setFeedback(null), 4000)
     }
   }
 
   const handleApproveLevel2 = (userId) => {
-    const res = adminUpdateKyc(userId, 'Verified Level 2')
+    const res = adminApproveKyc(userId, 2)
     if (res.success) {
       setFeedback({ type: 'success', message: 'User approved for KYC Level 2 (Full Institutional Clearance).' })
       if (selectedUser?.id === userId) {
-        setSelectedUser((prev) => ({ ...prev, kycStatus: 'Verified Level 2' }))
+        setSelectedUser((prev) => ({
+          ...prev,
+          kycStatus: 'Verified Level 2',
+          kycSubmitted: true,
+          kycApprovedByAdmin: true,
+          kycApprovedAt: new Date().toISOString()
+        }))
       }
       setTimeout(() => setFeedback(null), 4000)
     }
   }
 
   const handleRejectKyc = (userId) => {
-    const note = rejectReason.trim() ? `Rejected: ${rejectReason.trim()}` : 'Rejected: Document Unclear'
-    const res = adminUpdateKyc(userId, note)
+    const note = rejectReason.trim() ? rejectReason.trim() : 'Document Unclear'
+    const res = adminRejectKyc(userId, note)
     if (res.success) {
-      setFeedback({ type: 'warning', message: `KYC rejected for user. Note: ${note}` })
+      setFeedback({ type: 'warning', message: `KYC rejected for user. Note: Rejected: ${note}` })
       if (selectedUser?.id === userId) {
-        setSelectedUser((prev) => ({ ...prev, kycStatus: note }))
+        setSelectedUser((prev) => ({
+          ...prev,
+          kycStatus: `Rejected: ${note}`,
+          kycSubmitted: true,
+          kycApprovedByAdmin: false,
+          kycApprovedAt: null,
+          kycRejectionReason: note
+        }))
       }
       setShowRejectModal(false)
       setRejectReason('')

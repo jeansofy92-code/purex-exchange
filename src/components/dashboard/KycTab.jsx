@@ -24,11 +24,25 @@ export default function KycTab() {
   const [uploading, setUploading] = useState(false)
   const [feedback, setFeedback] = useState(null)
 
+  const hasSubmittedKyc = Boolean(
+    user?.kycSubmitted ||
+    user?.kycSubmittedAt ||
+    user?.kycDocNumber ||
+    user?.kycFrontUrl
+  )
+  const isApprovedByAdmin = Boolean(
+    hasSubmittedKyc &&
+    (user?.kycApprovedByAdmin === true || Boolean(user?.kycApprovedAt)) &&
+    !user?.kycStatus?.toLowerCase().includes('pending') &&
+    !user?.kycStatus?.toLowerCase().includes('reject') &&
+    !user?.kycStatus?.toLowerCase().includes('unverified')
+  )
+
   const statusLower = (user?.kycStatus || 'Unverified').toLowerCase()
-  const isKycPending = statusLower.includes('pending')
-  const isKycRejected = statusLower.includes('reject') || statusLower.includes('failed')
-  const isTier1Verified = !isKycPending && !isKycRejected && statusLower.includes('verified') && (statusLower.includes('level 1') || statusLower.includes('level 2'))
-  const isTier2Verified = !isKycPending && !isKycRejected && statusLower.includes('verified') && statusLower.includes('level 2')
+  const isKycPending = hasSubmittedKyc && !isApprovedByAdmin && !statusLower.includes('reject') && !statusLower.includes('failed')
+  const isKycRejected = statusLower.includes('reject') || statusLower.includes('failed') || Boolean(user?.kycRejectionReason)
+  const isTier1Verified = isApprovedByAdmin && (statusLower.includes('level 1') || statusLower.includes('level 2'))
+  const isTier2Verified = isApprovedByAdmin && statusLower.includes('level 2')
 
   const handleSimulateUpload = (e) => {
     const file = e.target.files?.[0]
