@@ -36,12 +36,18 @@ const DEFAULT_DEMO_USERS = [
     password: 'Password123!',
     fullName: 'Alex Vance (Alpha Trader)',
     phone: '+1 (555) 234-8921',
-    capital: 85000.00,
+    uninvestedCapital: 42350.00,
+    investedBalance: 85000.00,
+    capital: 127350.00,
     profit: 21170.50,
-    availableBalance: 42350.00,
+    availableBalance: 63520.50,
     totalBalance: 148520.50,
+    convertedBalance: 0.00,
+    approvedConversionCurrency: 'USD',
     tier: 'Pro Quant Desk',
     kycStatus: 'Unverified',
+    kycSubmitted: false,
+    kycApprovedByAdmin: false,
     referralCode: 'PX-88492',
     referralStats: {
       totalInvited: 14,
@@ -60,6 +66,7 @@ const DEFAULT_DEMO_USERS = [
         dailyEarnings: 1750.00,
         totalEarned: 12250.00,
         startDate: '2026-03-01',
+        durationDays: 45,
         duration: '45 Days',
         status: 'ACTIVE',
         insuranceStatus: '100% SAFU Insured'
@@ -73,6 +80,7 @@ const DEFAULT_DEMO_USERS = [
         dailyEarnings: 840.00,
         totalEarned: 8920.50,
         startDate: '2026-03-03',
+        durationDays: 30,
         duration: '30 Days',
         status: 'ACTIVE',
         insuranceStatus: '100% SAFU Insured'
@@ -94,12 +102,18 @@ const DEFAULT_DEMO_USERS = [
     password: 'Password123!',
     fullName: 'Elena Rostova (Institutional)',
     phone: '+44 7911 123456',
-    capital: 625000.00,
+    uninvestedCapital: 101800.00,
+    investedBalance: 625000.00,
+    capital: 726800.00,
     profit: 148200.00,
-    availableBalance: 101800.00,
+    availableBalance: 250000.00,
     totalBalance: 875000.00,
+    convertedBalance: 0.00,
+    approvedConversionCurrency: 'USD',
     tier: 'VIP Syndicate Master',
     kycStatus: 'Unverified',
+    kycSubmitted: false,
+    kycApprovedByAdmin: false,
     referralCode: 'PX-90142',
     referralStats: {
       totalInvited: 28,
@@ -118,6 +132,7 @@ const DEFAULT_DEMO_USERS = [
         dailyEarnings: 30000.00,
         totalEarned: 148200.00,
         startDate: '2026-02-20',
+        durationDays: 60,
         duration: '60 Days',
         status: 'ACTIVE',
         insuranceStatus: '100% SAFU Insured'
@@ -147,49 +162,137 @@ export const sanitizeUserKyc = (u) => {
 
   const isApproved = Boolean(
     hasSubmitted &&
-    (u.kycApprovedByAdmin === true || u.kycApprovedAt) &&
+    (u.kycApprovedByAdmin === true || Boolean(u.kycApprovedAt)) &&
     !u.kycStatus?.toLowerCase().includes('pending') &&
     !u.kycStatus?.toLowerCase().includes('reject') &&
     !u.kycStatus?.toLowerCase().includes('unverified')
   )
 
+  let sanitized = { ...u }
+
   if (isApproved) {
-    return {
-      ...u,
+    sanitized = {
+      ...sanitized,
       kycSubmitted: true,
       kycApprovedByAdmin: true,
-      kycStatus: u.kycStatus?.toLowerCase().includes('verified') ? u.kycStatus : 'Verified Level 2',
+      kycStatus: sanitized.kycStatus?.toLowerCase().includes('verified') ? sanitized.kycStatus : 'Verified Level 2',
       kycRejectionReason: null
     }
-  }
-
-  // If documents were submitted:
-  if (hasSubmitted) {
-    if (u.kycStatus?.toLowerCase().includes('reject') || u.kycStatus?.toLowerCase().includes('failed')) {
-      return {
-        ...u,
+  } else if (hasSubmitted) {
+    if (sanitized.kycStatus?.toLowerCase().includes('reject') || sanitized.kycStatus?.toLowerCase().includes('failed')) {
+      sanitized = {
+        ...sanitized,
         kycSubmitted: true,
         kycApprovedByAdmin: false,
         kycApprovedAt: null,
-        kycStatus: u.kycStatus
+        kycStatus: sanitized.kycStatus
+      }
+    } else {
+      sanitized = {
+        ...sanitized,
+        kycSubmitted: true,
+        kycApprovedByAdmin: false,
+        kycApprovedAt: null,
+        kycStatus: sanitized.kycStatus?.toLowerCase().includes('pending') ? sanitized.kycStatus : 'Pending Level 2 Verification'
       }
     }
-    return {
-      ...u,
-      kycSubmitted: true,
+  } else {
+    sanitized = {
+      ...sanitized,
+      kycSubmitted: false,
       kycApprovedByAdmin: false,
       kycApprovedAt: null,
-      kycStatus: u.kycStatus?.toLowerCase().includes('pending') ? u.kycStatus : 'Pending Level 2 Verification'
+      kycStatus: 'Unverified'
     }
   }
 
-  // NOT submitted: MUST BE UNVERIFIED
+  return calculateUserBalances(sanitized)
+}
+
+// Purex Financial Balances Engine
+// Mathematical Relationship:
+// 1. investedBalance: Capital locked in active investment packages (CANNOT be withdrawn until cycle finishes)
+// 2. uninvestedCapital: Deposited crypto capital not currently locked in an active package and not converted to fiat
+// 3. profit: Cumulative yield earned from investment packages / quant trades
+// 4. availableBalance: uninvestedCapital + profit (Ready for Crypto Withdrawal, Trading, or Starting a New Package)
+// 5. totalBalance: capital (uninvested + invested) + profit = availableBalance + investedBalance (All crypto assets)
+// 6. convertedBalance: Approved fiat funds converted from crypto (ONLY available for local bank withdrawal)
+export const calculateUserBalances = (u) => {
+  if (!u) return u
+
+  const activeInvestments = Array.isArray(u.activeInvestments) ? [...u.activeInvestments] : []
+
+  // Check if any package cycle has reached or exceeded its duration days
+  const nowMs = Date.now()
+  let newlyUnlockedCapital = 0
+  let newlyAccruedProfit = 0
+  const updatedInvestments = activeInvestments.map(inv => {
+    if (inv.status === 'ACTIVE') {
+      const startMs = inv.startDate ? new Date(inv.startDate).getTime() : nowMs
+      const durationDays = Number(inv.durationDays) || parseInt(inv.duration) || 7
+      const elapsedDays = Math.max(0, (nowMs - startMs) / (1000 * 60 * 60 * 24))
+
+      // If duration has elapsed, mark completed and unlock principal & profit
+      if (elapsedDays >= durationDays) {
+        const principal = Number(inv.amount) || 0
+        const dailyRoi = parseFloat(inv.dailyRoi) || 2.4
+        const totalProfit = principal * (dailyRoi / 100) * durationDays
+        newlyUnlockedCapital += principal
+        newlyAccruedProfit += totalProfit
+        return {
+          ...inv,
+          status: 'COMPLETED',
+          completedAt: new Date().toISOString(),
+          totalEarned: totalProfit
+        }
+      }
+    }
+    return inv
+  })
+
+  // 1. Invested Balance = capital locked in active packages
+  const investedBalance = updatedInvestments
+    .filter(inv => inv.status === 'ACTIVE')
+    .reduce((sum, inv) => sum + (Number(inv.amount) || 0), 0)
+
+  // 2. Profit Balance
+  let profit = Math.max(0, Number(u.profit) || 0) + newlyAccruedProfit
+
+  // 3. Uninvested Capital
+  let uninvestedCapital = Number(u.uninvestedCapital)
+  if (isNaN(uninvestedCapital) || uninvestedCapital < 0) {
+    if (u.availableBalance !== undefined && u.availableBalance !== null) {
+      uninvestedCapital = Math.max(0, Number(u.availableBalance) - profit)
+    } else {
+      uninvestedCapital = Math.max(0, (Number(u.capital) || 0) - investedBalance)
+    }
+  }
+  uninvestedCapital += newlyUnlockedCapital
+
+  // 4. Available Balance = uninvestedCapital + profit
+  const availableBalance = Math.max(0, uninvestedCapital + profit)
+
+  // 5. Total Capital in Crypto = uninvestedCapital + investedBalance
+  const capital = Math.max(0, uninvestedCapital + investedBalance)
+
+  // 6. Total Balance = all assets in crypto = capital + profit = availableBalance + investedBalance
+  const totalBalance = Math.max(0, capital + profit)
+
+  // 7. Converted Fiat Balance = fiat converted from crypto (ONLY for bank withdrawal)
+  const convertedBalance = Math.max(0, Number(u.convertedBalance || 0))
+  const approvedConversionCurrency = u.approvedConversionCurrency || 'USD'
+
   return {
     ...u,
-    kycSubmitted: false,
-    kycApprovedByAdmin: false,
-    kycApprovedAt: null,
-    kycStatus: 'Unverified'
+    activeInvestments: updatedInvestments,
+    uninvestedCapital,
+    investedBalance,
+    capital,
+    profit,
+    availableBalance,
+    totalBalance,
+    convertedBalance,
+    approvedConversionCurrency
   }
 }
 
@@ -603,7 +706,7 @@ export function AuthProvider({ children }) {
     method = 'CRYPTO',
     amount,
     asset = 'USDT',
-    balanceType = 'profit',
+    balanceType = 'available',
     // Crypto fields
     cryptoAddress = '',
     cryptoNetwork = 'TRC20',
@@ -660,52 +763,30 @@ export function AuthProvider({ children }) {
       return { success: false, error: 'Please enter a valid withdrawal amount' }
     }
 
-    // Check balance sufficiency (Note: fees are NOT deducted from balance; they are paid externally)
-    const userTotalBalance = (Number(user.totalBalance) || 0) ||
-      ((Number(user.capital) || 0) + (Number(user.profit) || 0) + (Number(user.availableBalance) || 0))
+    const txId = `tx-wdr-${Date.now()}`
 
-    if (balanceType === 'profit') {
-      if ((user.profit || 0) < numAmount) {
-        return { success: false, error: `Insufficient profit balance. Available profit: $${(user.profit || 0).toLocaleString()}` }
+    if (method === 'CRYPTO') {
+      // Crypto withdrawal: Can ONLY withdraw from availableBalance (uninvested crypto + profits)
+      // Locked investment capital CANNOT be withdrawn
+      const availableToWithdraw = Number(user.availableBalance) || 0
+      if (numAmount > availableToWithdraw) {
+        return {
+          success: false,
+          error: `Insufficient available crypto balance ($${availableToWithdraw.toLocaleString()}). Locked investment capital ($${(user.investedBalance || 0).toLocaleString()}) cannot be withdrawn until the package cycle completes.`
+        }
       }
-    } else if (balanceType === 'available') {
-      if ((user.availableBalance || 0) < numAmount) {
-        return { success: false, error: `Insufficient available balance. Available: $${(user.availableBalance || 0).toLocaleString()}` }
-      }
-    } else if (balanceType === 'total') {
-      // Crypto withdrawal — checks against full total balance
-      if (userTotalBalance < numAmount) {
-        return { success: false, error: `Insufficient balance. Total available: $${userTotalBalance.toLocaleString()}` }
-      }
-    } else {
-      if ((user.capital || 0) < numAmount) {
-        return { success: false, error: `Insufficient capital balance. Available: $${(user.capital || 0).toLocaleString()}` }
-      }
-    }
 
-    let newProfit = user.profit || 0
-    let newCapital = user.capital || 0
-    let newAvailable = user.availableBalance || 0
-
-    if (balanceType === 'profit') {
-      newProfit -= numAmount
-    } else if (balanceType === 'available') {
-      newAvailable -= numAmount
-    } else if (balanceType === 'total') {
-      // Deduct from profit first, then capital, for crypto withdrawals
+      // Deduct from profit first, then uninvestedCapital
+      let newProfit = Math.max(0, Number(user.profit) || 0)
+      let newUninvested = Math.max(0, Number(user.uninvestedCapital) || 0)
       const fromProfit = Math.min(newProfit, numAmount)
       newProfit -= fromProfit
       const remainder = numAmount - fromProfit
-      if (remainder > 0) newCapital -= remainder
-    } else {
-      newCapital -= numAmount
-    }
+      if (remainder > 0) {
+        newUninvested = Math.max(0, newUninvested - remainder)
+      }
 
-    const txId = `tx-wdr-${Date.now()}`
-    let newTx
-
-    if (method === 'CRYPTO') {
-      newTx = {
+      const newTx = {
         id: txId,
         type: 'WITHDRAWAL',
         withdrawalMethod: 'CRYPTO',
@@ -720,16 +801,44 @@ export function AuthProvider({ children }) {
         date: 'Just now',
         hash: `0x${Math.random().toString(16).slice(2, 10)}...`
       }
+
+      const updatedUser = calculateUserBalances({
+        ...user,
+        uninvestedCapital: newUninvested,
+        profit: newProfit,
+        transactions: [newTx, ...(user.transactions || [])]
+      })
+
+      persistSession(updatedUser, token)
+      return { success: true, user: updatedUser, transaction: newTx }
     } else {
-      // Local Currency Bank Withdrawal
-      newTx = {
+      // Local Currency Bank Withdrawal:
+      // Can ONLY withdraw from convertedBalance (money already converted from crypto to preferred fiat and approved)
+      const convertedAvail = Number(user.convertedBalance) || 0
+      const fiatCurrency = user.approvedConversionCurrency || localCurrency || 'USD'
+
+      if (convertedAvail <= 0) {
+        return {
+          success: false,
+          error: `No converted fiat balance found (${fiatCurrency} 0.00). To withdraw via bank transfer, you must first convert crypto to your preferred fiat in the Convert tab.`
+        }
+      }
+
+      if (numAmount > convertedAvail) {
+        return {
+          success: false,
+          error: `Insufficient converted balance. You can only withdraw up to ${fiatCurrency} ${convertedAvail.toLocaleString()} via bank transfer.`
+        }
+      }
+
+      const newTx = {
         id: txId,
         type: 'WITHDRAWAL',
         withdrawalMethod: 'LOCAL_BANK',
-        title: `Bank Transfer $${numAmount.toLocaleString()} (${localCurrency}) to ${bankName} (${accountNumber ? accountNumber.slice(-4) : ''})`,
+        title: `Bank Transfer ${numAmount.toLocaleString()} (${fiatCurrency}) to ${bankName} (${accountNumber ? accountNumber.slice(-4) : ''})`,
         amount: numAmount,
-        asset: localCurrency,
-        localCurrency,
+        asset: fiatCurrency,
+        localCurrency: fiatCurrency,
         bankName,
         accountNumber,
         accountName,
@@ -740,19 +849,16 @@ export function AuthProvider({ children }) {
         date: 'Just now',
         hash: `0x${Math.random().toString(16).slice(2, 10)}...`
       }
-    }
 
-    const updatedUser = {
-      ...user,
-      profit: Math.max(0, newProfit),
-      capital: Math.max(0, newCapital),
-      availableBalance: Math.max(0, newAvailable),
-      totalBalance: Math.max(0, (user.totalBalance || 0) - numAmount),
-      transactions: [newTx, ...(user.transactions || [])]
-    }
+      const updatedUser = calculateUserBalances({
+        ...user,
+        convertedBalance: Math.max(0, convertedAvail - numAmount),
+        transactions: [newTx, ...(user.transactions || [])]
+      })
 
-    persistSession(updatedUser, token)
-    return { success: true, user: updatedUser, transaction: newTx }
+      persistSession(updatedUser, token)
+      return { success: true, user: updatedUser, transaction: newTx }
+    }
   }
 
   // 3. Convert / Swap Crypto with 20% External Fee Payment
@@ -768,10 +874,19 @@ export function AuthProvider({ children }) {
     const numFrom = Number(fromAmount)
     const numTo = Number(toAmount)
 
+    // Crypto can only be converted from availableBalance (uninvested + profits)
+    const availableCrypto = Number(user.availableBalance) || 0
+    if (numFrom > availableCrypto) {
+      return {
+        success: false,
+        error: `Insufficient available crypto balance ($${availableCrypto.toLocaleString()}). Locked investment capital ($${(user.investedBalance || 0).toLocaleString()}) cannot be converted.`
+      }
+    }
+
     const newTx = {
       id: `tx-cnv-${Date.now()}`,
       type: 'CONVERT',
-      title: `Conversion Swap ${numFrom} ${fromAsset} → ${numTo.toFixed(4)} ${toAsset}`,
+      title: `Conversion Swap ${numFrom.toLocaleString()} ${fromAsset} → ${numTo.toLocaleString()} ${toAsset}`,
       amount: numFrom,
       asset: fromAsset,
       toAsset: toAsset,
@@ -792,20 +907,24 @@ export function AuthProvider({ children }) {
     return { success: true, user: updatedUser, transaction: newTx }
   }
 
-  // 4. Start Investing / Activate Package
-  const activateInvestmentPlan = (packageId, packageName, amount, dailyRoiRate, durationDays = 30) => {
+  // 4. Start Investing / Activate Package (Locks funds into active package)
+  const activateInvestmentPlan = (packageId, packageName, amount, dailyRoiRate, durationDays = 7) => {
     if (!user) return { success: false, error: 'User not logged in' }
     const numAmount = Number(amount)
     if (isNaN(numAmount) || numAmount <= 0) {
       return { success: false, error: 'Please enter a valid investment amount' }
     }
 
-    const availableToInvest = (user.availableBalance || 0)
+    const availableToInvest = Number(user.availableBalance) || 0
     if (availableToInvest < numAmount) {
-      return { success: false, error: `Insufficient available balance ($${availableToInvest.toLocaleString()}). Please deposit funds first.` }
+      return {
+        success: false,
+        error: `Insufficient available balance ($${availableToInvest.toLocaleString()}). Locked investment capital ($${(user.investedBalance || 0).toLocaleString()}) cannot be re-invested until cycle completion.`
+      }
     }
 
-    const dailyRateNum = parseFloat(dailyRoiRate) || 2.4
+    const dailyRateNum = parseFloat(dailyRoiRate) || 2.0
+    const durationNum = Number(durationDays) || 7
     const dailyEarnings = numAmount * (dailyRateNum / 100)
 
     const newInvestment = {
@@ -816,8 +935,9 @@ export function AuthProvider({ children }) {
       dailyRoi: `${dailyRateNum}%`,
       dailyEarnings: dailyEarnings,
       totalEarned: 0,
-      startDate: new Date().toISOString().split('T')[0],
-      duration: `${durationDays} Days`,
+      startDate: new Date().toISOString(),
+      durationDays: durationNum,
+      duration: `${durationNum} Days`,
       status: 'ACTIVE',
       insuranceStatus: '100% SAFU Insured'
     }
@@ -825,7 +945,7 @@ export function AuthProvider({ children }) {
     const newTx = {
       id: `tx-inv-${Date.now()}`,
       type: 'INVESTMENT',
-      title: `Activated ${packageName} (${dailyRateNum}% / Day)`,
+      title: `Locked into ${packageName} (${dailyRateNum}% / Day for ${durationNum} Days)`,
       amount: numAmount,
       asset: 'USDT',
       status: 'Completed',
@@ -833,17 +953,83 @@ export function AuthProvider({ children }) {
       hash: `0x${Math.random().toString(16).slice(2, 10)}...`
     }
 
-    const updatedUser = {
+    // Deduct invested capital from uninvestedCapital first, then profit if needed
+    let newUninvested = Math.max(0, Number(user.uninvestedCapital) || 0)
+    let newProfit = Math.max(0, Number(user.profit) || 0)
+    const fromUninvested = Math.min(newUninvested, numAmount)
+    newUninvested -= fromUninvested
+    const remainder = numAmount - fromUninvested
+    if (remainder > 0) {
+      newProfit = Math.max(0, newProfit - remainder)
+    }
+
+    const updatedUser = calculateUserBalances({
       ...user,
-      availableBalance: Math.max(0, availableToInvest - numAmount),
-      capital: (user.capital || 0) + numAmount,
+      uninvestedCapital: newUninvested,
+      profit: newProfit,
       tier: packageName,
       activeInvestments: [newInvestment, ...(user.activeInvestments || [])],
       transactions: [newTx, ...(user.transactions || [])]
-    }
+    })
 
     persistSession(updatedUser, token)
     return { success: true, user: updatedUser, investment: newInvestment }
+  }
+
+  // 4b. Complete Investment Cycle (e.g. after 7 days, unlocks capital & earned profit to available balance)
+  const completeInvestmentCycle = (invId) => {
+    if (!user) return { success: false, error: 'User not logged in' }
+    const users = getAllRegisteredUsers()
+    const uIdx = users.findIndex(u => u.id === user.id)
+    if (uIdx === -1) return { success: false, error: 'User not found' }
+
+    const targetUser = users[uIdx]
+    const investments = Array.isArray(targetUser.activeInvestments) ? [...targetUser.activeInvestments] : []
+    const invIdx = investments.findIndex(i => i.id === invId)
+    if (invIdx === -1) return { success: false, error: 'Investment package not found' }
+
+    const targetInv = investments[invIdx]
+    if (targetInv.status !== 'ACTIVE') {
+      return { success: false, error: 'Investment package cycle has already completed' }
+    }
+
+    const principal = Number(targetInv.amount) || 0
+    const durationDays = Number(targetInv.durationDays) || parseInt(targetInv.duration) || 7
+    const dailyRoi = parseFloat(targetInv.dailyRoi) || 2.0
+    const totalProfit = principal * (dailyRoi / 100) * durationDays
+
+    // Mark as completed
+    investments[invIdx] = {
+      ...targetInv,
+      status: 'COMPLETED',
+      completedAt: new Date().toISOString(),
+      totalEarned: totalProfit
+    }
+
+    // Return principal capital to uninvestedCapital, and add totalProfit to profit
+    // Both automatically flow into availableBalance (uninvestedCapital + profit)!
+    targetUser.uninvestedCapital = (Number(targetUser.uninvestedCapital) || 0) + principal
+    targetUser.profit = (Number(targetUser.profit) || 0) + totalProfit
+    targetUser.activeInvestments = investments
+
+    const newTx = {
+      id: `tx-settle-${Date.now()}`,
+      type: 'CYCLE_COMPLETED',
+      title: `${targetInv.packageName} Completed (${durationDays} Days) — $${principal.toLocaleString()} Capital & $${totalProfit.toFixed(2)} Profit Unlocked`,
+      amount: principal + totalProfit,
+      asset: 'USDT',
+      status: 'Completed',
+      date: 'Just now',
+      hash: `0x${Math.random().toString(16).slice(2, 10)}...`
+    }
+    targetUser.transactions = [newTx, ...(targetUser.transactions || [])]
+
+    const recalculated = calculateUserBalances(targetUser)
+    users[uIdx] = recalculated
+    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))
+
+    persistSession(recalculated, token)
+    return { success: true, user: recalculated, investment: investments[invIdx], transaction: newTx }
   }
 
   // 5. Submit KYC Verification
@@ -979,32 +1165,45 @@ export function AuthProvider({ children }) {
       const originalStatus = targetTx.status
       targetTx.status = 'Completed'
 
-      // If it was a pending DEPOSIT, credit the balance
+      // If it was a pending DEPOSIT, credit uninvestedCapital
       if (targetTx.type === 'DEPOSIT' && originalStatus?.includes('Pending')) {
-        targetUser.availableBalance = (targetUser.availableBalance || 0) + Number(targetTx.amount)
-        targetUser.totalBalance = (targetUser.totalBalance || 0) + Number(targetTx.amount)
+        targetUser.uninvestedCapital = (Number(targetUser.uninvestedCapital) || 0) + Number(targetTx.amount)
       }
 
-      // If it was a pending CONVERT, set availableBalance to the converted fiat amount
-      // so the user can now withdraw that local-currency amount via bank
+      // If it was a pending CONVERT, deduct the converted crypto and credit convertedBalance
+      // so the user can now withdraw that local fiat amount via bank
       if (targetTx.type === 'CONVERT' && originalStatus?.includes('Pending')) {
+        const fromCrypto = Number(targetTx.amount) || 0
         const convertedFiatAmount = Number(targetTx.toAmount) || 0
-        targetUser.availableBalance = convertedFiatAmount
-        // Store the currency the user converted to, so the bank form can lock onto it
+
+        // Deduct converted crypto amount from uninvested capital first, then profit
+        let uninvested = Math.max(0, Number(targetUser.uninvestedCapital) || 0)
+        let profit = Math.max(0, Number(targetUser.profit) || 0)
+        const fromUninvested = Math.min(uninvested, fromCrypto)
+        uninvested -= fromUninvested
+        const remainder = fromCrypto - fromUninvested
+        if (remainder > 0) {
+          profit = Math.max(0, profit - remainder)
+        }
+        targetUser.uninvestedCapital = uninvested
+        targetUser.profit = profit
+
+        // Credit to converted fiat balance (strictly reserved for bank withdrawal)
+        targetUser.convertedBalance = (Number(targetUser.convertedBalance) || 0) + convertedFiatAmount
         targetUser.approvedConversionCurrency = targetTx.toAsset || 'USD'
-        // totalBalance also reflects the new available (fiat) amount
-        targetUser.totalBalance =
-          (Number(targetUser.capital) || 0) +
-          (Number(targetUser.profit) || 0) +
-          convertedFiatAmount
       }
 
-      users[uIdx] = { ...targetUser, transactions: [...txs] }
+      const recalculatedUser = calculateUserBalances({
+        ...targetUser,
+        transactions: [...txs]
+      })
+
+      users[uIdx] = recalculatedUser
       localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))
 
       if (user && user.id === userId) {
-        setUser(users[uIdx])
-        localStorage.setItem(SESSION_KEY, JSON.stringify(users[uIdx]))
+        setUser(recalculatedUser)
+        localStorage.setItem(SESSION_KEY, JSON.stringify(recalculatedUser))
       }
 
       return { success: true, transaction: targetTx }
@@ -1027,18 +1226,26 @@ export function AuthProvider({ children }) {
       const targetTx = txs[tIdx]
       targetTx.status = `Rejected: ${reason}`
 
-      // If it was a withdrawal that failed, refund the amount back to user's profit balance
+      // If it was a withdrawal that failed, refund the amount back to the appropriate balance
       if (targetTx.type === 'WITHDRAWAL') {
-        targetUser.profit = (targetUser.profit || 0) + Number(targetTx.amount)
-        targetUser.totalBalance = (targetUser.totalBalance || 0) + Number(targetTx.amount)
+        if (targetTx.withdrawalMethod === 'LOCAL_BANK') {
+          targetUser.convertedBalance = (Number(targetUser.convertedBalance) || 0) + Number(targetTx.amount)
+        } else {
+          targetUser.uninvestedCapital = (Number(targetUser.uninvestedCapital) || 0) + Number(targetTx.amount)
+        }
       }
 
-      users[uIdx] = { ...targetUser, transactions: [...txs] }
+      const recalculatedUser = calculateUserBalances({
+        ...targetUser,
+        transactions: [...txs]
+      })
+
+      users[uIdx] = recalculatedUser
       localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))
 
       if (user && user.id === userId) {
-        setUser(users[uIdx])
-        localStorage.setItem(SESSION_KEY, JSON.stringify(users[uIdx]))
+        setUser(recalculatedUser)
+        localStorage.setItem(SESSION_KEY, JSON.stringify(recalculatedUser))
       }
 
       return { success: true, transaction: targetTx }
@@ -1402,6 +1609,7 @@ export function AuthProvider({ children }) {
         requestWithdrawal,
         convertCrypto,
         activateInvestmentPlan,
+        completeInvestmentCycle,
         submitKycDocuments,
         claimReferralCommission,
         executeTrade,

@@ -13,7 +13,8 @@ import {
   Download,
   ExternalLink,
   ShieldCheck,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Sparkles
 } from 'lucide-react'
 
 const FILTER_TYPES = [
@@ -93,6 +94,20 @@ export default function TransactionsTab({ onOpenDeposit, onOpenWithdraw }) {
           color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
           sign: '',
           amountColor: 'text-white'
+        }
+      case 'CYCLE_COMPLETED':
+        return {
+          icon: Sparkles,
+          color: 'text-[#B0F127] bg-[#B0F127]/10 border-[#B0F127]/30',
+          sign: '+',
+          amountColor: 'text-[#B0F127]'
+        }
+      case 'CONVERT':
+        return {
+          icon: SlidersHorizontal,
+          color: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
+          sign: '',
+          amountColor: 'text-blue-400'
         }
       case 'REFERRAL':
         return {

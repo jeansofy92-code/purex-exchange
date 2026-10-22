@@ -16,23 +16,23 @@ import {
 
 const PACKAGES = [
   {
-    id: 'starter',
-    name: 'Starter Arbitrage',
-    tier: 'Tier 1 Bot Cluster',
-    dailyRoi: '1.5%',
-    dailyRoiNum: 1.5,
-    durationDays: 15,
+    id: 'sprint7',
+    name: 'Flash Quant Sprint',
+    tier: 'Tier 1 Rapid 7-Day Cycle',
+    dailyRoi: '2.0%',
+    dailyRoiNum: 2.0,
+    durationDays: 7,
     minDeposit: 100,
-    maxDeposit: 4999,
+    maxDeposit: 50000,
     features: [
-      'Automated DEX/CEX arbitrage bot',
-      'Daily profit settlement at 00:00 UTC',
-      'Principal capital returned at maturity',
+      'Rapid 7-day quantitative cycle',
+      '2.0% daily automated arbitrage yield',
+      'Capital & profit unlock to Available Balance on Day 7',
       '100% Capital SAFU Insurance guarantee',
-      'Standard email & ticket support'
+      'Priority auto-settlement at cycle maturity'
     ],
-    popular: false,
-    cardTheme: 'dark'
+    popular: true,
+    cardTheme: 'white' // Finantech signature white contrast card
   },
   {
     id: 'pro',
@@ -42,16 +42,16 @@ const PACKAGES = [
     dailyRoiNum: 2.4,
     durationDays: 30,
     minDeposit: 5000,
-    maxDeposit: 24999,
+    maxDeposit: 99999,
     features: [
       'Multi-exchange cross-latency execution',
-      'Instant daily profit withdrawal anytime',
-      'Principal capital returned at maturity',
+      'Daily profit compounding',
+      'Principal capital returned at 30-day maturity',
       '100% Capital SAFU Insurance guarantee',
       'Dedicated Account Manager & Telegram VIP'
     ],
-    popular: true,
-    cardTheme: 'white' // Finantech signature white contrast card
+    popular: false,
+    cardTheme: 'dark'
   },
   {
     id: 'elite',
@@ -61,12 +61,12 @@ const PACKAGES = [
     dailyRoiNum: 3.5,
     durationDays: 45,
     minDeposit: 25000,
-    maxDeposit: 99999,
+    maxDeposit: 249999,
     features: [
       'Flash-loan & triangular arbitrage routing',
       'Sub-millisecond MEV protected execution',
       'Real-time automated profit auto-compounding',
-      '100% Capital SAFU Insurance guarantee',
+      'Principal capital returned at 45-day maturity',
       'Priority VIP Private Desk & Custom API'
     ],
     popular: false,
@@ -85,8 +85,8 @@ const PACKAGES = [
       'Direct liquidity pool arbitrage syndication',
       'Zero slippage order execution via OTC',
       'Personal Quantitative Portfolio Strategist',
-      '100% Capital SAFU Insurance guarantee',
-      'Unlimited instant withdrawals with 0% fee'
+      'Principal returned at 60-day maturity',
+      '100% Capital SAFU Insurance guarantee'
     ],
     popular: false,
     cardTheme: 'dark'
@@ -94,11 +94,12 @@ const PACKAGES = [
 ]
 
 export default function InvestTab({ onOpenDeposit }) {
-  const { user, activateInvestmentPlan } = useAuth()
-  const [selectedPlan, setSelectedPlan] = useState(PACKAGES[1])
+  const { user, activateInvestmentPlan, completeInvestmentCycle } = useAuth()
+  const [selectedPlan, setSelectedPlan] = useState(PACKAGES[0]) // Default to 7-day sprint
   const [investAmount, setInvestAmount] = useState(selectedPlan.minDeposit)
   const [loading, setLoading] = useState(false)
   const [feedback, setFeedback] = useState(null)
+  const [settlingId, setSettlingId] = useState(null)
 
   const availableBalance = user?.availableBalance || 0
 
@@ -113,6 +114,25 @@ export default function InvestTab({ onOpenDeposit }) {
   const dailyReturn = (Number(investAmount) || 0) * (selectedPlan.dailyRoiNum / 100)
   const totalReturn = dailyReturn * selectedPlan.durationDays
   const netRoiPercent = (selectedPlan.dailyRoiNum * selectedPlan.durationDays).toFixed(1)
+
+  const handleCompleteCycle = (invId) => {
+    setSettlingId(invId)
+    setTimeout(() => {
+      const res = completeInvestmentCycle(invId)
+      setSettlingId(null)
+      if (res.success) {
+        setFeedback({
+          type: 'success',
+          message: `Cycle completed! Capital and profits have been unlocked and returned to your Available Balance.`
+        })
+      } else {
+        setFeedback({
+          type: 'error',
+          message: res.error || 'Failed to settle cycle.'
+        })
+      }
+    }, 600)
+  }
 
   const handleActivate = (e) => {
     e.preventDefault()
@@ -229,15 +249,26 @@ export default function InvestTab({ onOpenDeposit }) {
                     <h4 className="text-lg font-bold text-white mt-0.5">{inv.packageName}</h4>
                     <p className="text-xs text-white/50">Started: {inv.startDate} • {inv.duration}</p>
                   </div>
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#B0F127] bg-[#B0F127]/10 border border-[#B0F127]/20 px-2.5 py-1 rounded-full">
-                    <ShieldCheck className="w-3 h-3" />
-                    100% SAFU Insured
-                  </span>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#B0F127] bg-[#B0F127]/10 border border-[#B0F127]/20 px-2.5 py-0.5 rounded-full">
+                      <ShieldCheck className="w-3 h-3" />
+                      100% SAFU Insured
+                    </span>
+                    {inv.status === 'COMPLETED' ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
+                        <CheckCircle2 className="w-3 h-3" /> Completed & Unlocked
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
+                        <Lock className="w-3 h-3" /> Capital Locked ({inv.durationDays || parseInt(inv.duration) || 7} Days)
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-3 p-3 bg-black/40 rounded-lg border border-white/5 font-mono text-center">
                   <div>
-                    <span className="text-[10px] text-white/40 block">CAPITAL</span>
+                    <span className="text-[10px] text-white/40 block">LOCKED CAPITAL</span>
                     <span className="text-sm font-bold text-white">${Number(inv.amount).toLocaleString()}</span>
                   </div>
                   <div>
@@ -246,20 +277,45 @@ export default function InvestTab({ onOpenDeposit }) {
                   </div>
                   <div>
                     <span className="text-[10px] text-white/40 block">EARNED TO DATE</span>
-                    <span className="text-sm font-bold text-white">${(Number(inv.totalEarned) || 0).toLocaleString()}</span>
+                    <span className="text-sm font-bold text-emerald-400">${(Number(inv.totalEarned) || 0).toLocaleString()}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-xs pt-1">
-                  <div className="flex items-center gap-1.5 text-white/60">
-                    <Clock className="w-3.5 h-3.5 text-white/40" />
-                    <span>Next Payout: 00:00 UTC</span>
+                {inv.status === 'COMPLETED' ? (
+                  <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-xs text-emerald-300 font-mono flex items-center justify-between">
+                    <span>Cycle Complete: Funds returned to Available</span>
+                    <span className="font-bold">+${(Number(inv.amount) + (Number(inv.totalEarned) || 0)).toLocaleString()}</span>
                   </div>
-                  <span className="text-[#B0F127] font-semibold flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-[#B0F127] animate-ping" />
-                    Active Trading
-                  </span>
-                </div>
+                ) : (
+                  <div>
+                    <div className="flex items-center justify-between text-xs pt-1">
+                      <div className="flex items-center gap-1.5 text-white/60">
+                        <Clock className="w-3.5 h-3.5 text-white/40" />
+                        <span>Duration: {inv.durationDays || parseInt(inv.duration) || 7} Days</span>
+                      </div>
+                      <span className="text-[#B0F127] font-semibold flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-[#B0F127] animate-ping" />
+                        Yield Accruing
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleCompleteCycle(inv.id)}
+                      disabled={settlingId === inv.id}
+                      className="mt-3 w-full py-2 px-3 bg-white/5 hover:bg-[#B0F127]/10 border border-white/10 hover:border-[#B0F127]/30 text-xs text-white/80 hover:text-[#B0F127] rounded-lg transition-all flex items-center justify-center gap-1.5 font-medium cursor-pointer"
+                    >
+                      {settlingId === inv.id ? (
+                        <span>Settling Cycle & Unlocking...</span>
+                      ) : (
+                        <>
+                          <Sparkles className="w-3.5 h-3.5 text-[#B0F127]" />
+                          <span>Complete Cycle (Unlock Capital & Profit to Available)</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>

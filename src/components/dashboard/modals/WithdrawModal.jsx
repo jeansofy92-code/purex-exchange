@@ -233,18 +233,22 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
 
   // ── Balance Calculation ────────────────────────────────────────────────────
   const availableBalance = Number(user?.availableBalance) || 0
+  const investedBalance  = Number(user?.investedBalance) || 0
   const totalBalance     = Number(user?.totalBalance) ||
-    ((Number(user?.capital) || 0) + (Number(user?.profit) || 0) + (Number(user?.availableBalance) || 0))
+    ((Number(user?.capital) || 0) + (Number(user?.profit) || 0))
+  const convertedBalance = Number(user?.convertedBalance) || 0
+  const approvedCurrency = user?.approvedConversionCurrency || 'USD'
 
-  // CRYPTO → can withdraw up to totalBalance
-  // BANK   → can ONLY withdraw from availableBalance (funded by approved conversion)
-  const cryptoMaxAmount = totalBalance
-  const bankMaxAmount   = availableBalance
+  // CRYPTO → can ONLY withdraw from availableBalance (uninvested crypto + profits)
+  //          Capital locked in active packages is strictly non-withdrawable until cycle completes
+  // BANK   → can ONLY withdraw from convertedBalance (money already converted from crypto to preferred fiat)
+  const cryptoMaxAmount = availableBalance
+  const bankMaxAmount   = convertedBalance
 
   const numCryptoAmount = Number(cryptoWithdrawAmount) || 0
 
-  // Bank: the amount is always set to the full available balance (max), read-only
-  const bankWithdrawAmount = availableBalance
+  // Bank: the amount is always set to the full converted fiat balance, read-only
+  const bankWithdrawAmount = convertedBalance
 
   // External Fee Calculations
   const cryptoGasFeePercent = Number(platformSettings?.cryptoGasFeePercent) || 10
@@ -279,7 +283,7 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
     if (numCryptoAmount > cryptoMaxAmount) {
       setFeedback({
         type: 'error',
-        message: `Amount exceeds your total balance ($${cryptoMaxAmount.toLocaleString()}).`
+        message: `Amount exceeds your available balance ($${cryptoMaxAmount.toLocaleString()}). Locked investment capital ($${investedBalance.toLocaleString()}) cannot be withdrawn until the package cycle completes.`
       })
       return
     }
@@ -307,7 +311,7 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
         method: 'CRYPTO',
         amount: numCryptoAmount,
         asset: cryptoAsset,
-        balanceType: 'total',
+        balanceType: 'available',
         cryptoAddress: destinationWallet.trim(),
         cryptoNetwork,
         gasFeeAmount: gasClearingFeeUsd,
@@ -331,7 +335,7 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
     if (bankWithdrawAmount <= 0) {
       setFeedback({
         type: 'error',
-        message: 'Your Available Balance is $0. You must first convert your balance and have an admin approve the conversion before you can withdraw to a bank.'
+        message: `You have 0 ${approvedCurrency} in Converted Balance. To withdraw via bank transfer, you must first convert crypto to fiat in the Convert tab.`
       })
       return
     }
@@ -722,16 +726,28 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
                 </div>
 
                 {/* Balance Summary Card */}
-                <div className="p-4 bg-black/50 border border-white/10 rounded-2xl space-y-2 text-xs font-mono">
+                <div className="p-4 bg-black/50 border border-white/10 rounded-2xl space-y-2.5 text-xs font-mono">
                   <div className="text-white/50 font-semibold uppercase tracking-wider text-[10px]">Your Balances</div>
                   <div className="flex justify-between text-white/70">
-                    <span>Total Balance (Crypto):</span>
+                    <span>Total Balance (All Crypto):</span>
                     <span className="text-white font-bold">${totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
                   </div>
                   <div className="flex justify-between text-white/70">
-                    <span>Available Balance (Fiat):</span>
+                    <span>Available Balance (Crypto Payout):</span>
                     <span className={`font-bold ${availableBalance > 0 ? 'text-[#B0F127]' : 'text-white/40'}`}>
                       ${availableBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                  {investedBalance > 0 && (
+                    <div className="flex justify-between text-amber-400/90 bg-amber-500/5 px-2 py-1 rounded">
+                      <span className="flex items-center gap-1.5"><Lock className="w-3 h-3 text-amber-400" /> Locked in Packages:</span>
+                      <span className="font-bold">${investedBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-blue-400/90 pt-1.5 border-t border-white/10">
+                    <span>Converted Fiat Balance (Bank Wire):</span>
+                    <span className="font-bold">
+                      {convertedBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })} {approvedCurrency}
                     </span>
                   </div>
                 </div>
@@ -751,14 +767,15 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
                           Withdraw in Crypto
                         </h4>
                         <span className="text-[10px] text-[#B0F127] font-mono bg-[#B0F127]/10 px-2 py-0.5 rounded">
-                          Blockchain Payout
+                          Available Crypto Only
                         </span>
                       </div>
                       <p className="text-xs text-white/60">
-                        Withdraw from your <strong className="text-white">total balance</strong> directly to a crypto wallet (USDT, BTC, ETH, SOL).
+                        Withdraw from your <strong className="text-white">Available Balance</strong> (uninvested crypto & profit) directly to a crypto wallet.
                       </p>
                       <p className="text-[10px] text-[#B0F127] font-mono">
-                        Available: ${totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        Available to withdraw: ${availableBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        {investedBalance > 0 && ` • ($${investedBalance.toLocaleString()} locked)`}
                       </p>
                     </div>
                   </div>
@@ -781,11 +798,11 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
                         </span>
                       </div>
                       <p className="text-xs text-black/70">
-                        Withdraw your <strong>Available Balance</strong> (funded by an approved conversion) to your bank account in local currency.
+                        Withdraw your <strong>Converted Fiat Balance</strong> to your local bank account. You can only withdraw money already converted from crypto.
                       </p>
-                      <p className={`text-[10px] font-mono font-bold ${availableBalance > 0 ? 'text-emerald-600' : 'text-red-500'}`}>
-                        Available for bank withdrawal: ${availableBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                        {availableBalance <= 0 && ' — Convert your balance first'}
+                      <p className={`text-[10px] font-mono font-bold ${convertedBalance > 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                        Converted balance: {convertedBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })} {approvedCurrency}
+                        {convertedBalance <= 0 && ' (Convert crypto first in Convert tab)'}
                       </p>
                     </div>
                   </div>
@@ -812,17 +829,27 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
                     Crypto Withdrawal Details
                   </h3>
                   <p className="text-xs text-white/50">
-                    Withdraw from your total balance to any crypto wallet.
+                    Withdraw from your available balance to any external crypto wallet.
                   </p>
                 </div>
 
-                {/* Total Balance Info */}
-                <div className="p-3 bg-[#B0F127]/10 border border-[#B0F127]/20 rounded-xl flex items-center gap-2 text-xs">
-                  <DollarSign className="w-4 h-4 text-[#B0F127] shrink-0" />
-                  <span className="text-white/80">
-                    Withdrawing from <strong className="text-[#B0F127]">Total Balance</strong>: ${totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                {/* Available Balance Info */}
+                <div className="p-3.5 bg-[#B0F127]/10 border border-[#B0F127]/25 rounded-xl flex items-center justify-between text-xs font-mono">
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="w-4 h-4 text-[#B0F127] shrink-0" />
+                    <span className="text-white/80">Available Crypto Balance:</span>
+                  </div>
+                  <span className="text-[#B0F127] font-bold text-sm">
+                    ${availableBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
+
+                {investedBalance > 0 && (
+                  <div className="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center gap-2 text-[11px] text-amber-300 font-mono">
+                    <Lock className="w-3.5 h-3.5 shrink-0 text-amber-400" />
+                    <span>${investedBalance.toLocaleString()} is locked in active packages until cycle finishes.</span>
+                  </div>
+                )}
 
                 <form onSubmit={handleProceedCryptoFee} className="space-y-4">
                   {/* Amount Input */}
@@ -832,7 +859,7 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
                       <button
                         type="button"
                         onClick={() => setCryptoWithdrawAmount(cryptoMaxAmount)}
-                        className="text-[#B0F127] font-bold"
+                        className="text-[#B0F127] font-bold cursor-pointer"
                       >
                         MAX (${cryptoMaxAmount.toLocaleString()})
                       </button>
@@ -1017,32 +1044,32 @@ export default function WithdrawModal({ isOpen, onClose, onNavigateKyc }) {
                     Local Currency Bank Withdrawal
                   </h3>
                   <p className="text-xs text-white/50">
-                    Withdraw your converted available balance to your bank account.
+                    Withdraw your converted fiat balance to your bank account.
                   </p>
                 </div>
 
-                {/* Available Balance Display — always max, read-only */}
+                {/* Converted Balance Display — always max, read-only */}
                 <div className="p-4 bg-black/60 border border-white/10 rounded-2xl space-y-2">
                   <div className="flex justify-between text-xs text-white/50 font-mono">
-                    <span>Withdrawal Amount (Available Balance)</span>
-                    <span className="flex items-center gap-1 text-amber-400">
-                      <Lock className="w-3 h-3" /> Auto-set to Max
+                    <span>Withdrawal Amount (Converted Fiat Balance)</span>
+                    <span className="flex items-center gap-1 text-emerald-400">
+                      <Lock className="w-3 h-3" /> Auto-set to Converted Fiat
                     </span>
                   </div>
                   <div className="text-2xl font-black font-mono text-[#B0F127]">
-                    ${bankWithdrawAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    {convertedBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })} {approvedCurrency}
                   </div>
                   <p className="text-[10px] text-white/40 font-mono">
-                    This is your full available balance from an approved conversion. Bank withdrawals always use the full amount.
+                    Bank transfers can only be made from funds converted from crypto to fiat and approved by compliance.
                   </p>
                 </div>
 
                 {/* Zero Balance Warning */}
                 {bankWithdrawAmount <= 0 && (
-                  <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-300 flex items-start gap-2">
-                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                    <span>
-                      Your available balance is <strong>$0.00</strong>. You must first use the <strong>Convert</strong> feature to convert your total balance to local currency and wait for admin approval before you can withdraw to a bank.
+                  <div className="p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-300 flex items-start gap-2.5">
+                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
+                    <span className="leading-relaxed">
+                      Your converted balance is <strong>0.00 {approvedCurrency}</strong>. Users withdrawing with bank can only withdraw from money already converted from crypto to their preferred fiat. Please visit the <strong>Convert</strong> tab to convert your crypto first.
                     </span>
                   </div>
                 )}

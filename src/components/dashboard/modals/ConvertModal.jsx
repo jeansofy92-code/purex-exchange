@@ -36,12 +36,10 @@ export default function ConvertModal({ isOpen, onClose }) {
 
   if (!isOpen) return null
 
-  // ─── The amount is ALWAYS the user's full total balance ───────────────────
-  const totalBalance = user
-    ? (Number(user.totalBalance) || (Number(user.capital || 0) + Number(user.profit || 0) + Number(user.availableBalance || 0)))
-    : 0
-
-  const fromAmount = totalBalance   // READ-ONLY — always max
+  // ─── Convert from Available Crypto Balance (locked package funds cannot be converted) ──
+  const availableBalance = user ? (Number(user.availableBalance) || 0) : 0
+  const investedBalance  = user ? (Number(user.investedBalance) || 0) : 0
+  const fromAmount       = availableBalance
 
   const cryptoObj = CRYPTO_INPUT_ASSETS[fromCrypto]
   const fiatObj   = LOCAL_CURRENCIES_MAP[toFiat] || LOCAL_CURRENCIES[0]
@@ -63,7 +61,7 @@ export default function ConvertModal({ isOpen, onClose }) {
     setFeedback(null)
 
     if (!fromAmount || fromAmount <= 0) {
-      setFeedback({ type: 'error', message: 'Your account balance must be greater than $0 to convert.' })
+      setFeedback({ type: 'error', message: 'Your available crypto balance must be greater than $0 to convert.' })
       return
     }
 
@@ -144,16 +142,23 @@ export default function ConvertModal({ isOpen, onClose }) {
                 Convert Balance to Local Currency
               </h3>
               <p className="text-xs text-white/50 mt-1">
-                Convert your entire platform balance to local fiat currency at institutional premium exchange rates.
+                Convert your available crypto to local fiat currency at institutional premium exchange rates.
               </p>
             </div>
 
             {/* Info Banner */}
-            <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-start gap-2.5 text-xs text-blue-300">
+            <div className="p-3.5 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-start gap-2.5 text-xs text-blue-300">
               <Info className="w-4 h-4 shrink-0 mt-0.5" />
-              <span>
-                Your <strong>entire total balance</strong> is converted at once. After admin approval, the converted amount will be credited to your Available Balance for bank withdrawal.
-              </span>
+              <div className="space-y-1">
+                <p>
+                  You are converting from your <strong>Available Crypto Balance</strong>. Once approved by compliance, this amount will be credited to your <strong>Converted Fiat Balance</strong>, making it eligible for direct local bank withdrawal.
+                </p>
+                {investedBalance > 0 && (
+                  <p className="text-amber-300 font-mono text-[11px]">
+                    Note: ${investedBalance.toLocaleString()} currently locked in active packages is generating yield and cannot be converted until the package cycle completes.
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* High Rate Incentive Banner */}
@@ -167,12 +172,12 @@ export default function ConvertModal({ isOpen, onClose }) {
             </div>
 
             <form onSubmit={handleProceedToFee} className="space-y-4">
-              {/* From: Total Balance (LOCKED — always max) */}
+              {/* From: Available Balance (LOCKED — always max) */}
               <div className="p-4 bg-black/60 border border-white/10 rounded-2xl space-y-2">
                 <div className="flex justify-between text-xs text-white/50 font-mono">
-                  <span>From (Total Platform Balance)</span>
-                  <span className="flex items-center gap-1 text-amber-400">
-                    <Lock className="w-3 h-3" /> Auto-set to Max
+                  <span>From (Available Crypto Balance)</span>
+                  <span className="flex items-center gap-1 text-[#B0F127]">
+                    <Lock className="w-3 h-3" /> Auto-set to Available
                   </span>
                 </div>
 
@@ -193,8 +198,8 @@ export default function ConvertModal({ isOpen, onClose }) {
                   </select>
                 </div>
 
-                <p className="text-[10px] text-white/30 font-mono">
-                  Capital: ${(user?.capital || 0).toLocaleString()} · Profit: ${(user?.profit || 0).toLocaleString()} · Available: ${(user?.availableBalance || 0).toLocaleString()}
+                <p className="text-[10px] text-white/40 font-mono">
+                  Uninvested Capital + Profit: ${(user?.availableBalance || 0).toLocaleString()} {investedBalance > 0 && `· Locked: $${investedBalance.toLocaleString()}`}
                 </p>
               </div>
 

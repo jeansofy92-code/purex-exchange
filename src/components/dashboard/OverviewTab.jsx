@@ -14,7 +14,10 @@ import {
   ArrowRight,
   Sparkles,
   Users,
-  Award
+  Award,
+  Lock,
+  Building2,
+  Wallet
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 
@@ -44,20 +47,23 @@ export default function OverviewTab({ onOpenDeposit, onOpenWithdraw, onOpenConve
   const secs = secondsRemaining % 60
   const countdownFormatted = `${String(hours).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`
 
-  const capital = user?.capital || 0
-  const profit = user?.profit || 0
-  const available = user?.availableBalance || 0
-  const total = user?.totalBalance || (capital + profit + available)
+  const capital = Number(user?.capital) || 0
+  const profit = Number(user?.profit) || 0
+  const available = Number(user?.availableBalance) || 0
+  const investedLocked = Number(user?.investedBalance) || 0
+  const total = Number(user?.totalBalance) || (capital + profit)
+  const convertedBalance = Number(user?.convertedBalance) || 0
+  const conversionCurrency = user?.approvedConversionCurrency || 'USD'
   const activeInvestments = user?.activeInvestments || []
   const transactions = user?.transactions || []
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem', width: '100%' }}>
-      {/* 4 BENTO BALANCE METRIC CARDS */}
+      {/* 5 BENTO BALANCE METRIC CARDS */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-        gap: '1.25rem',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
+        gap: '1.15rem',
         width: '100%'
       }}>
         {/* Card 1: Total Account Balance (Signature White Card) */}
@@ -69,13 +75,14 @@ export default function OverviewTab({ onOpenDeposit, onOpenWithdraw, onOpenConve
             justifyContent: 'space-between',
             boxShadow: '0 12px 32px rgba(0,0,0,0.12)',
             border: '1px solid #e7e7e7',
-            padding: '1.5rem 1.35rem'
+            padding: '1.4rem 1.25rem',
+            borderRadius: '16px'
           }}
         >
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#717172', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Total Account Balance
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#717172', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Total Balance (Crypto)
               </span>
               <button 
                 onClick={() => setHideBalances(!hideBalances)}
@@ -87,7 +94,7 @@ export default function OverviewTab({ onOpenDeposit, onOpenWithdraw, onOpenConve
             </div>
 
             <div style={{
-              fontSize: '2rem',
+              fontSize: '1.85rem',
               fontWeight: 800,
               color: '#060606',
               fontFamily: 'var(--font-mono)',
@@ -97,94 +104,50 @@ export default function OverviewTab({ onOpenDeposit, onOpenWithdraw, onOpenConve
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.25rem', paddingTop: '0.85rem', borderTop: '1px solid #eee' }}>
-            <span style={{ fontSize: '0.75rem', color: '#555' }}>Available: ${available.toLocaleString()}</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.15rem', paddingTop: '0.75rem', borderTop: '1px solid #eee' }}>
+            <span style={{ fontSize: '0.72rem', color: '#666' }}>Capital + Profit</span>
             <span style={{
-              fontSize: '0.72rem',
+              fontSize: '0.7rem',
               fontWeight: 800,
               color: '#060606',
               backgroundColor: '#B0F127',
               padding: '0.2rem 0.5rem',
               borderRadius: '6px'
             }}>
-              Active Desk
+              All Assets
             </span>
           </div>
         </div>
 
-        {/* Card 2: Invested Capital */}
+        {/* Card 2: Available Balance (Signature Lime Highlight) */}
         <div 
           className="finantech-card"
           style={{
-            backgroundColor: '#111111',
-            border: '1px solid #232323',
-            padding: '1.5rem 1.35rem',
+            backgroundColor: '#0d1306',
+            border: '1px solid rgba(176, 241, 39, 0.35)',
+            padding: '1.4rem 1.25rem',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            borderRadius: '16px',
+            boxShadow: '0 8px 24px rgba(176, 241, 39, 0.08)'
           }}
         >
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#717172', textTransform: 'uppercase' }}>
-                Invested Capital
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#B0F127', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Available Balance
               </span>
               <span style={{
-                fontSize: '0.7rem',
+                fontSize: '0.68rem',
                 color: '#B0F127',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.25rem',
-                fontWeight: 700
-              }}>
-                <ShieldCheck size={14} color="#B0F127" /> 100% Insured
-              </span>
-            </div>
-
-            <div style={{
-              fontSize: '1.85rem',
-              fontWeight: 800,
-              color: '#ffffff',
-              fontFamily: 'var(--font-mono)',
-              lineHeight: 1.15
-            }}>
-              {hideBalances ? '••••••••' : `$${capital.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.25rem', paddingTop: '0.85rem', borderTop: '1px solid #1f1f1f' }}>
-            <span style={{ fontSize: '0.75rem', color: '#939393' }}>SAFU Vault Protection</span>
-            <span style={{ fontSize: '0.75rem', color: '#B0F127', fontWeight: 700 }}>Zero Downside</span>
-          </div>
-        </div>
-
-        {/* Card 3: Net Profit Realized */}
-        <div 
-          className="finantech-card"
-          style={{
-            backgroundColor: '#111111',
-            border: '1px solid #232323',
-            padding: '1.5rem 1.35rem',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between'
-          }}
-        >
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#717172', textTransform: 'uppercase' }}>
-                Net Profit Realized
-              </span>
-              <span style={{
-                fontSize: '0.7rem',
-                color: '#05C168',
-                backgroundColor: '#16231a',
-                border: '1px solid #1f3d29',
+                backgroundColor: 'rgba(176, 241, 39, 0.12)',
+                border: '1px solid rgba(176, 241, 39, 0.25)',
                 padding: '0.15rem 0.45rem',
                 borderRadius: '6px',
                 fontWeight: 700
               }}>
-                Paid Daily
+                Crypto Ready
               </span>
             </div>
 
@@ -195,42 +158,47 @@ export default function OverviewTab({ onOpenDeposit, onOpenWithdraw, onOpenConve
               fontFamily: 'var(--font-mono)',
               lineHeight: 1.15
             }}>
-              {hideBalances ? '••••••••' : `+$${profit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+              {hideBalances ? '••••••••' : `$${available.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.25rem', paddingTop: '0.85rem', borderTop: '1px solid #1f1f1f' }}>
-            <span style={{ fontSize: '0.75rem', color: '#939393' }}>24h Profit Accrual</span>
-            <span style={{ fontSize: '0.75rem', color: '#fff', fontWeight: 700 }}>Instant Withdraw</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.15rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(176, 241, 39, 0.15)' }}>
+            <span style={{ fontSize: '0.72rem', color: '#9bc46b' }}>Uninvested + Profit</span>
+            <span style={{ fontSize: '0.72rem', color: '#fff', fontWeight: 700 }}>Withdraw / Invest</span>
           </div>
         </div>
 
-        {/* Card 4: Active Arbitrage Investments */}
+        {/* Card 3: Invested Capital (Locked in Packages) */}
         <div 
           className="finantech-card"
           style={{
             backgroundColor: '#111111',
             border: '1px solid #232323',
-            padding: '1.5rem 1.35rem',
+            padding: '1.4rem 1.25rem',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            borderRadius: '16px'
           }}
         >
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#717172', textTransform: 'uppercase' }}>
-                Active Quant Bots
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#717172', textTransform: 'uppercase' }}>
+                Invested Capital
               </span>
               <span style={{
-                fontSize: '0.7rem',
-                color: '#B0F127',
+                fontSize: '0.68rem',
+                color: '#f59e0b',
+                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                border: '1px solid rgba(245, 158, 11, 0.25)',
+                padding: '0.15rem 0.45rem',
+                borderRadius: '6px',
+                fontWeight: 700,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.3rem',
-                fontWeight: 700
+                gap: '0.25rem'
               }}>
-                <RefreshCw size={11} className="animate-spin" /> LIVE
+                <Lock size={11} /> Locked in Plans
               </span>
             </div>
 
@@ -241,13 +209,114 @@ export default function OverviewTab({ onOpenDeposit, onOpenWithdraw, onOpenConve
               fontFamily: 'var(--font-mono)',
               lineHeight: 1.15
             }}>
-              {activeInvestments.length} {activeInvestments.length === 1 ? 'Package' : 'Packages'}
+              {hideBalances ? '••••••••' : `$${investedLocked.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.25rem', paddingTop: '0.85rem', borderTop: '1px solid #1f1f1f' }}>
-            <span style={{ fontSize: '0.75rem', color: '#939393' }}>Current Tier</span>
-            <span style={{ fontSize: '0.75rem', color: '#B0F127', fontWeight: 700 }}>{user?.tier || 'Pro Quant'}</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.15rem', paddingTop: '0.75rem', borderTop: '1px solid #1f1f1f' }}>
+            <span style={{ fontSize: '0.72rem', color: '#939393' }}>Unlocks when cycle ends</span>
+            <span style={{ fontSize: '0.72rem', color: '#B0F127', fontWeight: 700 }}>100% Insured</span>
+          </div>
+        </div>
+
+        {/* Card 4: Profit Balance */}
+        <div 
+          className="finantech-card"
+          style={{
+            backgroundColor: '#111111',
+            border: '1px solid #232323',
+            padding: '1.4rem 1.25rem',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            borderRadius: '16px'
+          }}
+        >
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#717172', textTransform: 'uppercase' }}>
+                Profit Balance
+              </span>
+              <span style={{
+                fontSize: '0.68rem',
+                color: '#05C168',
+                backgroundColor: '#16231a',
+                border: '1px solid #1f3d29',
+                padding: '0.15rem 0.45rem',
+                borderRadius: '6px',
+                fontWeight: 700
+              }}>
+                Gained Yield
+              </span>
+            </div>
+
+            <div style={{
+              fontSize: '1.85rem',
+              fontWeight: 800,
+              color: '#05C168',
+              fontFamily: 'var(--font-mono)',
+              lineHeight: 1.15
+            }}>
+              {hideBalances ? '••••••••' : `+$${profit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.15rem', paddingTop: '0.75rem', borderTop: '1px solid #1f1f1f' }}>
+            <span style={{ fontSize: '0.72rem', color: '#939393' }}>Accrued ROI</span>
+            <span style={{ fontSize: '0.72rem', color: '#fff', fontWeight: 700 }}>In Available</span>
+          </div>
+        </div>
+
+        {/* Card 5: Converted Fiat Balance (Bank Wire Ready) */}
+        <div 
+          className="finantech-card"
+          style={{
+            backgroundColor: '#111111',
+            border: convertedBalance > 0 ? '1px solid rgba(59, 130, 246, 0.4)' : '1px solid #232323',
+            padding: '1.4rem 1.25rem',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            borderRadius: '16px'
+          }}
+        >
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.45rem' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#717172', textTransform: 'uppercase' }}>
+                Converted Balance
+              </span>
+              <span style={{
+                fontSize: '0.68rem',
+                color: convertedBalance > 0 ? '#60a5fa' : '#9ca3af',
+                backgroundColor: convertedBalance > 0 ? 'rgba(59, 130, 246, 0.1)' : '#1a1a1a',
+                border: convertedBalance > 0 ? '1px solid rgba(59, 130, 246, 0.25)' : '1px solid #292929',
+                padding: '0.15rem 0.45rem',
+                borderRadius: '6px',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.25rem'
+              }}>
+                <Building2 size={11} /> Fiat Ready
+              </span>
+            </div>
+
+            <div style={{
+              fontSize: '1.85rem',
+              fontWeight: 800,
+              color: convertedBalance > 0 ? '#ffffff' : '#777777',
+              fontFamily: 'var(--font-mono)',
+              lineHeight: 1.15
+            }}>
+              {hideBalances ? '••••••••' : `${convertedBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${conversionCurrency}`}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.15rem', paddingTop: '0.75rem', borderTop: '1px solid #1f1f1f' }}>
+            <span style={{ fontSize: '0.72rem', color: '#939393' }}>For Bank Transfer</span>
+            <span style={{ fontSize: '0.72rem', color: convertedBalance > 0 ? '#60a5fa' : '#888', fontWeight: 700 }}>
+              {convertedBalance > 0 ? 'Approved Wire' : 'Convert First'}
+            </span>
           </div>
         </div>
       </div>
